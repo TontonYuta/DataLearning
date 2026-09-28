@@ -1,0 +1,205 @@
+\chapter{Level 7: Machine Learning \& Predictive Analytics Thực Chiến (Tuần 37--44)}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: Bạn cần đã hoàn thành Chương 3 (Python, Pandas) và Chương 5 (Thống kê cơ bản). \textbf{Chưa cần biết gì về trí tuệ nhân tạo hay thuật toán học máy trước đó!}
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Hiểu từ con số 0 bản chất của Machine Learning và phân biệt với lập trình truyền thống.
+    \item Nắm vững 2 bài toán cốt lõi: Hồi quy (Regression) và Phân loại (Classification).
+    \item Hiểu vì sao phải chia tập dữ liệu thành Train và Test để chống học vẹt (Overfitting).
+    \item Làm chủ Scikit-Learn \texttt{Pipeline} và \texttt{ColumnTransformer} để ngăn chặn 100\% cạm bẫy Rò rỉ dữ liệu (Data Leakage).
+    \item Đánh giá mô hình dựa trên Confusion Matrix, Precision, Recall và ROC-AUC thay vì Accuracy ảo tưởng.
+    \item Giải thích quyết định của mô hình bằng lý thuyết trò chơi \textbf{SHAP}.
+    \item Hoàn thành \textbf{Project 7: Customer Churn Prediction System} sẵn sàng đưa vào CV ứng tuyển Data Scientist / ML Engineer Intern.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Machine Learning Căn Bản Từ Con Số 0}
+
+\subsection{1. Lập Trình Truyền Thống vs Machine Learning}
+\begin{itemize}
+    \item \textbf{Lập trình truyền thống (Software 1.0)}: Con người tự nghĩ ra quy tắc (Rules) và nạp dữ liệu (Data) vào máy tính để nhận kết quả (Answers).
+    \[
+    \text{Data} + \text{Rules (if/else do con người viết)} \longrightarrow \text{Answers}
+    \]
+    Ví dụ: Nếu khách hàng không đăng nhập $>30$ ngày thì gắn cờ "Nguy cơ rời bỏ".
+    \item \textbf{Học máy (Machine Learning - Software 2.0)}: Chúng ta cung cấp dữ liệu lịch sử (Data) cùng với kết quả thực tế trong quá khứ (Answers), và máy tính sẽ \textbf{tự động học ra quy tắc toán học tối ưu nhất}!
+    \[
+    \text{Data} + \text{Answers (Lịch sử thực tế)} \longrightarrow \text{Rules (Mô hình / Model)}
+    \]
+\end{itemize}
+
+\subsection{2. Ma Trận Đặc Trưng (X) \& Vector Mục Tiêu (y)}
+Trong học máy có giám sát (Supervised Learning):
+\begin{itemize}
+    \item \textbf{Đặc trưng ($X$ - Features / Input)}: Bảng gồm $n$ dòng và $m$ cột chứa các thông tin quan sát được của đối tượng (ví dụ: \texttt{age, monthly\_charges, tenure\_months}).
+    \item \textbf{Mục tiêu ($y$ - Target / Label)}: Cột kết quả duy nhất mà ta muốn dự báo trong tương lai (ví dụ: \texttt{is\_churn} nhận giá trị $1$ hoặc $0$).
+\end{itemize}
+
+\subsection{3. Tại Sao Bắt Buộc Phải Chia Tập Train \& Test?}
+Nếu bạn cho một học sinh ôn tập đúng 100 câu hỏi và đề thi cuối kỳ cũng dùng y hệt 100 câu hỏi đó, học sinh có thể đạt điểm 10 tuyệt đối chỉ bằng cách học vẹt đáp án mà không hiểu bản chất!
+Trong Machine Learning, hiện tượng này gọi là \textbf{Overfitting (Quá khớp / Học vẹt)}. Để đo lường trung thực khả năng ứng dụng trên dữ liệu chưa từng thấy:
+\begin{itemize}
+    \item Ta chia tập dữ liệu ban đầu thành: \textbf{80\% Train Set} (để mô hình học) và \textbf{20\% Test Set} (khóa kín lại, chỉ dùng để thi sát hạch cuối cùng).
+\end{itemize}
+
+\section{Feature Engineering \& Nghệ Thuật Ngăn Chặn Data Leakage}
+
+\begin{lythuyetbox}[Cạm Bẫy Chết Người: Data Leakage (Rò Rỉ Dữ Liệu)]
+Data Leakage xảy ra khi thông tin từ tập kiểm thử (Test Set) hoặc thông tin chỉ xuất hiện \textit{sau khi sự kiện diễn ra} bị rò rỉ vào quá trình huấn luyện mô hình.
+\begin{itemize}
+    \item \textbf{Ví dụ kinh điển}: Chuẩn hóa dữ liệu (StandardScaler) trên toàn bộ tập dữ liệu TRƯỚC KHI chia \texttt{train\_test\_split}. Điều này làm cho giá trị trung bình $\mu$ và độ lệch chuẩn $\sigma$ của tập kiểm thử bị tiết lộ vào tập huấn luyện!
+    \item \textbf{Rò rỉ dòng thời gian (Look-ahead Bias)}: Sử dụng cột "Thời gian gọi điện khiếu nại hủy dịch vụ" để dự báo khách hàng có rời bỏ (Churn) hay không trong khi cuộc gọi đó chỉ xảy ra sau khi khách hàng đã có ý định rời bỏ!
+\end{itemize}
+\textbf{Giải pháp tuyệt đối}: Luôn luôn sử dụng \textbf{Scikit-learn Pipeline} và \textbf{ColumnTransformer}!
+\end{lythuyetbox}
+
+\section{Vượt Qua Ảo Tưởng Accuracy: Ma Trận Đánh Giá Thực Tế}
+
+Khi dự báo tỷ lệ khách hàng rời bỏ mạng viễn thông (tỷ lệ rời bỏ thực tế chỉ là 5\%):
+\begin{itemize}
+    \item Nếu một mô hình "ngớ ngẩn" luôn luôn dự báo tất cả mọi người là \textbf{"Ở lại (Non-Churn)"}, nó sẽ đạt độ chính xác \textbf{Accuracy = 95\%}!
+    \item Nhưng nó phát hiện được bao nhiêu người rời bỏ thực sự? \textbf{Chính xác là 0\%}! Doanh nghiệp vẫn mất trắng 5\% khách hàng này.
+\end{itemize}
+
+\begin{thuchanhbox}[Chọn Đúng Chỉ Số Cho Đúng Bài Toán Kinh Doanh]
+\begin{itemize}
+    \item \textbf{Precision (Độ chuẩn xác - Tỷ lệ đoán trúng trong số những ca báo động)}:
+    \[
+    \text{Precision} = \frac{TP}{TP + FP}
+    \]
+    $\rightarrow$ Ưu tiên khi \textbf{chi phí cho một cảnh báo giả (False Positive) rất đắt đỏ}. Ví dụ: Bộ lọc thư rác (Spam Filter) - Bạn thà để sót một email spam còn hơn chuyển nhầm email quan trọng của đối tác kinh doanh vào hòm thư rác!
+    \item \textbf{Recall (Độ thu hồi - Tỷ lệ tóm được trong tổng số ca bệnh/gian lận thực tế)}:
+    \[
+    \text{Recall} = \frac{TP}{TP + FN}
+    \]
+    $\rightarrow$ Ưu tiên khi \textbf{bỏ sót một ca bệnh (False Negative) là thảm họa}! Ví dụ: Phát hiện ung thư, phát hiện giao dịch rửa tiền gian lận ngân hàng.
+    \item \textbf{ROC-AUC (Receiver Operating Characteristic - Area Under Curve)}: Đánh giá khả năng phân tách xếp hạng xác suất của mô hình độc lập với ngưỡng phân loại (Threshold-independent). Điểm chuẩn: $0.5$ (ngang tung đồng xu), $>0.8$ (Tốt), $>0.9$ (Xuất sắc).
+\end{itemize}
+\end{thuchanhbox}
+
+\section{PROJECT 7: End-to-End Customer Churn Prediction System}
+
+\subsection{Bài Toán Thực Tế}
+Xây dựng pipeline Machine Learning hoàn chỉnh dự báo khách hàng rời bỏ cho doanh nghiệp thương mại điện tử dựa trên hành vi giao dịch và tần suất đăng nhập.
+
+\subsection{Mã Nguồn Pipeline Scikit-Learn Chuẩn Doanh Nghiệp}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+import joblib
+
+# 1. Tai du lieu da trich xuat tu PostgreSQL
+df = pd.read_csv("data/customer_churn_features.csv")
+
+X = df.drop(columns=['customer_id', 'is_churn'])
+y = df['is_churn']
+
+# 2. Chia tap du lieu theo ty le phan tang (Stratified)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# 3. Dinh nghia cac cot so va cot chu
+numeric_features = ['tenure_months', 'monthly_charges', 'total_transactions', 'days_since_last_login']
+categorical_features = ['contract_type', 'payment_method', 'gender']
+
+# 4. Dong goi Preprocessing bang ColumnTransformer
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), numeric_features),
+        ('cat', OneHotEncoder(drop='first', handle_unknown='ignore'), categorical_features)
+    ]
+)
+
+# 5. Xay dung Scikit-Learn Pipeline hoan chinh (Tranh Data Leakage 100%)
+full_pipeline = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', RandomForestClassifier(n_estimators=200, max_depth=8, class_weight='balanced', random_state=42))
+])
+
+# 6. Kiem dinh cheo 5-Fold Stratified Cross Validation
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+cv_scores = cross_val_score(full_pipeline, X_train, y_train, cv=cv, scoring='roc_auc')
+
+print(f"[*] 5-Fold CV ROC-AUC Scores: {cv_scores}")
+print(f"[+] Average CV ROC-AUC     : {cv_scores.mean():.4f} (+/- {cv_scores.std():.4f})")
+
+# 7. Huan luyen tren toan bo tap Train va Danh gia tren Test Set doc lap
+full_pipeline.fit(X_train, y_train)
+y_pred_proba = full_pipeline.predict_proba(X_test)[:, 1]
+y_pred = (y_pred_proba >= 0.40).astype(int)  # Toi uu hoa nguong (Threshold tuning)
+
+test_auc = roc_auc_score(y_test, y_pred_proba)
+print(f"\n[V] Test Set ROC-AUC Score: {test_auc:.4f}\n")
+print("Bao Cao Chi Tiet Hieu Nang (Classification Report):")
+print(classification_report(y_test, y_pred))
+
+# 8. Dong goi model de dua vao Production
+joblib.dump(full_pipeline, "models/churn_prediction_v1.joblib")
+print("[+] Da dong goi model vao file 'models/churn_prediction_v1.joblib' thanh cong!")
+\end{lstlisting}
+
+\section{Khả Năng Diễn Giải Mô Hình Với SHAP (SHapley Values)}
+
+Trong ngành ngân hàng và bảo hiểm, quy định pháp luật yêu cầu bạn phải giải thích được lý do vì sao một khách hàng bị từ chối cấp thẻ tín dụng. Thư viện **SHAP** dựa trên lý thuyết trò chơi của nhà toán học đoạt giải Nobel Lloyd Shapley, lượng hóa mức độ đóng góp chính xác của từng đặc trưng:
+
+\begin{lstlisting}[language=Python]
+import shap
+
+# Trich xuat mo hinh cay tu pipeline da huan luyen
+rf_model = full_pipeline.named_steps['classifier']
+X_test_transformed = full_pipeline.named_steps['preprocessor'].transform(X_test)
+
+# Tinh toan SHAP values
+explainer = shap.TreeExplainer(rf_model)
+shap_values = explainer.shap_values(X_test_transformed)
+
+# Giai thich quyet dinh: Dac trung nao khien khach hang nay co nguy co roi bo cao nhat?
+# shap.summary_plot(shap_values[1], X_test_transformed)
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 7}
+
+\begin{baitapbox}[5 Bài Tập Xây Dựng \& Tối Ưu Mô Hình ML]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Regularization)}: Phân tích sự khác biệt về mặt toán học giữa chuẩn hóa $L_1$ (Lasso) và $L_2$ (Ridge). Vì sao Lasso lại có khả năng triệt tiêu hoàn toàn trọng số về 0 để tự động chọn lọc đặc trưng (Feature Selection)?
+    \item \textbf{Bài 2 (Threshold Tuning)}: Giả sử chi phí giữ chân một khách hàng có nguy cơ rời bỏ là 10 USD (tặng voucher), nhưng nếu mất khách hàng đó công ty thiệt hại 200 USD. Hãy viết đoạn mã Python tìm ngưỡng xác suất tối ưu ($Threshold \in [0.1, 0.9]$) để cực tiểu hóa tổng chi phí tổn thất kinh doanh.
+    \item \textbf{Bài 3 (Target Encoding)}: Viết một class biến đổi dữ liệu tùy chỉnh kế thừa từ \texttt{BaseEstimator, TransformerMixin} của Scikit-learn để thực hiện Target Encoding có tính toán làm mịn (Smoothing) nhằm ngăn chặn Overfitting.
+    \item \textbf{Bài 4 (XGBoost vs LightGBM)}: So sánh cơ chế phân nhánh cây theo chiều sâu (Level-wise) của XGBoost và phân nhánh theo lá tốt nhất (Leaf-wise) của LightGBM. Trường hợp nào LightGBM có nguy cơ bị Overfitting cao hơn?
+    \item \textbf{Bài 5 (Error Analysis)}: Viết đoạn mã trích xuất 20 trường hợp False Positives (mô hình đoán churn nhưng thực tế không churn) và tính toán khoảng cách trung bình của các đặc trưng này so với mẫu huấn luyện để phát hiện nhóm dữ liệu bị dị biệt.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Lasso phạt hàm mất mát bằng $\lambda \sum |w_i|$ (hình viên kim cương có góc nhọn cắt các trục tọa độ tại chính xác 0). Ridge phạt bằng $\lambda \sum w_i^2$ (hình cầu trơn, chỉ thu nhỏ trọng số tiệm cận 0 chứ không bao giờ chạm hẳn 0).
+    \item \textbf{Bài 2}: Tạo hàm tính chi phí:
+    \texttt{Total\_Cost = FP * 10 + FN * 200}. Duyệt qua các ngưỡng cắt từ 0.1 đến 0.9 với bước nhảy 0.05, chọn ngưỡng có \texttt{Total\_Cost} thấp nhất (thường ngưỡng tối ưu sẽ thấp hơn 0.5 để bắt được nhiều FN hơn).
+    \item \textbf{Bài 3}: Công thức làm mịn Target Encoding:
+    \[
+    S\_i = \frac{n\_i \times \bar{y}\_i + m \times \bar{y}\_{\text{global}}}{n\_i + m}
+    \]
+    với $m$ là trọng số làm mịn (Weight of prior).
+    \item \textbf{Bài 4}: LightGBM chia nhánh theo Leaf-wise (chọn lá làm giảm sai số nhiều nhất để chia tiếp). Trên tập dữ liệu nhỏ ($<10,000$ dòng), Leaf-wise rất dễ phát triển cây quá sâu và gây Overfitting nặng. Cần kiểm soát bằng \texttt{max\_depth} và \texttt{min\_child\_samples}.
+    \item \textbf{Bài 5}: Dùng biểu thức lọc:
+    \texttt{df\_errors = X\_test[(y\_test == 0) \& (y\_pred == 1)]} và phân tích phân phối các cột thông qua \texttt{df\_errors.describe()}.
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Dự Án Machine Learning Vào CV]
+\textbf{Customer Churn Prediction \& Retention Pipeline | Python, Scikit-learn, XGBoost, SHAP}
+\begin{itemize}
+    \item Xây dựng hệ thống học máy dự báo khách hàng rời bỏ từ 150,000 hồ sơ khách hàng, đóng gói toàn bộ quy trình qua Scikit-Learn Pipeline ngăn chặn 100\% rò rỉ dữ liệu.
+    \item Huấn luyện và tinh chỉnh các mô hình Gradient Boosting (XGBoost, Random Forest), đạt điểm ROC-AUC 0.88 trên tập kiểm thử độc lập và cải thiện Recall lên tới 78\% qua kỹ thuật cân bằng trọng số lớp (Class Weights).
+    \item Ứng dụng lý thuyết trò chơi SHAP để giải thích các nhân tố then chốt dẫn đến tỷ lệ rời bỏ (thời gian từ lần đăng nhập cuối và loại hợp đồng), hỗ trợ phòng Marketing xây dựng chiến dịch giữ chân cá nhân hóa giúp giảm 12\% tỷ lệ khách hàng rời mạng.
+\end{itemize}
+\end{cvtipbox}

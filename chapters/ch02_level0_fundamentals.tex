@@ -1,0 +1,270 @@
+\chapter{Level 0: Nền Tảng Dữ Liệu, Git \& Linux CLI (Tuần 1--2)}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: Bạn chỉ cần đã hoàn thành Chương 0 (đã cài đặt VS Code và mở được cửa sổ Terminal). \textbf{Chưa cần biết gì về hệ điều hành Linux hay Git trước đó!}
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Hiểu từ con số 0 các loại dữ liệu: Có cấu trúc, Bán cấu trúc, Phi cấu trúc.
+    \item Hiểu cơ chế lưu trữ dạng dòng (CSV) vs dạng cột (Parquet) và vì sao Parquet lại giúp tiết kiệm 80\% dung lượng ổ cứng.
+    \item Làm chủ các câu lệnh Linux CLI căn bản nhất: \texttt{pwd, ls, cd, mkdir, cat, grep, awk, cut, sort, uniq}.
+    \item Hiểu cách Git hoạt động từ con số 0: Vùng làm việc (Working Tree), Vùng chờ (Staging Area), Kho lưu trữ (Repository), và quy tắc bảo mật với \texttt{.gitignore}.
+    \item Tự tay viết và chạy công cụ dòng lệnh đầu tiên (\textbf{Project 0: Personal Data CLI Analyzer}) phân tích dữ liệu tự động.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Bản Chất Dữ Liệu \& Các Định Dạng File Doanh Nghiệp}
+
+Trước khi viết bất kỳ dòng mã xử lý dữ liệu nào, bạn phải hiểu rõ bản chất của dữ liệu và định dạng vật lý lưu trữ nó trên ổ đĩa. Trong môi trường doanh nghiệp, dữ liệu tồn tại ở ba dạng chính:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Dữ liệu có cấu trúc (Structured Data)}: Có schema định nghĩa chặt chẽ (tên cột, kiểu dữ liệu, ràng buộc). Ví dụ: Bảng trong PostgreSQL, MySQL, BigQuery.
+    \item \textbf{Dữ liệu bán cấu trúc (Semi-structured Data)}: Không tuân theo bảng cố định nhưng có cấu trúc phân cấp, thẻ tag hoặc cặp key-value. Ví dụ: JSON từ REST API, tài liệu MongoDB, file XML cấu hình.
+    \item \textbf{Dữ liệu phi cấu trúc (Unstructured Data)}: Không có định dạng bảng định trước. Ví dụ: Nội dung review sản phẩm của khách hàng, tệp âm thanh ghi âm cuộc gọi của tổng đài viên, tệp video camera giám sát.
+\end{itemize}
+
+\subsection{So Sánh Thực Chiến: CSV vs JSON vs Parquet vs Excel}
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|p{4.5cm}|}
+\hline
+\textbf{Định Dạng} & \textbf{Lưu Trữ} & \textbf{Nén Dữ Liệu} & \textbf{Tốc Độ Đọc} & \textbf{Mục Đích Khuyên Dùng} \\
+\hline
+\textbf{CSV} & Dạng dòng (Text) & Kém & Rất chậm & Xuất báo cáo nhỏ ($<50$MB) cho con người đọc \\
+\hline
+\textbf{JSON} & Phân cấp (Text) & Kém & Chậm & Giao tiếp REST API, log sự kiện web/app \\
+\hline
+\textbf{Excel (.xlsx)} & Nhị phân/XML & Trung bình & Rất chậm & Nghiệp vụ kinh doanh, báo cáo tài chính phòng ban \\
+\hline
+\textbf{Parquet} & Dạng cột (Columnar) & Tuyệt hảo (Snappy) & Cực nhanh & Chuẩn lưu trữ Data Lake, Big Data, Data Warehouse \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{lythuyetbox}[Bản Chất Của Lưu Trữ Dạng Cột (Columnar Storage)]
+Tại sao \textbf{Parquet} lại thống trị thế giới Data Engineering và Data Science hiện đại?
+\begin{itemize}
+    \item \textbf{I/O Pruning (Cắt giảm đọc đĩa)}: Khi bạn thực hiện câu lệnh SQL: \texttt{SELECT AVG(order\_total) FROM sales;}, định dạng dòng (CSV) buộc ổ cứng phải đọc toàn bộ 100 cột trên mỗi dòng từ đĩa vào RAM rồi mới bỏ đi 99 cột thừa. Trong khi đó, định dạng cột (Parquet) chỉ cần nhảy trực tiếp đến khối lưu trữ cột \texttt{order\_total}, giảm tới 90--99\% lượng dữ liệu đọc từ đĩa cứng (I/O).
+    \item \textbf{Tỷ lệ nén cực đại}: Vì tất cả giá trị trong cùng một cột có cùng kiểu dữ liệu (ví dụ cột số nguyên, hoặc cột mã bưu điện), các thuật toán nén (Snappy, GZIP, Dictionary Encoding) có thể nén dữ liệu giảm từ 10GB CSV xuống chỉ còn 1.5GB Parquet!
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Git \& GitHub Thực Chiến Cho Kỹ Sư Dữ Liệu}
+
+Git không chỉ là công cụ lưu trữ mã nguồn, nó là cuốn nhật ký hoạt động và lá chắn bảo vệ an toàn cho hệ sinh thái dữ liệu của doanh nghiệp.
+
+\begin{thuchanhbox}[Quy Chuẩn Commit \& Gitignore Bắt Buộc]
+\textbf{1. Chuẩn hóa Commit (Conventional Commits)}:
+\begin{itemize}
+    \item \texttt{feat: add incremental extraction for order table} (Tính năng mới)
+    \item \texttt{fix: resolve null pointer exception in currency converter} (Sửa lỗi)
+    \item \texttt{refactor: optimize sql execution plan for churn query} (Tối ưu hóa)
+    \item \texttt{docs: update data dictionary for dim\_customer} (Tài liệu hóa)
+\end{itemize}
+
+\textbf{2. Tệp \texttt{.gitignore} Chuẩn Mực Trong Mọi Data Project}:
+Tuyệt đối không bao giờ đẩy (push) tệp dữ liệu lớn hoặc thông tin bảo mật lên GitHub:
+\begin{lstlisting}[language=bash]
+# Khong day du lieu tho va du lieu xu ly len Git
+*.csv
+*.parquet
+*.xlsx
+data/raw/
+data/processed/
+
+# Khong bao gio day credentials, API keys, mat khau database
+.env
+*.pem
+secrets/
+
+# Moi truong ao va cache Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Linux CLI \& Xử Lý Dữ Liệu Nhanh Bằng Dòng Lệnh}
+
+\subsection{1. Lệnh Điều Hướng Hệ Thống Tập Tin Từ Con Số 0}
+Trước khi lọc dữ liệu lớn, bạn phải biết cách di chuyển và quản lý tệp tin trong hệ điều hành:
+
+\begin{thuchanhbox}[Các Lệnh Điều Hướng Cốt Lõi Bắt Buộc Phải Nhớ]
+\begin{itemize}
+    \item \texttt{pwd} (\textit{Print Working Directory}): In ra đường dẫn thư mục hiện tại mà bạn đang đứng.
+    \item \texttt{ls -lh}: Liệt kê tất cả các tệp tin và thư mục kèm dung lượng dễ đọc (\textit{Human-readable}: KB, MB, GB).
+    \item \texttt{cd <tên\_thư\_mục>}: Đi vào trong thư mục đó.
+    \item \texttt{cd ..}: Lùi ra thư mục cha bên ngoài một cấp.
+    \item \texttt{cd ~}: Nhảy ngay về thư mục gốc người dùng (Home Directory).
+    \item \texttt{mkdir -p data/raw}: Tạo thư mục mới (cờ \texttt{-p} tự động tạo các thư mục cha nếu chưa tồn tại).
+    \item \texttt{touch notes.txt}: Tạo một tệp tin văn bản rỗng mới.
+    \item \texttt{cp file.csv backup.csv}: Sao chép (copy) tệp tin.
+    \item \texttt{mv file.csv data/}: Di chuyển tệp tin vào thư mục \texttt{data/} hoặc đổi tên tệp.
+    \item \texttt{rm file.txt}: Xóa tệp tin vĩnh viễn (\textbf{CẢNH BÁO}: Trên Linux dòng lệnh không có thùng rác Recycle Bin, xóa là mất vĩnh viễn!).
+\end{itemize}
+\end{thuchanhbox}
+
+\subsection{2. Thao Tác \& Lọc Dữ Liệu Lớn Siêu Tốc}
+
+Một kỹ sư dữ liệu giỏi có thể chẩn đoán lỗi trên tập dữ liệu 10 triệu bản ghi trong 5 giây chỉ bằng các lệnh Bash mà không cần đợi mở Jupyter Notebook:
+
+\begin{thuchanhbox}[Các Lệnh Bash Thao Tác Dữ Liệu Siêu Tốc]
+\begin{lstlisting}[language=bash]
+# 1. Xem 5 dong dau tien va 5 dong cuoi cung
+head -n 5 sales_data.csv
+tail -n 5 sales_data.csv
+
+# 2. Dem tong so dong trong file CSV
+wc -l sales_data.csv
+
+# 3. Tim tat ca cac don hang bi loi 'PAYMENT_FAILED'
+grep "PAYMENT_FAILED" access_log.txt | wc -l
+
+# 4. Trich xuat cot 2 va cot 5 tu file CSV phan tach boi dau phay
+cut -d ',' -f 2,5 sales_data.csv | head -n 10
+
+# 5. Loc ra cac gia tri duy nhat va dem tan suat (Value Counts cuc nhanh)
+# Lay cot status (cot 4), sap xep va dem so lan xuat hien
+cut -d ',' -f 4 sales_data.csv | sort | uniq -c | sort -nr
+
+# 6. Dung AWK de tinh tong doanh thu tren cot 3 (Amount)
+awk -F ',' '{sum += $3} END {print "Tong Doanh Thu = ", sum}' sales_data.csv
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Bí Kíp AI Copilot: Sinh Dữ Liệu Giả Lập \& Scripting}
+
+\begin{aipromptbox}[Prompt Sinh Mock Data Chuẩn Schema Doanh Nghiệp]
+Khi bạn cần kiểm thử một pipeline hoặc xây dựng portfolio mà không có dữ liệu thực tế, hãy dùng prompt sau:
+
+\textit{"Đóng vai trò là Senior Data Engineer. Hãy viết một script Python hoàn chỉnh sử dụng thư viện Faker để sinh ra 5,000 dòng dữ liệu giao dịch bán hàng thương mại điện tử.
+Tệp xuất ra định dạng CSV và Parquet tên là `ecommerce\_transactions`.
+Các cột bao gồm:
+1. `transaction\_id` (UUIDv4 dạng chuỗi)
+2. `customer\_id` (định dạng `CUST\_` kèm 5 chữ số ngẫu nhiên từ 10000 đến 15000 để tạo ra hành vi mua lặp lại)
+3. `order\_timestamp` (phân bổ ngẫu nhiên trong 90 ngày gần nhất)
+4. `category` (chọn từ ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports'])
+5. `amount` (phân phối chuẩn lệch phải, giá trị từ 10 đến 2,500 USD, làm tròn 2 chữ số thập phân)
+6. `status` (tỷ lệ 85\% 'COMPLETED', 10\% 'CANCELLED', 5\% 'REFUNDED')
+Yêu cầu: Chèn cố tình 2\% giá trị null ở cột `amount` và 5\% khách hàng có thông tin địa chỉ email rỗng để làm bài tập Data Cleaning. Viết mã tối ưu hóa chạy dưới 3 giây."}
+\end{aipromptbox}
+
+\section{PROJECT 0: Xây Dựng Personal Data CLI Analyzer}
+
+\subsection{Bài Toán Thực Tế}
+Mỗi khi nhận được một tệp dữ liệu mới từ đối tác hoặc đội ngũ vận hành, Data Analyst hay Data Engineer mất từ 15 đến 30 phút để mở Jupyter Notebook, nạp thư viện Pandas, viết các dòng lệnh xem kích thước bảng, đếm số lượng null, kiểm tra trùng lặp và tính các chỉ số thống kê. 
+
+Mục tiêu của **Project 0** là xây dựng một công cụ dòng lệnh (CLI Tool) bằng Python thuần mang tên \texttt{data-analyzer} có thể chạy trực tiếp từ Terminal:
+\begin{lstlisting}[language=bash]
+python src/analyzer.py --file data/input.csv --output report.txt
+\end{lstlisting}
+
+\subsection{Mã Nguồn Thực Hiện Hoàn Chỉnh}
+
+\begin{lstlisting}[language=Python]
+import argparse
+import sys
+import pandas as pd
+import numpy as np
+
+def analyze_dataset(file_path: str, output_path: str = None) -> None:
+    """Doc va phan tich ho so tong quan cua tap du lieu CSV/Parquet."""
+    print(f"[*] Dang tai du lieu tu: {file_path}...")
+    try:
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        elif file_path.endswith('.parquet'):
+            df = pd.read_parquet(file_path)
+        else:
+            print("[!] Loi: Chi ho tro dinh dang .csv va .parquet!")
+            sys.exit(1)
+    except Exception as e:
+        print(f"[!] Khong the doc file: {e}")
+        sys.exit(1)
+
+    # Thu thap thong tin thong ke
+    total_rows, total_cols = df.shape
+    duplicate_rows = df.duplicated().sum()
+    memory_usage_mb = df.memory_usage(deep=True).sum() / (1024 * 1024)
+
+    report_lines = []
+    report_lines.append("=" * 60)
+    report_lines.append("        BAO CAO HO SO DU LIEU (DATA PROFILING REPORT)")
+    report_lines.append("=" * 60)
+    report_lines.append(f"Tong so ban ghi (Rows)    : {total_rows:,}")
+    report_lines.append(f"Tong so cot (Columns)     : {total_cols}")
+    report_lines.append(f"Ban ghi trung lap (Dupes) : {duplicate_rows} ({duplicate_rows/total_rows*100:.2f}%)")
+    report_lines.append(f"Dung luong bo nho (RAM)   : {memory_usage_mb:.2f} MB\n")
+
+    report_lines.append("-" * 60)
+    report_lines.append("CHI TIET CAC COT VA GIA TRI THIEU (MISSING VALUES):")
+    report_lines.append("-" * 60)
+    for col in df.columns:
+        null_count = df[col].isnull().sum()
+        null_pct = (null_count / total_rows) * 100
+        dtype = str(df[col].dtype)
+        unique_cnt = df[col].nunique()
+        report_lines.append(f"{col:<20} | Type: {dtype:<10} | Null: {null_count:>6} ({null_pct:>5.1f}%) | Unique: {unique_cnt}")
+
+    report_lines.append("\n" + "-" * 60)
+    report_lines.append("THONG KE COT DU LIEU SO (NUMERICAL METRICS):")
+    report_lines.append("-" * 60)
+    num_cols = df.select_dtypes(include=[np.number]).columns
+    if len(num_cols) > 0:
+        desc = df[num_cols].describe().T[['mean', 'std', 'min', '50%', 'max']]
+        desc.rename(columns={'50%': 'median'}, inplace=True)
+        report_lines.append(desc.to_string())
+    else:
+        report_lines.append("Khong co cot du lieu dang so.")
+
+    full_report = "\n".join(report_lines)
+    print(full_report)
+
+    if output_path:
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(full_report)
+        print(f"\n[+] Da luu bao cao vao: {output_path}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Cong cu CLI phan tich nhanh du lieu CSV/Parquet")
+    parser.add_argument("--file", "-f", required=True, help="Duong dan den file du lieu")
+    parser.add_argument("--output", "-o", required=False, help="Duong dan luu file text bao cao")
+    args = parser.parse_args()
+    analyze_dataset(args.file, args.output)
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 0}
+
+\begin{baitapbox}[Hệ Thống 5 Bài Tập Dòng Lệnh \& Quản Lý Dự Án]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Bash - Phân tích log)}: Cho file \texttt{server\_logs.txt}. Hãy viết một câu lệnh Bash một dòng (one-liner) đếm số lượng địa chỉ IP duy nhất (cột thứ 1) gửi yêu cầu thành công mã HTTP 200 (cột thứ 9).
+    \item \textbf{Bài 2 (So sánh kích thước)}: Hãy tải một file CSV 100MB, chuyển đổi sang Parquet bằng Pandas. Ghi lại dung lượng chênh lệch và so sánh thời gian đọc 1 cột của 2 file.
+    \item \textbf{Bài 3 (Git - Xử lý xung đột)}: Tạo 2 branch \texttt{feature/sql-query} và \texttt{feature/python-etl}. Cùng sửa dòng thứ 5 trong file \texttt{README.md}, sau đó tiến hành merge vào branch \texttt{main} và xử lý conflict phát sinh.
+    \item \textbf{Bài 4 (CLI Enhancements)}: Mở rộng Project 0 thêm tính năng tự động phát hiện các cột dạng chuỗi nhưng thực chất là ngày tháng (\texttt{datetime}) để đưa ra khuyến nghị chuyển đổi kiểu dữ liệu.
+    \item \textbf{Bài 5 (Cron Job)}: Viết một dòng cấu hình Cron job trên Linux để tự động thực thi script phân tích dữ liệu \texttt{analyzer.py} vào đúng 02:00 sáng hàng ngày từ Thứ Hai đến Thứ Sáu.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Hướng Dẫn Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Lệnh Bash chuẩn:
+    \begin{lstlisting}[language=bash]
+awk '$9 == "200" {print $1}' server_logs.txt | sort -u | wc -l
+    \end{lstlisting}
+    \item \textbf{Bài 2}: Với dữ liệu bảng thông thường, Parquet giảm dung lượng từ 100MB xuống còn khoảng 15--25MB (nén Snappy). Thời gian đọc một cột số lượng/doanh thu trên Parquet nhanh gấp 10--30 lần so với CSV vì cơ chế Columnar I/O Pruning.
+    \item \textbf{Bài 3}: Khi gặp conflict, Git sẽ đánh dấu \texttt{<<<<<<< HEAD}, \texttt{=======}, \texttt{>>>>>>> branch\_name}. Cần mở file, thống nhất nội dung cần giữ lại, xóa các ký tự đánh dấu của Git, sau đó thực hiện \texttt{git add README.md} và \texttt{git commit -m "fix: resolve merge conflict in README"}.
+    \item \textbf{Bài 4}: Gợi ý code: Thử parse thử nghiệm 50 giá trị đầu tiên của cột object qua \texttt{pd.to\_datetime(sample, errors='coerce')}. Nếu tỷ lệ parse thành công đạt $>90\%$, in ra cảnh báo: \texttt{"Khuyen nghi doi sang datetime"}.
+    \item \textbf{Bài 5}: Dòng crontab chuẩn:
+    \begin{lstlisting}[language=bash]
+0 2 * * 1-5 /usr/bin/python3 /path/to/src/analyzer.py --file /data/daily.csv >> /logs/analyzer.log 2>&1
+    \end{lstlisting}
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Project 0 Vào CV Của Bạn]
+\textbf{Personal Data Profiling CLI Tool | Python, Argparse, Pandas, Bash}
+\begin{itemize}
+    \item Xây dựng công cụ dòng lệnh (CLI) bằng Python hỗ trợ tự động hóa việc kiểm tra chất lượng dữ liệu ban đầu cho các tệp CSV và Parquet lên tới 500,000 bản ghi.
+    \item Tự động trích xuất các chỉ số quan trọng (missing values, duplicate rate, distribution metrics) chỉ trong dưới 2 giây, giúp cắt giảm 80\% thời gian thăm dò dữ liệu thủ công.
+\end{itemize}
+\end{cvtipbox}

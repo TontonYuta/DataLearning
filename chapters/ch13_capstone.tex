@@ -1,0 +1,82 @@
+\chapter{Đồ Án Flagship Capstone: Modern Enterprise Data \& AI Platform (Project 11)}
+
+\section{Tầm Nhìn Của Dự Án Flagship Capstone}
+
+Đa phần ứng viên trên thị trường nộp vào CV những đồ án rời rạc: một file notebook phân tích dữ liệu Titanic, một file SQL vài câu lệnh cơ bản, hoặc một biểu đồ dashboard đơn điệu. Những dự án này không chứng minh được bạn có khả năng làm việc trong một môi trường doanh nghiệp thực tế.
+
+\textbf{Dự Án Flagship Capstone (Project 11)} được thiết kế để trở thành **tâm điểm sáng nhất trong Portfolio của bạn**. Đây là một nền tảng dữ liệu và trí tuệ nhân tạo hoàn chỉnh từ đầu đến cuối (End-to-End Platform), tích hợp mượt mà cả ba trụ cột:
+\begin{enumerate}
+    \item \textbf{Data Engineering}: Tự động hóa trích xuất từ nhiều nguồn, nạp vào Data Lake S3/MinIO, điều phối bằng Apache Airflow, mô hình hóa và kiểm thử tự động bằng dbt, tối ưu hóa lưu trữ trong Data Warehouse PostgreSQL.
+    \item \textbf{Data Science}: Huấn luyện và theo dõi mô hình học máy phân loại nguy cơ rời bỏ khách hàng (Churn Prediction) với MLflow, đóng gói thành Microservice FastAPI phục vụ thời gian thực qua container Docker.
+    \item \textbf{Data Analytics}: Xây dựng mô hình Star Schema chuẩn Kimball, tính toán các chỉ số tài chính nâng cao bằng DAX và thiết kế Executive Dashboard trên Power BI phục vụ ban lãnh đạo.
+\end{enumerate}
+
+\section{Kiến Trúc Kỹ Thuật Toàn Cảnh (End-to-End Architecture)}
+
+\begin{lythuyetbox}[Luồng Dữ Liệu 6 Tầng Chuẩn Doanh Nghiệp Hiện Đại]
+\begin{enumerate}
+    \item \textbf{Tầng Nguồn (Source Systems)}: Hệ thống giả lập các giao dịch E-commerce phát sinh liên tục (REST APIs) và tệp dữ liệu khách hàng CRM (CSV/Parquet).
+    \item \textbf{Tầng Hồ Dữ Liệu Thô (Bronze Layer - Data Lake)}: Dữ liệu thô chưa qua xử lý được lưu trữ nguyên trạng trên MinIO (tương thích hoàn toàn với Amazon S3) theo cấu trúc thư mục \texttt{raw/year=2026/month=03/}.
+    \item \textbf{Tầng Điều Phối (Orchestration)}: **Apache Airflow** kích hoạt DAG theo lịch định kỳ, kiểm tra tính khả dụng của file nguồn, thực thi xác thực dữ liệu và gọi dbt.
+    \item \textbf{Tầng Biến Đổi Dữ Liệu (Silver \& Gold Layers - dbt)}:
+    \begin{itemize}
+        \item \textit{Silver Layer (Staging)}: dbt làm sạch dữ liệu, khử trùng lặp, chuẩn hóa kiểu ngày tháng và tên cột.
+        \item \textit{Gold Layer (Marts)}: dbt xây dựng các bảng Fact và Dimension (Star Schema), thực thi hơn 30 bài kiểm định chất lượng tự động (\texttt{dbt test}).
+    \end{itemize}
+    \item \textbf{Tầng Phục Vụ Máy Học (Machine Learning Layer)}: Mô hình Scikit-Learn/XGBoost lấy dữ liệu từ Gold Layer, trích xuất đặc trưng RFM, tính toán xác suất rời bỏ và xuất ra REST API FastAPI với độ trễ dưới 25ms.
+    \item \textbf{Tầng Ra Quyết Định Kinh Doanh (BI \& Consumption Layer)}: **Power BI** kết nối trực tiếp vào Data Warehouse để hiển thị các chỉ số kinh doanh cốt lõi (Doanh thu, Tăng trưởng, Khách hàng trung thành, Danh sách cảnh báo rủi ro).
+\end{enumerate}
+\end{lythuyetbox}
+
+\section{Cấu Trúc Repository Chuẩn Doanh Nghiệp (Enterprise Monorepo)}
+
+Một dự án chuyên nghiệp phải được tổ chức khoa học để bất kỳ kỹ sư nào trong nhóm cũng có thể khởi chạy toàn bộ hệ sinh thái chỉ bằng một lệnh duy nhất:
+
+\begin{lstlisting}[language=bash]
+modern-ecommerce-data-platform/
+├── .github/
+│   └── workflows/
+│       └── ci_cd.yml              # Pipeline kiem thu va build tu dong
+├── airflow/
+│   ├── dags/
+│   │   └── ecommerce_master_dag.py # DAG dieu phoi chinh
+│   └── plugins/
+├── dbt_ecommerce/
+│   ├── dbt_project.yml
+│   ├── models/
+│   │   ├── staging/               # Silver Layer
+│   │   └── marts/                 # Gold Layer (Star Schema)
+│   └── tests/                     # Kiem dinh toan ven du lieu
+├── ml_service/
+│   ├── src/
+│   │   ├── app.py                 # FastAPI microservice
+│   │   └── model_trainer.py       # Script huan luyen va log MLflow
+│   ├── tests/
+│   │   └── test_api.py            # Unit tests voi pytest
+│   └── Dockerfile
+├── dashboards/
+│   └── executive_performance.pbix # File Power BI Dashboard hoan chinh
+├── data/                          # Du lieu mau mock testing
+├── docker-compose.yml             # Khoi chay Postgres, Airflow, MinIO, FastAPI
+├── Makefile                       # Lenh tat thao tac: make up, make test, make run
+├── requirements.txt
+└── README.md                      # Tai lieu huong dan dinh cao (Architecture + Metrics)
+\end{lstlisting}
+
+\section{Kịch Bản 15 Phút Trình Bày Dự Án Chinh Phục Nhà Tuyển Dụng}
+
+Khi người phỏng vấn đề nghị: \textit{"Em hãy trình bày dự án ấn tượng nhất mà em từng xây dựng"}, hãy áp dụng kịch bản 4 phần:
+\begin{enumerate}
+    \item \textbf{Phần 1: Bối Cảnh Nghiệp Vụ \& Mục Tiêu (3 phút)}:
+    \textit{"Em nhận thấy bài toán phổ biến của các sàn TMĐT là dữ liệu giao dịch bị phân mảnh ở nhiều nơi khiến báo cáo kinh doanh bị chậm trễ và không kịp thời giữ chân khách hàng có nguy cơ rời bỏ. Vì vậy, em đã tự mình thiết kế và xây dựng một nền tảng dữ liệu toàn diện Modern Data Platform xử lý hơn 100,000 giao dịch/ngày, tích hợp giữa hạ tầng dữ liệu và mô hình trí tuệ nhân tạo."}
+    \item \textbf{Phần 2: Kiến Trúc Kỹ Thuật \& Đánh Đổi Lựa Chọn (5 phút)}:
+    Giải thích vì sao bạn chọn công nghệ này mà không chọn công nghệ khác:
+    \begin{itemize}
+        \item \textit{"Em chọn mô hình ELT kết hợp dbt thay vì viết code Python biến đổi thủ công vì dbt tận dụng tối đa sức mạnh tính toán song song của DWH, tự động quản lý lineage và tích hợp sẵn bộ kiểm thử dữ liệu."}
+        \item \textit{"Em thiết kế Data Warehouse theo mô hình Star Schema của Ralph Kimball với các Surrogate Keys để tách biệt hoàn toàn dữ liệu vận hành khỏi dữ liệu phân tích lịch sử."}
+    \end{itemize}
+    \item \textbf{Phần 3: Trình Diễn Trực Tiếp (Live Demo) (5 phút)}:
+    Mở giao diện Webserver của Airflow cho thấy DAG chạy xanh hoàn toàn; mở terminal chạy lệnh gọi API FastAPI cho thấy kết quả dự báo churn trả về trong 18ms; mở file Power BI cho thấy các biểu đồ tương tác mượt mà.
+    \item \textbf{Phần 4: Số Liệu Đo Lường Thực Tế \& Bài Học Kinh Nghiệm (2 phút)}:
+    Báo cáo các con số ấn tượng: Thời gian chạy pipeline giảm 65\%, độ chính xác mô hình đạt ROC-AUC 0.88, và giải thích cách bạn xử lý sự cố khi tệp nguồn bị mất kết nối mạng (Network Retry \& Dead Letter Queue).
+\end{enumerate}

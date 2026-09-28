@@ -1,0 +1,102 @@
+\chapter{Cẩm Nang Thiết Lập Môi Trường \& Công Cụ Từ Con Số 0}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: \textbf{HOÀN TOÀN KHÔNG CÓ!} Bạn chỉ cần một chiếc máy tính cá nhân (Windows, macOS hoặc Linux) có kết nối Internet.
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Hiểu rõ Terminal/Dòng lệnh (CLI) là gì và tại sao kỹ sư dữ liệu bắt buộc phải dùng CLI.
+    \item Cài đặt và cấu hình Visual Studio Code (VS Code) thành môi trường làm việc Data chuyên nghiệp.
+    \item Cài đặt Python 3.11/3.12, tạo và quản lý môi trường ảo cô lập (\texttt{venv}).
+    \item Cài đặt Git, liên kết GitHub và cấu hình DBeaver (phần mềm GUI quản trị SQL miễn phí).
+    \item Tự tay chạy chương trình Python đầu tiên và sinh bộ dữ liệu mẫu 11 projects chỉ bằng 1 dòng lệnh.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Terminal Là Gì? Tại Sao Kỹ Sư Dữ Liệu Không Thể Chỉ Bấm Chuột?}
+
+Người dùng máy tính phổ thông quen thao tác bằng giao diện đồ họa (GUI - Graphical User Interface): nhấp đúp chuột để mở thư mục, kéo thả file. Tuy nhiên, trong thế giới dữ liệu:
+\begin{itemize}
+    \item Các máy chủ đám mây (AWS EC2, Google Cloud, Docker Containers) \textbf{hoàn toàn không có màn hình hay chuột}, chỉ có giao diện dòng lệnh văn bản qua mạng (SSH).
+    \item Thao tác chuột không thể tự động hóa. Một dòng lệnh có thể xử lý 10,000 tệp tin trong 3 giây, trong khi nhấp chuột sẽ mất cả tuần.
+    \item \textbf{Terminal / Command Prompt / Shell}: Là cửa sổ nơi bạn gõ các lệnh bằng chữ để yêu cầu hệ điều hành thực thi trực tiếp.
+\end{itemize}
+
+\section{Cài Đặt Bộ Công Cụ Lập Trình Chuẩn Doanh Nghiệp}
+
+\subsection{1. Visual Studio Code (VS Code)}
+Tải và cài đặt phiên bản mới nhất từ trang chủ \url{https://code.visualstudio.com/}. Sau khi cài đặt, mở mục **Extensions** (phím tắt \texttt{Ctrl + Shift + X} trên Windows/Linux hoặc \texttt{Cmd + Shift + X} trên Mac) và cài đặt 5 tiện ích mở rộng bắt buộc sau:
+\begin{enumerate}
+    \item \textbf{Python} (bởi Microsoft): Hỗ trợ gợi ý code thông minh, highlight cú pháp.
+    \item \textbf{Pylance}: Động cơ phân tích kiểu dữ liệu và kiểm tra lỗi thời gian thực.
+    \item \textbf{SQLTools}: Truy vấn cơ sở dữ liệu trực tiếp trong VS Code.
+    \item \textbf{Docker}: Quản lý container và image trực quan.
+    \item \textbf{GitLens}: Soi chiếu lịch sử thay đổi code từng dòng.
+\end{enumerate}
+
+\subsection{2. Cài Đặt Python 3.11/3.12 \& Thiết Lập Môi Trường Ảo (venv)}
+
+\begin{thuchanhbox}[Quy Tắc Sống Còn: Luôn Sử Dụng Virtual Environment]
+\textbf{Sai lầm lớn nhất của người mới}: Mở terminal và gõ \texttt{pip install pandas}, cài thẳng mọi thư viện vào Python gốc của hệ điều hành. Sau 3 tháng, các dự án khác nhau yêu cầu các phiên bản thư viện xung đột lẫn nhau làm hỏng toàn bộ môi trường Python của máy tính!
+
+\textbf{Quy trình chuẩn mực bắt buộc}: Mỗi dự án phải có một "chiếc hộp cách ly" riêng mang tên Virtual Environment (\texttt{.venv}):
+
+\begin{lstlisting}[language=bash]
+# 1. Di chuyen vao thu muc du an
+cd ~/Data_Handbook_2026
+
+# 2. Tao moi truong ao co lap ten la .venv
+python3 -m venv .venv
+
+# 3. Kich hoat moi truong ao
+# Tren Linux / macOS:
+source .venv/bin/activate
+# Tren Windows (PowerShell):
+# .venv\Scripts\Activate.ps1
+
+# Khi thay dau (.venv) xuat hien o dau dong lenh la da kich hoat thanh cong!
+# 4. Cai dat toan bo thu vien can thiet
+pip install --upgrade pip
+pip install pandas numpy scikit-learn matplotlib seaborn psycopg2-binary fastapi uvicorn pydantic requests
+\end{lstlisting}
+\end{thuchanhbox}
+
+\subsection{3. Cài Đặt DBeaver (Trình Quản Trị Cơ Sở Dữ Liệu Miễn Phí)}
+Tải bản Community Edition tại \url{https://dbeaver.io/}. DBeaver hỗ trợ kết nối tới mọi hệ quản trị cơ sở dữ liệu (PostgreSQL, MySQL, SQLite, DuckDB, ClickHouse) với giao diện trực quan, cho phép người mới xem trực tiếp cấu trúc bảng, khóa chính, và dữ liệu dòng trước khi viết câu lệnh SQL.
+
+\section{Sinh Toàn Bộ Dữ Liệu Mẫu Cho 11 Projects Chỉ Bằng 1 Dòng Lệnh}
+
+Để đảm bảo bạn có thể thực hành ngay lập tức 100\% các ví dụ và dự án trong cuốn sách này mà không bao giờ gặp lỗi thiếu file (\texttt{FileNotFoundError}), cuốn sách đã chuẩn bị sẵn một script tự động sinh dữ liệu:
+
+\begin{thuchanhbox}[Khởi Tạo Dữ Liệu Thực Hành Toàn Diện]
+Mở Terminal trong thư mục dự án và thực thi lệnh sau:
+\begin{lstlisting}[language=bash]
+python scripts/generate_all_datasets.py
+\end{lstlisting}
+Script sẽ tự động tạo thư mục \texttt{data/} và sinh ra đầy đủ 8 tệp dữ liệu chuẩn xác khớp từng tên cột và kiểu dữ liệu:
+\begin{itemize}
+    \item \texttt{data/input.csv}: Dữ liệu cho Project 0 (CLI Profiler).
+    \item \texttt{data/customers.csv, orders.csv, order\_items.csv, payments.csv}: Bộ dữ liệu E-commerce đa bảng cho Project 1, 2 và 4.
+    \item \texttt{data/ab\_test\_checkout.csv}: 50,000 phiên thử nghiệm A/B Testing cho Project 3.
+    \item \texttt{data/customer\_churn\_features.csv}: 10,000 hồ sơ khách hàng cho Project 7 và 10.
+    \item \texttt{data/raw\_transactions.csv}: 10,000 giao dịch có chứa lỗi để kiểm thử Data Pipeline Project 5.
+\end{itemize}
+\end{thuchanhbox}
+
+\section{Chạy File Python Đầu Tiên \& Kiểm Tra Môi Trường}
+
+Tạo một tệp tin mang tên \texttt{test\_env.py} và dán đoạn mã sau:
+\begin{lstlisting}[language=Python]
+import sys
+import pandas as pd
+import numpy as np
+
+print("=" * 50)
+print("[V] CHUC MUNG! BAN DA THIET LAP MOI TRUONG THANH CONG!")
+print(f"Phiên bản Python: {sys.version.split()[0]}")
+print(f"Phiên bản Pandas: {pd.__version__}")
+print(f"Phiên bản NumPy : {np.__version__}")
+print("=" * 50)
+\end{lstlisting}
+
+Chạy file bằng lệnh: \texttt{python test\_env.py}. Nếu bạn nhìn thấy thông báo chúc mừng, bạn đã hoàn toàn sẵn sàng bước vào hành trình chinh phục Dữ liệu từ con số 0!

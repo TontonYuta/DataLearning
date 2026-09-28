@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+data_env/
+.venv/
+env/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv
+
+# SQLite databases & temp artifacts
+*.db
+data/pyspark_output/

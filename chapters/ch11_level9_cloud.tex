@@ -1,0 +1,150 @@
+\chapter{Level 9: Nền Tảng Cloud Cho Data -- AWS \& GCP (Tuần 51--54)}
+
+\section{Lựa Chọn Nền Tảng Đám Mây: AWS vs Google Cloud (GCP)}
+
+Trong kỷ nguyên điện toán đám mây, các doanh nghiệp không còn mua máy chủ vật lý đặt tại văn phòng mà thuê hạ tầng từ các nhà cung cấp Cloud lớn. Thay vì cố gắng học cả AWS, Azure và GCP cùng lúc, hãy chọn một nền tảng và làm chủ nó đến mức chuyên gia:
+
+\begin{center}
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Nhóm Dịch Vụ} & \textbf{Amazon Web Services (AWS)} & \textbf{Google Cloud Platform (GCP)} \\
+\hline
+\textbf{Object Storage (Hồ chứa)} & \textbf{Amazon S3} (Tiêu chuẩn công nghiệp toàn cầu) & \textbf{Google Cloud Storage (GCS)} \\
+\hline
+\textbf{Data Warehouse Serverless} & \textbf{Amazon Athena / Redshift} & \textbf{Google BigQuery} (Cực kỳ mạnh mẽ cho DA/DS) \\
+\hline
+\textbf{Serverless Compute} & \textbf{AWS Lambda} & \textbf{Cloud Functions / Cloud Run} \\
+\hline
+\textbf{Cơ Sở Dữ Liệu Quản Trị} & \textbf{Amazon RDS} (PostgreSQL, MySQL) & \textbf{Cloud SQL} \\
+\hline
+\textbf{Quản Lý Định Danh} & \textbf{AWS IAM} (Cực kỳ chi tiết, bảo mật cao) & \textbf{GCP IAM} \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Kiến Trúc Pipeline Không Máy Chủ (Serverless Event-Driven)}
+
+Mô hình không máy chủ (Serverless) cho phép bạn chạy mã nguồn xử lý dữ liệu mà không cần bận tâm về việc cài đặt hệ điều hành, vá lỗi bảo mật hay bảo trì máy chủ:
+
+\begin{lythuyetbox}[Luồng Dữ Liệu Hướng Sự Kiện (Event-Driven Ingestion)]
+\begin{enumerate}
+    \item Đối tác đẩy một tệp CSV giao dịch bán hàng lên bucket \textbf{Amazon S3} (\texttt{s3://ecommerce-landing-zone/raw/}).
+    \item Hành động đẩy file lập tức phát ra sự kiện \textbf{S3:ObjectCreated}.
+    \item Sự kiện này tự động kích hoạt hàm \textbf{AWS Lambda} viết bằng Python.
+    \item Lambda đọc tệp, kiểm tra tính hợp lệ của schema, giải mã định dạng và nạp trực tiếp vào kho dữ liệu.
+    \item Khi xử lý xong trong 3 giây, Lambda tự động tắt. Bạn chỉ phải trả tiền cho chính xác 3 giây đó (chi phí chỉ là 0.00001 USD)!
+\end{enumerate}
+\end{lythuyetbox}
+
+\begin{thuchanhbox}[Mã Nguồn Hàm AWS Lambda Xử Lý Dữ Liệu Tự Động]
+\begin{lstlisting}[language=Python]
+import json
+import boto3
+import urllib.parse
+
+s3_client = boto3.client('s3')
+
+def lambda_handler(event, context):
+    """Tu dong kich hoat khi co file moi duoc day len Amazon S3."""
+    # 1. Trich xuat thong tin Bucket va File Key tu su kien S3
+    bucket = event['Records'][0]['s3']['bucket']['name']
+    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'])
+    
+    print(f"[*] Phat hien file moi tai: s3://{bucket}/{key}")
+    
+    # 2. Doc noi dung file truc tiep vao RAM
+    response = s3_client.get_object(Bucket=bucket, Key=key)
+    file_content = response['Body'].read().decode('utf-8')
+    lines = file_content.splitlines()
+    
+    total_records = len(lines) - 1  # Tru di dong header
+    print(f"[+] So luong ban ghi phat hien: {total_records}")
+    
+    # 3. Kich hoat pipeline nap tiep theo hoac ghi log kiem toan
+    return {
+        'statusCode': 200,
+        'body': json.dumps(f"Xu ly thanh cong file {key} voi {total_records} ban ghi!")
+    }
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Bảo Mật \& Nguyên Tắc Phân Quyền Tối Thiểu (Least Privilege)}
+
+\begin{lythuyetbox}[Nguyên Tắc Đặc Quyền Tối Thiểu (Principle of Least Privilege)]
+\textbf{Tuyệt đối không bao giờ} gắn quyền \texttt{AdministratorAccess} hoặc \texttt{s3:*} cho tài khoản dịch vụ của pipeline!
+Nếu khóa API của pipeline bị lộ ra ngoài, hacker có thể xóa sạch toàn bộ cơ sở dữ liệu của công ty.
+
+\textbf{Quy tắc vàng}: Chỉ cấp chính xác những quyền hạn tối thiểu cần thiết để hoàn thành công việc:
+\begin{lstlisting}[language=json]
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::ecommerce-landing-zone/daily_orders/*"
+    }
+  ]
+}
+\end{lstlisting}
+Chính sách này chỉ cho phép đọc và ghi trong thư mục \texttt{daily\_orders/}, không cho phép xóa (\texttt{s3:DeleteObject}) và không cho phép truy cập bất kỳ bucket nhạy cảm nào khác!
+\end{lythuyetbox}
+
+\section{Quản Trị Chi Phí (FinOps Cho Kỹ Sư Dữ Liệu)}
+
+Trong các hệ thống Data Warehouse hiện đại như BigQuery hay AWS Athena, chi phí không tính theo giờ bật máy mà tính theo **Lượng dữ liệu được quét (Data Scanned)**: Mỗi 1 Terabyte quét qua tốn 5 USD.
+\begin{itemize}
+    \item Nếu bảng dữ liệu của bạn có 10TB và một bạn Data Analyst chạy câu lệnh: \texttt{SELECT * FROM clickstream;}, công ty sẽ mất ngay \textbf{50 USD} cho một truy vấn duy nhất!
+    \item \textbf{Giải pháp Phân Vùng (Partitioning)}: Phân vùng bảng theo cột ngày (\texttt{PARTITION BY event\_date}). Khi câu lệnh có điều kiện \texttt{WHERE event\_date = '2026-03-20'}, BigQuery chỉ quét duy nhất partition của ngày hôm đó (ví dụ 10GB thay vì 10TB) $\rightarrow$ Chi phí giảm ngay \textbf{99.9\%}, từ 50 USD xuống còn 0.05 USD!
+\end{itemize}
+
+\section{PROJECT 9: Serverless Cloud Data Platform}
+
+Thiết kế kiến trúc và triển khai nền tảng dữ liệu đám mây hoàn chỉnh:
+\begin{enumerate}
+    \item Khởi tạo Bucket Amazon S3 lưu trữ các tầng dữ liệu: \texttt{raw/}, \texttt{processed/}, và \texttt{analytics/}.
+    \item Cấu hình vòng đời dữ liệu (S3 Lifecycle Policy) tự động chuyển các tệp sau 90 ngày sang lớp lưu trữ giá rẻ S3 Glacier.
+    \item Sử dụng AWS Athena hoặc Google BigQuery để truy vấn trực tiếp trên các tệp Parquet mà không cần dựng máy chủ cơ sở dữ liệu.
+\end{enumerate}
+
+\section{Bài Tập Tự Luyện Level 9}
+
+\begin{baitapbox}[5 Bài Tập Hạ Tầng Đám Mây \& Tối Ưu Chi Phí]
+\begin{enumerate}
+    \item \textbf{Bài 1 (IAM Policy)}: Viết một chính sách IAM Policy dạng JSON cho phép một Lambda Function có quyền ghi kết quả vào bucket \texttt{s3://analytics-gold-mart} nhưng cấm tuyệt đối mọi hành vi xóa file (\texttt{Deny s3:DeleteObject}).
+    \item \textbf{Bài 2 (BigQuery Partitioning \& Clustering)}: Viết câu lệnh SQL DDL trong BigQuery tạo bảng \texttt{user\_events} phân vùng theo ngày (\texttt{event\_date}) và gom cụm (Clustering) theo hai cột \texttt{user\_id} và \texttt{event\_type}.
+    \item \textbf{Bài 3 (S3 Storage Classes)}: So sánh chi phí lưu trữ và độ trễ truy xuất giữa 3 lớp lưu trữ của AWS: S3 Standard, S3 Standard-IA (Infrequent Access), và S3 Glacier Flexible Retrieval.
+    \item \textbf{Bài 4 (Cloud Architecture)}: Vẽ sơ đồ kiến trúc luồng dữ liệu (Architecture Flow) nhận dữ liệu đơn hàng từ ứng dụng di động qua API Gateway, chuyển tiếp qua SQS Queue và ghi nhận vào hồ dữ liệu.
+    \item \textbf{Bài 5 (Bảo mật Secrets)}: Trình bày cách một script Python ETL trên Cloud đọc mật khẩu kết nối cơ sở dữ liệu từ AWS Secrets Manager hoặc HashiCorp Vault thay vì viết cứng (hardcode) mật khẩu trong file code.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Khai báo 2 statement: Statement 1 \texttt{"Effect": "Allow"} cho \texttt{"s3:PutObject"} trên bucket chỉ định, Statement 2 \texttt{"Effect": "Deny"} cho \texttt{"s3:Delete*"} trên toàn bộ tài nguyên.
+    \item \textbf{Bài 2}:
+    \begin{lstlisting}[language=SQL]
+CREATE TABLE `project.dataset.user_events` (
+    event_id STRING,
+    user_id STRING,
+    event_type STRING,
+    event_date DATE,
+    payload JSON
+)
+PARTITION BY event_date
+CLUSTER BY user_id, event_type;
+    \end{lstlisting}
+    \item \textbf{Bài 3}: S3 Standard: ~\$0.023/GB/tháng, truy xuất mili-giây. S3 Standard-IA: ~\$0.0125/GB/tháng (rẻ gần 50\%), truy xuất mili-giây nhưng có phí đọc dữ liệu. S3 Glacier: ~\$0.004/GB/tháng (tiết kiệm 80\%), nhưng mất từ 1 đến 5 giờ để giải nén dữ liệu.
+    \item \textbf{Bài 4}: Luồng chuẩn: Mobile App $\rightarrow$ AWS API Gateway $\rightarrow$ Amazon SQS (Đệm tải để chống nghẽn khi có flash sale) $\rightarrow$ AWS Lambda $\rightarrow$ S3 Data Lake.
+    \item \textbf{Bài 5}: Dùng SDK \texttt{boto3.client('secretsmanager')} gọi hàm \texttt{get\_secret\_value(SecretId='prod/dwh/postgres')}, parse chuỗi JSON trả về và nạp vào cấu hình kết nối của SQLAlchemy/psycopg2.
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Kỹ Năng Cloud Vào CV]
+\textbf{Serverless Cloud Data Platform | AWS (S3, Lambda, Athena, IAM), BigQuery, FinOps}
+\begin{itemize}
+    \item Thiết kế kiến trúc hồ dữ liệu (Data Lake) trên Amazon S3 với chính sách phân lớp vòng đời (Lifecycle Policies) tự động lưu trữ lạnh, giúp cắt giảm 45\% chi phí lưu trữ hạ tầng hàng tháng.
+    \item Triển khai pipeline không máy chủ (Serverless Ingestion) bằng AWS Lambda và Amazon S3 Event Notifications, xử lý tự động hơn 500 tệp giao dịch hàng ngày với thời gian phản hồi dưới 3 giây.
+    \item Thiết lập cơ chế phân vùng (Partitioning) và gom cụm (Clustering) trên Google BigQuery/AWS Athena, tối ưu hóa các truy vấn phân tích giúp giảm 85\% lượng dữ liệu quét (Scan Bytes).
+\end{itemize}
+\end{cvtipbox}

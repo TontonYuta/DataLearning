@@ -1,0 +1,55 @@
+\chapter{Workbook Phần 1: 20 Bài Tập Thực Hành Excel \& Báo Cáo Nghiệp Vụ}
+
+\begin{lythuyetbox}[Mục Tiêu Luyện Tập Phần 1]
+Phần này cung cấp \textbf{20 bài tập thực hành Excel chuyên sâu} từ cơ bản đến nâng cao. Mỗi bài tập đều mô phỏng tình huống thực tế tại các phòng ban (Tài chính, Kinh doanh, Marketing, Vận hành), đi kèm công thức chuẩn và giải thích ngắn gọn để bạn tự kiểm tra.
+\end{lythuyetbox}
+
+\begin{baitapbox}[Hệ Thống 20 Bài Tập Excel Thực Chiến]
+\begin{enumerate}
+    \item \textbf{Bài 1 (XLOOKUP Cơ Bản)}: Cho bảng Danh mục nhân viên \texttt{A1:D100} gồm các cột \texttt{[Mã NV, Họ Tên, Phòng Ban, Lương]}. Tại ô \texttt{F2}, người dùng nhập Mã NV \texttt{"NV105"}. Hãy viết công thức XLOOKUP tại ô \texttt{G2} để tra cứu Họ Tên và tại \texttt{H2} để tra cứu Lương, trả về chuỗi \texttt{"Không tìm thấy"} nếu mã không tồn tại.
+    \item \textbf{Bài 2 (XLOOKUP Hai Chiều)}: Bảng ma trận giá cước vận chuyển \texttt{A1:E10} có dòng là Tỉnh/Thành đến và cột là Khối lượng hàng (1kg, 2kg, 5kg, 10kg). Viết công thức XLOOKUP lồng nhau (2-Way XLOOKUP) để tra cứu chính xác cước phí dựa trên 2 điều kiện: Tỉnh đến tại \texttt{G2} và Khối lượng tại \texttt{H2}.
+    \item \textbf{Bài 3 (INDEX \& MATCH Kinh Điển)}: Tại sao trong các phiên bản Excel cũ, cặp hàm \texttt{INDEX/MATCH} lại vượt trội hơn \texttt{VLOOKUP}? Viết công thức tra cứu Tên Khách Hàng ở cột A dựa trên Số Điện Thoại ở cột C.
+    \item \textbf{Bài 4 (SUMIFS Đa Điều Kiện)}: Bảng doanh số \texttt{A1:E5000} gồm \texttt{[Ngày, Nhân Viên, Khu Vực, Ngành Hàng, Doanh Thu]}. Hãy viết công thức tính tổng doanh thu thỏa mãn 3 điều kiện: Khu vực là \texttt{"Miền Bắc"}, Ngành hàng là \texttt{"Điện Tử"}, và phát sinh trong Quý 1 năm 2026 (từ 01/01/2026 đến 31/03/2026).
+    \item \textbf{Bài 5 (COUNTIFS Đếm Đơn Hàng)}: Đếm số lượng đơn hàng có giá trị trên \$500 của nhân viên \texttt{"Nguyễn Văn A"} được giao thành công trong tháng 02/2026.
+    \item \textbf{Bài 6 (Dynamic Array -- UNIQUE)}: Cho cột \texttt{B2:B10000} chứa danh sách khách hàng có nhiều tên trùng lặp. Viết công thức mảng động xuất ra danh sách khách hàng duy nhất và tự động sắp xếp theo thứ tự bảng chữ cái A--Z.
+    \item \textbf{Bài 7 (Dynamic Array -- FILTER)}: Viết công thức mảng động trích xuất toàn bộ các dòng từ bảng \texttt{A2:E1000} thỏa mãn điều kiện: Trạng thái đơn hàng là \texttt{"COMPLETED"} và Giá trị đơn hàng $> \$1,000$.
+    \item \textbf{Bài 8 (Tính Hoa Hồng Đa Bậc)}: Chính sách hoa hồng: Doanh số $\le \$10,000$: hoa hồng 3\%; Từ $\$10,001$ đến $\$30,000$: hoa hồng 5\%; Trên $\$30,000$: hoa hồng 8\%. Viết công thức \texttt{IFS} hoặc \texttt{XLOOKUP} xấp xỉ (\texttt{match\_mode = -1}) để tính tiền hoa hồng cho doanh số tại ô \texttt{C2}.
+    \item \textbf{Bài 9 (Tách Chuỗi Họ Tên)}: Cột A chứa \texttt{"Họ và Tên"} đầy đủ (ví dụ: \textit{"Nguyễn Văn An"}). Sử dụng các hàm xử lý chuỗi (\texttt{TEXTBEFORE}, \texttt{TEXTAFTER} hoặc \texttt{LEFT, RIGHT, FIND}) để tách riêng Tên gọi và Họ đệm sang 2 cột riêng biệt.
+    \item \textbf{Bài 10 (Chuẩn Hóa Ngày Tháng)}: Cột A chứa ngày tháng ở định dạng text hỗn loạn: \texttt{"20260315"}, \texttt{"15/03/2026"}, \texttt{"2026.03.15"}. Trình bày quy trình dùng Power Query để chuẩn hóa toàn bộ về định dạng chuẩn \texttt{Date (DD/MM/YYYY)}.
+    \item \textbf{Bài 11 (Tính Tăng Trưởng MoM)}: Cho bảng doanh thu 12 tháng tại cột B (\texttt{B2:B13}). Viết công thức tính tỷ lệ tăng trưởng phần trăm so với tháng trước (MoM Growth \%) tại ô \texttt{C3} và bẫy lỗi chia cho 0 nếu tháng trước doanh thu bằng 0 bằng hàm \texttt{IFERROR}.
+    \item \textbf{Bài 12 (Tự Động Đánh Số Thứ Tự)}: Viết công thức đánh số thứ tự 1, 2, 3... tại cột A sao cho số thứ tự chỉ hiện khi cột B có nhập tên, và tự động bỏ trống nếu cột B để trống.
+    \item \textbf{Bài 13 (Unpivot Trong Power Query)}: Một bảng dữ liệu theo dõi doanh thu có các cột: \texttt{[Mã SP, Tháng 1, Tháng 2, Tháng 3... Tháng 12]}. Giải thích vì sao cấu trúc này vi phạm nguyên tắc Tidy Data và nêu các bước Unpivot Columns trong Power Query để đưa về 3 cột: \texttt{[Mã SP, Tháng, Doanh Thu]}.
+    \item \textbf{Bài 14 (Pivot Table -- Sắp Xếp Top N)}: Trình bày các bước thiết lập Pivot Table để tự động lọc ra Top 5 nhân viên có doanh số cao nhất mà không làm thủ công.
+    \item \textbf{Bài 15 (Pivot Table -- Calculated Field)}: Tạo một trường tính toán mới (Calculated Field) trong Pivot Table mang tên \texttt{"Lợi Nhuận Thuần"} với công thức: \texttt{Doanh Thu * 0.25 - Chi Phí Vận Chuyển}.
+    \item \textbf{Bài 16 (Xác Thực Dữ Liệu -- Data Validation)}: Thiết lập ô \texttt{D2} chỉ cho phép người dùng nhập ngày trong tương lai (sau ngày hiện tại \texttt{TODAY()}) và hiển thị thông báo lỗi tùy chỉnh khi nhập sai.
+    \item \textbf{Bài 17 (Conditional Formatting Theo Điều Kiện)}: Thiết lập định dạng có điều kiện tự động tô màu nền đỏ nhạt cho toàn bộ dòng dữ liệu nếu cột Trạng Thái là \texttt{"OVERDUE"} (Quá hạn thanh toán).
+    \item \textbf{Bài 18 (XLOOKUP Tìm Kiếm Ngược Từ Dưới Lên)}: Trong bảng nhật ký xuất kho, một sản phẩm xuất kho nhiều lần. Viết công thức XLOOKUP tìm giá xuất kho của \textbf{lần xuất gần đây nhất} (lần xuất cuối cùng trong bảng) bằng tham số \texttt{search\_mode = -1}.
+    \item \textbf{Bài 19 (Tính Số Ngày Làm Việc Thực Tế)}: Viết công thức tính số ngày làm việc thực tế giữa ngày bắt đầu dự án tại \texttt{A2} và ngày kết thúc tại \texttt{B2}, tự động trừ đi Thứ Bảy, Chủ Nhật và danh sách ngày nghỉ lễ tại dải ô \texttt{Holiday\_List} bằng hàm \texttt{NETWORKDAYS.INTL}.
+    \item \textbf{Bài 20 (Ghép Nối Dữ Liệu TEXTJOIN)}: Cho cột danh sách email khách hàng từ \texttt{C2:C50}. Viết công thức gom tất cả các email này thành một chuỗi duy nhất phân tách bằng dấu chấm phẩy (\texttt{; }) để dán vào hòm thư Outlook, tự động bỏ qua các ô trống.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Lời Giải Ngắn Gọn Cho 20 Bài Tập Excel]
+\begin{itemize}
+    \item \textbf{Bài 1}: \texttt{G2 = XLOOKUP(F2, A2:A100, B2:B100, "Không tìm thấy")}; \texttt{H2 = XLOOKUP(F2, A2:A100, D2:D100, "Không tìm thấy")}.
+    \item \textbf{Bài 2}: \texttt{=XLOOKUP(G2, A2:A10, XLOOKUP(H2, B1:E1, B2:E10))}.
+    \item \textbf{Bài 3}: VLOOKUP chỉ tìm từ trái sang phải. INDEX/MATCH tìm kiếm linh hoạt hai chiều: \texttt{=INDEX(A2:A100, MATCH(Phone\_Val, C2:C100, 0))}.
+    \item \textbf{Bài 4}: \texttt{=SUMIFS(E2:E5000, C2:C5000, "Miền Bắc", D2:D5000, "Điện Tử", A2:A5000, ">=2026-01-01", A2:A5000, "<=2026-03-31")}.
+    \item \textbf{Bài 5}: \texttt{=COUNTIFS(B2:B5000, "Nguyễn Văn A", E2:E5000, ">500", A2:A5000, ">=2026-02-01", A2:A5000, "<=2026-02-28", D2:D5000, "COMPLETED")}.
+    \item \textbf{Bài 6}: \texttt{=SORT(UNIQUE(B2:B10000))}.
+    \item \textbf{Bài 7}: \texttt{=FILTER(A2:E1000, (D2:D1000="COMPLETED") * (E2:E1000>1000), "Không có đơn hàng")}.
+    \item \textbf{Bài 8}: \texttt{=IFS(C2<=10000, C2*0.03, C2<=30000, C2*0.05, C2>30000, C2*0.08)}.
+    \item \textbf{Bài 9}: Tên: \texttt{=TEXTAFTER(A2, " ", -1)}. Họ đệm: \texttt{=TEXTBEFORE(A2, " ", -1)}.
+    \item \textbf{Bài 10}: Trong Power Query: Chọn cột $\rightarrow$ \textit{Using Locale} $\rightarrow$ chọn kiểu Date với định dạng nguồn tương ứng $\rightarrow$ Power Query tự parse sang định dạng chuẩn của máy tính.
+    \item \textbf{Bài 11}: \texttt{=IFERROR((B3 - B2) / B2, 0)}.
+    \item \textbf{Bài 12}: \texttt{=IF(B2<>"", ROW()-1, "")} (hoặc dùng hàm \texttt{=IF(ISBLANK(B2), "", COUNTA(\$B\$2:B2))}).
+    \item \textbf{Bài 13}: Cấu trúc ngang (cột là các tháng) khiến công thức SUMIFS và Pivot Table không thể lọc theo tháng. Unpivot biến các cột tháng thành 1 cột định danh duy nhất (Dữ liệu dạng Tidy/Dọc).
+    \item \textbf{Bài 14}: Nhấp chuột phải vào tên Nhân viên trong Pivot $\rightarrow$ \textit{Filter} $\rightarrow$ \textit{Top 10...} $\rightarrow$ đổi số 10 thành 5 $\rightarrow$ chọn trường sắp xếp theo Doanh Thu.
+    \item \textbf{Bài 15}: Chọn PivotTable $\rightarrow$ tab \textit{PivotTable Analyze} $\rightarrow$ \textit{Fields, Items, \& Sets} $\rightarrow$ \textit{Calculated Field} $\rightarrow$ nhập công thức.
+    \item \textbf{Bài 16}: Tab \textit{Data} $\rightarrow$ \textit{Data Validation} $\rightarrow$ Allow: \textit{Date} $\rightarrow$ Data: \textit{greater than} $\rightarrow$ Start date: \texttt{=TODAY()}.
+    \item \textbf{Bài 17}: Bôi đen toàn bộ bảng \texttt{\$A\$2:\$E\$100} $\rightarrow$ \textit{Conditional Formatting} $\rightarrow$ \textit{New Rule} $\rightarrow$ \textit{Use a formula...} $\rightarrow$ nhập công thức: \texttt{=\$D2="OVERDUE"} (khóa cột D).
+    \item \textbf{Bài 18}: \texttt{=XLOOKUP(Product\_ID, A2:A1000, C2:C1000, "N/A", 0, -1)}.
+    \item \textbf{Bài 19}: \texttt{=NETWORKDAYS.INTL(A2, B2, 1, Holiday\_List)} (số 1 quy định T7 và CN là ngày nghỉ).
+    \item \textbf{Bài 20}: \texttt{=TEXTJOIN("; ", TRUE, C2:C50)}.
+\end{itemize}
+\end{dapanbox}

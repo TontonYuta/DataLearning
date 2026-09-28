@@ -1,0 +1,217 @@
+\chapter{Level 6: DE Professional -- Docker, Apache Airflow \& dbt (Tuần 31--36)}
+
+\section{Docker \& Containerization Cho Kỹ Sư Dữ Liệu}
+
+Trong môi trường sản xuất, bạn không thể yêu cầu quản trị viên cài đặt thủ công từng phiên bản Python, thư viện C, hay cơ sở dữ liệu trên từng máy chủ. **Docker** đóng gói toàn bộ mã nguồn, môi trường chạy, biến môi trường và thư viện phụ thuộc vào một đơn vị độc lập gọi là **Container**.
+
+\begin{thuchanhbox}[Tệp docker-compose.yml Khởi Động Toàn Bộ Stack Dữ Liệu]
+Chỉ với lệnh \texttt{docker compose up -d}, toàn bộ hệ sinh thái gồm PostgreSQL và Apache Airflow sẽ được khởi chạy đồng bộ:
+
+\begin{lstlisting}[language=bash]
+version: '3.8'
+services:
+  postgres_dwh:
+    image: postgres:16-alpine
+    container_name: postgres_dwh
+    environment:
+      POSTGRES_USER: data_admin
+      POSTGRES_PASSWORD: SecretPassword123
+      POSTGRES_DB: analytics_warehouse
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow_webserver:
+    image: apache/airflow:2.8.1-python3.11
+    container_name: airflow_webserver
+    restart: always
+    depends_on:
+      - postgres_dwh
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://data_admin:SecretPassword123@postgres_dwh:5432/analytics_warehouse
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+
+volumes:
+  postgres_data:
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Apache Airflow: Trái Tim Điều Phối Hệ Thống (Orchestrator)}
+
+Airflow không thực hiện tính toán dữ liệu trực tiếp; nó đóng vai trò là "Nhạc trưởng" điều phối các công việc (Tasks) chạy đúng lịch trình, đúng thứ tự phụ thuộc, tự động thử lại khi có lỗi mạng và ghi lại toàn bộ lịch sử thực thi.
+
+\begin{lythuyetbox}[Các Khái Niệm Cốt Lõi Của Airflow 2.x]
+\begin{itemize}
+    \item \textbf{DAG (Directed Acyclic Graph)}: Đồ thị có hướng không chu trình. Một luồng công việc phải có điểm bắt đầu và điểm kết thúc rõ ràng, không được phép lặp vòng tròn vô tận ($A \rightarrow B \rightarrow C \rightarrow A$).
+    \item \textbf{TaskFlow API}: Cú pháp hiện đại sử dụng Decorator \texttt{@dag} và \texttt{@task}, tự động chuyển giao dữ liệu giữa các bước qua XComs mà không cần viết boilerplate code phức tạp.
+    \item \textbf{Cạm bẫy Catchup}: Luôn thiết lập \texttt{catchup=False}! Nếu không, khi bạn kích hoạt một DAG có lịch chạy từ 1 năm trước, Airflow sẽ ngay lập tức kích hoạt hàng trăm tiến trình chạy đồng thời làm sập toàn bộ máy chủ!
+\end{itemize}
+\end{lythuyetbox}
+
+\subsection{Mã Nguồn Một Airflow DAG Chuẩn Doanh Nghiệp (TaskFlow API)}
+
+\begin{lstlisting}[language=Python]
+from datetime import datetime, timedelta
+from airflow.decorators import dag, task
+import requests
+import json
+
+default_args = {
+    'owner': 'data_engineering_team',
+    'depends_on_past': False,
+    'email_on_failure': True,
+    'retries': 3,
+    'retry_delay': timedelta(minutes=5),
+}
+
+@dag(
+    dag_id='ecommerce_daily_analytics_pipeline',
+    default_args=default_args,
+    description='Pipeline tu dong trich xuat, kiem tra va nap du lieu don hang',
+    schedule_interval='0 2 * * *',  # Chay vao 02:00 sang moi ngay
+    start_date=datetime(2026, 1, 1),
+    catchup=False,
+    tags=['production', 'ecommerce', 'elt']
+)
+def ecommerce_pipeline():
+
+    @task()
+    def extract_raw_transactions() -> list:
+        print("[*] Dang goi REST API de trich xuat giao dich ngay hom qua...")
+        response = requests.get("https://api.mockecommerce.com/v1/orders/daily", timeout=30)
+        response.raise_for_status()
+        orders = response.json()
+        print(f"[+] Da trich xuat duoc: {len(orders)} don hang.")
+        return orders
+
+    @task()
+    def validate_and_stage(orders: list) -> str:
+        clean_orders = [o for o in orders if float(o.get('amount', 0)) > 0]
+        staged_file_path = f"/tmp/staged_orders_{datetime.now().strftime('%Y%m%d')}.json"
+        with open(staged_file_path, 'w', encoding='utf-8') as f:
+            json.dump(clean_orders, f)
+        print(f"[+] Da luu {len(clean_orders)} don hang hop le vao: {staged_file_path}")
+        return staged_file_path
+
+    @task()
+    def trigger_dbt_transformation(staged_file: str):
+        print(f"[*] Dang kich hoat dbt models tren file: {staged_file}")
+        # Thuc thi lenh dbt run de bien doi du lieu trong Data Warehouse
+        print("[V] Hoan tat toan bo tien trinh pipeline ngay!")
+
+    # Thiet lap luong phu thuoc (Dependency Chain)
+    raw_data = extract_raw_transactions()
+    staged_data = validate_and_stage(raw_data)
+    trigger_dbt_transformation(staged_data)
+
+ecommerce_dag_instance = ecommerce_pipeline()
+\end{lstlisting}
+
+\section{dbt (Data Build Tool): Tái Định Nghĩa Analytics Engineering}
+
+\begin{lythuyetbox}[Triết Lý Hiện Đại: Biến Đổi Dữ Liệu Ngay Trong Kho (In-Warehouse ELT)]
+Trước đây với ETL cổ điển, dữ liệu được kéo về máy chủ Python để biến đổi rồi mới đẩy vào DWH. Với **dbt**, toàn bộ dữ liệu thô được nạp thẳng vào Data Warehouse trước (Extract \& Load). Sau đó, **dbt chỉ quản lý mã SQL SELECT**, biên dịch chúng thành các bảng (\texttt{TABLE}) hoặc khung nhìn (\texttt{VIEW}) bên trong Data Warehouse bằng chính sức mạnh tính toán khổng lồ của DWH!
+\end{lythuyetbox}
+
+\subsection{Cấu Trúc Mô Hình Đa Tầng Chuẩn Mực Trong dbt}
+
+\begin{itemize}
+    \item \textbf{Tầng 1: Staging (\texttt{models/staging/})}: Làm sạch cơ bản, đổi tên cột chuẩn \texttt{snake\_case}, ép kiểu dữ liệu. Quan hệ $1 - 1$ với bảng nguồn.
+    \item \textbf{Tầng 2: Intermediate (\texttt{models/intermediate/})}: Thực hiện các phép JOIN phức tạp, logic nghiệp vụ nội bộ.
+    \item \textbf{Tầng 3: Marts (\texttt{models/marts/})}: Các bảng Fact và Dimension chuẩn Star Schema cung cấp trực tiếp cho Power BI và đội ngũ phân tích.
+\end{itemize}
+
+\begin{thuchanhbox}[Ví Dụ Một Model dbt: \texttt{fct\_customer\_orders.sql}]
+\begin{lstlisting}[language=SQL]
+{{
+    config(
+        materialized='incremental',
+        unique_key='order_id',
+        on_schema_change='fail'
+    )
+}}
+
+WITH staging_orders AS (
+    SELECT * FROM {{ ref('stg_ecommerce__orders') }}
+    {% if is_incremental() %}
+        -- Chi trich xuat cac ban ghi moi hoac duoc cap nhat ke tu lan chay truoc
+        WHERE order_updated_at > (SELECT MAX(order_updated_at) FROM {{ this }})
+    {% endif %}
+),
+customers AS (
+    SELECT * FROM {{ ref('dim_customers') }}
+)
+SELECT 
+    o.order_id,
+    o.customer_id,
+    c.customer_city,
+    o.order_amount,
+    o.order_date,
+    CURRENT_TIMESTAMP AS dbt_updated_at
+FROM staging_orders o
+LEFT JOIN customers c ON o.customer_id = c.customer_id;
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{PROJECT 6: Production Analytics Engineering Pipeline}
+
+Dự án này tích hợp toàn bộ:
+\begin{enumerate}
+    \item Khởi chạy môi trường đa dịch vụ bằng Docker Compose.
+    \item Xây dựng DAG Airflow tự động kéo dữ liệu mỗi ngày và xử lý lỗi tự động.
+    \item Tích hợp dbt để kiểm thử chất lượng dữ liệu (\texttt{unique}, \texttt{not\_null}) và tạo bảng Data Marts.
+    \item Xuất tự động tài liệu Data Lineage Graph cho toàn bộ công ty.
+\end{enumerate}
+
+\section{Bài Tập Tự Luyện Level 6}
+
+\begin{baitapbox}[5 Bài Tập Docker, Airflow \& dbt Thực Tế]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Docker)}: Viết một \texttt{Dockerfile} tối ưu hóa bằng Multi-stage build để đóng gói ứng dụng Python ETL, giảm dung lượng ảnh từ 1GB xuống dưới 150MB.
+    \item \textbf{Bài 2 (Airflow Branching)}: Sử dụng \texttt{BranchPythonOperator} trong Airflow để kiểm tra kích thước file tải về: Nếu dung lượng $>10$MB thì rẽ sang nhánh xử lý lô song song, nếu $\le 10$MB thì xử lý tuần tự.
+    \item \textbf{Bài 3 (dbt Generic Tests)}: Viết file YAML cấu hình các kiểm thử tự động cho model \texttt{fct\_orders}: Cột \texttt{order\_id} phải \texttt{unique} và \texttt{not\_null}; cột \texttt{status} chỉ nhận các giá trị \texttt{['PENDING', 'SUCCESS', 'FAILED']}.
+    \item \textbf{Bài 4 (dbt Jinja Macro)}: Viết một Macro Jinja trong dbt tên là \texttt{cents\_to\_dollars(column\_name)} tự động chia giá trị cho 100 và làm tròn 2 chữ số thập phân.
+    \item \textbf{Bài 5 (Airflow SLA Alerting)}: Cấu hình thông số SLA (Service Level Agreement) cho một DAG Airflow sao cho nếu toàn bộ pipeline chạy quá 30 phút mà chưa hoàn tất, hệ thống sẽ tự động gửi email cảnh báo cho đội kỹ sư trực ban.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Sử dụng base image nhẹ \texttt{python:3.11-slim}, dùng cờ \texttt{--no-cache-dir} khi cài pip và xóa các file tạm build tools ở stage cuối.
+    \item \textbf{Bài 2}: Sử dụng decorator \texttt{@task.branch} trả về task\_id của nhánh tương ứng dựa trên điều kiện \texttt{os.path.getsize(file\_path)}.
+    \item \textbf{Bài 3}: Khai báo trong file \texttt{schema.yml}:
+    \begin{lstlisting}[language=yaml]
+models:
+  - name: fct_orders
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['PENDING', 'SUCCESS', 'FAILED']
+    \end{lstlisting}
+    \item \textbf{Bài 4}: Macro chuẩn:
+    \begin{lstlisting}
+{% macro cents_to_dollars(column_name) %}
+    ROUND(CAST({{ column_name }} AS NUMERIC) / 100.0, 2)
+{% endmacro %}
+    \end{lstlisting}
+    \item \textbf{Bài 5}: Khai báo tham số \texttt{sla=timedelta(minutes=30)} trong \texttt{default\_args} và định nghĩa hàm callback \texttt{sla\_miss\_callback}.
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Dự Án DE Pro Vào CV]
+\textbf{Production Analytics Data Platform | Docker, Apache Airflow, dbt, PostgreSQL}
+\begin{itemize}
+    \item Container hóa toàn bộ hệ thống cơ sở dữ liệu và công cụ điều phối luồng dữ liệu sử dụng Docker Compose, tối ưu hóa quá trình triển khai nội bộ và môi trường phát triển.
+    \item Thiết kế và triển khai 5 DAGs Apache Airflow theo TaskFlow API với cơ chế tự động thử lại (Automated Retries), kiểm soát SLA và hệ thống cảnh báo qua Webhook.
+    \item Xây dựng hơn 20 mô hình biến đổi dữ liệu (dbt Models) theo kiến trúc Staging-Intermediate-Marts với mô hình gia tăng (Incremental Loading), cắt giảm 60\% thời gian tính toán kho dữ liệu và thiết lập bộ kiểm thử toàn vẹn dữ liệu tự động.
+\end{itemize}
+\end{cvtipbox}

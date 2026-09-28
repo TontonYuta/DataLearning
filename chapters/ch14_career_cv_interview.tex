@@ -1,0 +1,220 @@
+\chapter{Chiến Lược Nghề Nghiệp, Bộ CV Chuẩn ATS \& 40 Câu Hỏi Phỏng Vấn Sát Thủ}
+
+\section{Chân Dung Năng Lực Tuyển Dụng: Intern vs Junior vs Middle}
+
+Rất nhiều người tự học lầm tưởng rằng chỉ cần học xong một khóa học hoặc một cuốn sách là có thể tự nhận mình là "Middle Data Engineer" hay "Middle Data Scientist". Trong thực tế ngành dữ liệu, ranh giới giữa các cấp bậc được định hình bởi **kinh nghiệm giải quyết sự cố thực tế và trách nhiệm làm chủ (Ownership)**:
+
+\begin{lythuyetbox}[Sự Khác Biệt Bản Chất Giữa Các Cấp Bậc]
+\begin{itemize}
+    \item \textbf{Intern / Fresher (Tuần 1--24)}:
+    \begin{itemize}
+        \item \textit{Kỳ vọng}: Nền tảng SQL và Python vững chắc; tư duy logic trong sáng; hiểu bản chất dữ liệu; thái độ cầu tiến và có khả năng đọc tài liệu kỹ thuật.
+        \item \textit{Bằng chứng cần có}: Portfolio 3--4 dự án hoàn chỉnh trên GitHub có README chỉn chu, có thể giải thích từng dòng code mình đã viết.
+    \end{itemize}
+    \item \textbf{Junior (1--2 năm kinh nghiệm)}:
+    \begin{itemize}
+        \item \textit{Kỳ vọng}: Hoàn thành độc lập các tính năng hoặc báo cáo được giao mà không cần người kèm cặp liên tục; tuân thủ quy chuẩn viết code, kiểm thử (Testing) và quy trình Git Flow; chủ động debug khi pipeline/mô hình gặp lỗi.
+    \end{itemize}
+    \item \textbf{Middle (2--4+ năm kinh nghiệm)}:
+    \begin{itemize}
+        \item \textit{Kỳ vọng}: \textbf{Tư duy làm chủ (Total Ownership)} một hệ thống con (Subsystem); tham gia thiết kế kiến trúc (System Architecture); cân nhắc các bài toán đánh đổi (Trade-offs: Chi phí vs Tốc độ vs Độ tin cậy); trực tiếp làm việc với các bên kinh doanh để định nghĩa yêu cầu và chuyển hóa thành giải pháp kỹ thuật.
+    \end{itemize}
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Công Thức Vàng Viết Bullet Point CV Chuẩn ATS}
+
+Hệ thống lọc hồ sơ tự động (Applicant Tracking System - ATS) và các Trưởng nhóm Kỹ thuật (Tech Leads) chỉ dành trung bình 6 giây để lướt qua một bản CV. Những dòng mô tả chung chung như: \textit{"Tham gia phân tích dữ liệu bán hàng bằng Python và SQL"} sẽ bị loại ngay lập tức!
+
+\begin{thuchanhbox}[Công Thức 5 Thành Phần: Action + What + Tech + Scale + Result]
+Mỗi gạch đầu dòng trong phần Dự án của CV phải tuân thủ nghiêm ngặt công thức:
+\begin{center}
+\colorbox{navyprimary!10}{\textbf{[Hành Động]} $\boldsymbol{+}$ \textbf{[Cái Gì]} $\boldsymbol{+}$ \textbf{[Công Nghệ]} $\boldsymbol{+}$ \textbf{[Quy Mô]} $\boldsymbol{+}$ \textbf{[Kết Quả Đo Lường]}}
+\end{center}
+
+\textbf{So sánh các ví dụ thực tế}:
+\begin{itemize}
+    \item \textbf{Cách viết yếu}: \textit{"Em viết câu lệnh SQL để truy vấn dữ liệu đơn hàng và làm dashboard Power BI cho công ty."}
+    \item \textbf{Cách viết chuẩn mực}: \textit{"Thiết kế kiến trúc cơ sở dữ liệu quan hệ gồm 5 bảng và viết hơn 40 truy vấn SQL nâng cao (CTEs, Window Functions), xây dựng Executive Dashboard trên Power BI hỗ trợ theo dõi 8 chỉ số kinh doanh chính cho hơn 120,000 giao dịch bán lẻ hàng tháng."}
+    \item \textbf{Cách viết yếu}: \textit{"Xây dựng mô hình máy học dự đoán khách hàng rời bỏ bằng Scikit-learn."}
+    \item \textbf{Cách viết chuẩn mực}: \textit{"Huấn luyện và tinh chỉnh mô hình XGBoost phân loại khách hàng rời bỏ trên tập dữ liệu 150,000 bản ghi, tối ưu hóa qua Stratified 5-Fold Cross Validation đạt ROC-AUC 0.88, đóng gói thành Microservice FastAPI với độ trễ phản hồi dưới 25ms."}
+\end{itemize}
+\end{thuchanhbox}
+
+\section{Bộ 3 Mẫu CV Chuẩn ATS (Sẵn Sàng Ứng Tuyển)}
+
+\subsection{Mẫu 1: Data Analyst Intern / Fresher CV}
+\begin{lstlisting}
+NGUYEN VAN A
+Hanoi, Vietnam | (+84) 912 345 678 | anhtuan.data@email.com
+github.com/anhtuan-data | linkedin.com/in/anhtuan-data
+
+OBJECTIVE
+Motivated Data Analyst candidate with a strong foundation in Mathematics & Computer Science, proficient in SQL, Python (Pandas, NumPy), Statistics, and Power BI. Eager to leverage analytical skills and hands-on portfolio experience to deliver actionable business insights for enterprise growth.
+
+EDUCATION
+Hanoi University of Science and Technology (HUST)                  2022 - 2026
+Bachelor of Science in Mathematics and Computer Science
+GPA: 3.4/4.0 | Relevant Coursework: Probability & Statistics, Database Systems, Data Structures
+
+TECHNICAL SKILLS
+- Querying & Databases: SQL (PostgreSQL), Complex Joins, CTEs, Window Functions, Indexing
+- Programming & Analysis: Python (Pandas, NumPy, SciPy), Data Cleaning, EDA, Git/GitHub
+- Business Intelligence: Power BI, DAX (CALCULATE, Time Intelligence), Star Schema Modeling, Excel
+- Statistics: Hypothesis Testing, A/B Testing (Sample size, SRM, Two-proportion Z-test), Regression
+
+FEATURED PROJECTS
+E-Commerce Business Analytics & Executive Dashboard | SQL, Power BI, Python
+- Extracted and transformed over 100,000 raw transaction records from PostgreSQL using advanced SQL queries with CTEs and Window Functions (ROW_NUMBER, LAG) to analyze monthly revenue trends.
+- Designed a star-schema data model with 1 Fact and 4 Dimension tables in Power BI, implementing 15+ custom DAX measures (YoY Growth, Rolling Averages, Customer Lifetime Value).
+- Built an interactive 3-tier Executive Dashboard delivering critical insights into customer retention and product sales, identifying that top 20% of customers generated 74% of total company revenue.
+
+A/B Testing Conversion Optimization Experiment | Python, SciPy, Statsmodels
+- Designed and evaluated an end-to-end A/B test on 50,000 user sessions to measure the impact of a redesigned checkout flow on purchase conversion rate.
+- Conducted pre-experiment sample size sizing (Power = 80%, alpha = 0.05) and checked for Sample Ratio Mismatch (SRM) using Chi-square goodness-of-fit testing.
+- Performed Two-proportion Z-test and computed 95% confidence intervals, demonstrating a statistically significant +8.3% relative conversion lift (p = 0.004) to support executive rollout decisions.
+\end{lstlisting}
+
+\subsection{Mẫu 2: Data Engineer Intern / Junior CV}
+\begin{lstlisting}
+TRAN VAN B
+Ho Chi Minh City, Vietnam | (+84) 987 654 321 | vanb.de@email.com
+github.com/vanb-dataeng | linkedin.com/in/vanb-de
+
+TECHNICAL SKILLS
+- Data Pipelines & Orchestration: Python, Apache Airflow (TaskFlow API), dbt, Bash Scripting
+- Storage & Warehousing: PostgreSQL, MinIO/Amazon S3, Kimball Dimensional Modeling (Star Schema, SCD2)
+- Big Data & Cloud: PySpark (DataFrames, Broadcast Join), AWS (S3, Lambda, Athena), Docker, Linux
+- Data Quality & DevOps: Pydantic, dbt tests, Git, GitHub Actions (CI/CD)
+
+FEATURED PROJECTS
+Production-Grade Analytics Engineering Pipeline | Docker, Airflow, dbt, PostgreSQL
+- Containerized a full-stack data environment running PostgreSQL, Apache Airflow, and dbt using Docker Compose to ensure 100% reproducible local and production setups.
+- Designed and deployed daily Airflow DAGs extracting batch JSON data from REST APIs into raw staging storage with automated retries and failure notification webhooks.
+- Implemented 18 dbt transformation models across Staging, Intermediate, and Mart layers with incremental processing, cutting warehouse transformation runtime by 55%.
+- Established automated data quality assertions (unique, not_null, relationship tests) using dbt test, preventing corrupted records from entering production reporting tables.
+
+Big Data Lakehouse Pipeline | PySpark, Delta Lake, AWS S3
+- Processed 10M+ rows of clickstream log data using PySpark, performing sessionization and user engagement aggregations with Spark SQL Window Functions.
+- Applied partition pruning and Broadcast Hash Joins to eliminate cross-network data shuffle, reducing job execution time from 90 minutes to under 18 minutes.
+- Implemented Delta Lake ACID transaction tables with Z-Ordering on timestamp and user ID, accelerating downstream analytical query performance by 4x.
+\end{lstlisting}
+
+\subsection{Mẫu 3: Data Scientist Intern / Junior CV}
+\begin{lstlisting}
+LE THI C
+Hanoi, Vietnam | (+84) 901 234 567 | lethic.ds@email.com
+github.com/lethic-datascience | linkedin.com/in/lethic-ds
+
+TECHNICAL SKILLS
+- Machine Learning: Scikit-learn, XGBoost, Random Forest, Logistic Regression, Feature Engineering
+- Statistical Analysis: Hypothesis Testing, A/B Testing, Dimensionality Reduction (PCA), SHAP
+- Deployment & MLOps: FastAPI, Docker, MLflow (Experiment Tracking, Model Registry), Git, CI/CD
+- Programming & DB: Python (NumPy, Pandas, Matplotlib, Seaborn), SQL (PostgreSQL)
+
+FEATURED PROJECTS
+Customer Churn Prediction & Model Serving Microservice | Python, XGBoost, FastAPI, Docker
+- Built an end-to-end customer churn prediction pipeline on 120,000 customer records, resolving class imbalance using class-weighted loss functions.
+- Engineered 25+ behavioral features and bundled preprocessing transformations using Scikit-Learn Pipeline and ColumnTransformer to completely eliminate data leakage risks.
+- Tuned ensemble classifiers (XGBoost, Random Forest) via Stratified 5-Fold Cross Validation, achieving an ROC-AUC score of 0.88 and Recall of 76% on holdout test data.
+- Leveraged SHAP values to explain individual feature contributions, identifying tenure and contract type as key retention drivers for targeted marketing campaigns.
+- Productionized the trained pipeline into a containerized FastAPI REST microservice with Pydantic request validation, serving real-time inference with sub-25ms latency.
+\end{lstlisting}
+
+\section{Ngân Hàng 40 Câu Hỏi Phỏng Vấn "Sát Thủ" Kèm Lời Giải}
+
+\subsection{10 Câu Hỏi Cốt Lõi Về SQL \& Cơ Sở Dữ Liệu}
+\begin{enumerate}
+    \item \textbf{Câu 1}: \textit{"Phân biệt sự khác nhau giữa WHERE và HAVING trong SQL?"} \\
+    $\rightarrow$ \textbf{Trả lời}: \texttt{WHERE} lọc dữ liệu ở cấp độ từng dòng TRƯỚC KHI các phép toán gộp nhóm (\texttt{GROUP BY}) được thực hiện và không thể chứa các hàm tổng hợp (\texttt{SUM, COUNT}). Ngược lại, \texttt{HAVING} lọc dữ liệu ở cấp độ nhóm SAU KHI phép gộp nhóm đã hoàn thành và chuyên dùng để lọc dựa trên kết quả của hàm tổng hợp.
+    \item \textbf{Câu 2}: \textit{"Window Functions khác gì so với GROUP BY?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Cả hai đều tính toán trên một tập hợp dữ liệu, nhưng \texttt{GROUP BY} gom nhiều dòng lại thành một dòng duy nhất đại diện cho nhóm, trong khi \textbf{Window Function} giữ nguyên từng dòng ban đầu của bảng dữ liệu và trả kết quả tính toán vào một cột mới trên từng dòng đó.
+    \item \textbf{Câu 3}: \textit{"Phân biệt ROW\_NUMBER(), RANK() và DENSE\_RANK()?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Khi có các giá trị bằng nhau: \texttt{ROW\_NUMBER} luôn đánh số liên tục không trùng ($1, 2, 3, 4$); \texttt{RANK} cho các giá trị bằng nhau cùng chung thứ tự nhưng sẽ nhảy cóc thứ bậc tiếp theo ($1, 2, 2, 4$); \texttt{DENSE\_RANK} cho các giá trị bằng nhau cùng thứ bậc và KHÔNG nhảy cóc thứ bậc tiếp theo ($1, 2, 2, 3$).
+    \item \textbf{Câu 4}: \textit{"Index B-Tree hoạt động như thế nào và tại sao nó giúp tăng tốc độ truy vấn?"} \\
+    $\rightarrow$ \textbf{Trả lời}: B-Tree là cấu trúc cây tự cân bằng lưu trữ dữ liệu theo thứ tự đã sắp xếp. Thay vì phải quét tuần tự toàn bộ bảng với độ phức tạp $O(n)$, B-Tree cho phép tìm kiếm dữ liệu qua việc duyệt các nút từ gốc đến lá theo phép chia nhị phân với độ phức tạp chỉ $O(\log n)$.
+    \item \textbf{Câu 5}: \textit{"Khi nào một câu lệnh SQL không thể tận dụng được Index?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Khi truy vấn bọc hàm tính toán quanh cột có index (ví dụ \texttt{WHERE YEAR(date\_col) = 2026}); khi sử dụng toán tử \texttt{LIKE '\%keyword'} bắt đầu bằng dấu phần trăm; hoặc khi vi phạm quy tắc tiền tố bên trái (Leftmost Prefix) của Composite Index.
+    \item \textbf{Câu 6}: \textit{"ACID trong cơ sở dữ liệu là gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Atomicity (Tính nguyên tử - hoặc thành công hết hoặc hủy bỏ toàn bộ), Consistency (Tính nhất quán - tuân thủ mọi ràng buộc dữ liệu), Isolation (Tính cô lập - các giao dịch song song không can thiệp lẫn nhau), Durability (Tính bền vững - dữ liệu đã commit sẽ được lưu vĩnh viễn ngay cả khi mất điện).
+    \item \textbf{Câu 7}: \textit{"Thế nào là Star Schema và Snowflake Schema?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Star Schema có các bảng Dimension kết nối trực tiếp với bảng Fact ở trung tâm (dạng phi chuẩn hóa, ít phép JOIN, truy vấn nhanh). Snowflake Schema tiếp tục chuẩn hóa các bảng Dimension thành nhiều bảng nhỏ hơn (tiết kiệm dung lượng nhưng tăng số lượng JOIN, truy vấn chậm hơn).
+    \item \textbf{Câu 8}: \textit{"Làm thế nào để tìm khách hàng có chi tiêu lớn thứ 2 trong mỗi phòng ban?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Dùng CTE kết hợp \texttt{DENSE\_RANK() OVER(PARTITION BY department\_id ORDER BY spending DESC) AS rnk}, sau đó lọc \texttt{WHERE rnk = 2}.
+    \item \textbf{Câu 9}: \textit{"Cạm bẫy Fan-Out trong phép JOIN là gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Khi nối một bảng $1$ với bảng $N$ theo quan hệ $1 - \text{Nhiều}$, các dòng của bảng $1$ bị nhân bản lên $N$ lần. Nếu vội vàng tính \texttt{SUM()} trên bảng 1, kết quả doanh thu sẽ bị thổi phồng sai lệch. Cần tiền tổng hợp qua CTE trước khi JOIN.
+    \item \textbf{Câu 10}: \textit{"Làm thế nào để tối ưu một câu lệnh query chạy chậm?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Chạy \texttt{EXPLAIN ANALYZE} để xác định nút thắt cổ chai (Seq Scan, Hash Join tràn đĩa); tạo Index phù hợp trên các cột trong \texttt{JOIN} và \texttt{WHERE}; tránh dùng \texttt{SELECT *}; hạn chế Correlated Subqueries; và xem xét phân vùng bảng (Partitioning) nếu bảng quá lớn.
+\end{enumerate}
+
+\subsection{10 Câu Hỏi Về Python, Pandas \& Kỹ Thuật Lập Trình}
+\begin{enumerate}
+    \item \textbf{Câu 11}: \textit{"Generator trong Python là gì và tại sao nó quan trọng cho Kỹ sư Dữ liệu?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Generator là hàm sử dụng từ khóa \texttt{yield} trả về từng phần tử theo cơ chế Lazy Evaluation. Nó cho phép xử lý các luồng dữ liệu khổng lồ hàng chục Gigabytes mà tiêu tốn bộ nhớ RAM gần như bằng 0, ngăn chặn lỗi \texttt{MemoryError}.
+    \item \textbf{Câu 12}: \textit{"Vectorization trong NumPy/Pandas là gì và tại sao nó nhanh hơn vòng lặp for?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Vectorization thực thi tính toán trên toàn bộ mảng dữ liệu cùng lúc thông qua mã C cấp thấp được tối ưu hóa chỉ thị phần cứng SIMD (Single Instruction, Multiple Data), loại bỏ hoàn toàn chi phí lặp và kiểm tra kiểu động của Python interpreter.
+    \item \textbf{Câu 13}: \textit{"Phân biệt .loc và .iloc trong Pandas?"} \\
+    $\rightarrow$ \textbf{Trả lời}: \texttt{.loc} truy cập theo nhãn (Labels: tên cột, tên chỉ số index); \texttt{.iloc} truy cập theo vị trí số nguyên (Integer positions: từ $0$ đến $n-1$).
+    \item \textbf{Câu 14}: \textit{"Kể tên 3 cơ chế dữ liệu khuyết trong thống kê và cách xử lý?"} \\
+    $\rightarrow$ \textbf{Trả lời}: MCAR (Khuyết hoàn toàn ngẫu nhiên - có thể drop hoặc điền mean); MAR (Khuyết phụ thuộc biến quan sát khác - dùng conditional imputation); MNAR (Khuyết phụ thuộc vào chính giá trị của nó - không được điền mean bừa bãi mà phải tạo cột cờ flag báo khuyết).
+    \item \textbf{Câu 15}: \textit{"Decorators trong Python hoạt động như thế nào?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Decorator là một hàm nhận vào một hàm khác làm đối số và mở rộng hành vi của hàm đó mà không sửa đổi trực tiếp mã nguồn của nó. Thường dùng cho ghi log (\texttt{@log}), đo thời gian (\texttt{@timer}), hoặc xác thực quyền truy cập.
+    \item \textbf{Câu 16}: \textit{"Làm thế nào để xử lý một tệp CSV 50GB trên máy tính chỉ có 8GB RAM bằng Python?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Đọc dữ liệu theo từng khối (\texttt{chunksize}) qua \texttt{pd.read\_csv(file, chunksize=100000)}; tối ưu hóa kiểu dữ liệu cột (\texttt{category}, \texttt{int32} thay vì \texttt{int64}); hoặc sử dụng các công cụ hiện đại như \textbf{DuckDB} hoặc \textbf{Polars}.
+    \item \textbf{Câu 17}: \textit{"Sự khác nhau giữa copy nông (Shallow Copy) và copy sâu (Deep Copy)?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Shallow copy tạo đối tượng mới nhưng chỉ sao chép tham chiếu của các đối tượng con bên trong; sửa đổi đối tượng con ở bản copy sẽ ảnh hưởng đến bản gốc. Deep copy tạo bản sao độc lập hoàn toàn cho cả đối tượng cha và toàn bộ các đối tượng lồng nhau bên trong.
+    \item \textbf{Câu 18}: \textit{"Tính lũy đẳng (Idempotency) trong lập trình hàm dữ liệu là gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Là tính chất đảm bảo một hàm hay tiến trình khi thực thi nhiều lần với cùng một tham số đầu vào sẽ luôn trả về cùng một kết quả và không gây ra tác dụng phụ ngoài ý muốn (Side Effects).
+    \item \textbf{Câu 19}: \textit{"Thư viện Pydantic giải quyết vấn đề gì trong Data Pipelines?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Pydantic thực thi việc kiểm tra kiểu dữ liệu tĩnh và động (Data Validation \& Parsing) tại thời điểm chạy (Runtime), tự động ép kiểu và phát hiện các bản ghi sai định dạng trước khi chúng làm sập pipeline.
+    \item \textbf{Câu 20}: \textit{"GIL (Global Interpreter Lock) trong Python là gì và ảnh hưởng thế nào đến tính toán dữ liệu?"} \\
+    $\rightarrow$ \textbf{Trả lời}: GIL là khóa ngăn không cho nhiều luồng (threads) thực thi mã Python bytecode cùng lúc trên nhiều lõi CPU. Để xử lý dữ liệu nặng CPU-bound, Kỹ sư Dữ liệu phải sử dụng đa tiến trình (\texttt{multiprocessing}) hoặc các thư viện C cấp thấp như NumPy/PySpark.
+\end{enumerate}
+
+\subsection{10 Câu Hỏi Về Thống Kê, A/B Testing \& Machine Learning}
+\begin{enumerate}
+    \item \textbf{Câu 21}: \textit{"Giải thích ý nghĩa thực sự của giá trị p-value cho một người không chuyên?"} \\
+    $\rightarrow$ \textbf{Trả lời}: $p$-value là thước đo mức độ "bất ngờ" của kết quả. Giả sử tính năng mới hoàn toàn không có tác dụng gì, thì $p$-value là xác suất ta vẫn tình cờ nhìn thấy sự chênh lệch lớn như vậy chỉ do may mắn ngẫu nhiên. Nếu $p < 0.05$, điều ngẫu nhiên đó quá khó xảy ra, ta kết luận tính năng mới thực sự có hiệu quả.
+    \item \textbf{Câu 22}: \textit{"Định lý Giới Hạn Trung Tâm (CLT) phát biểu điều gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Với mẫu lấy ngẫu nhiên đủ lớn ($n \ge 30$), phân phối của giá trị trung bình mẫu sẽ xấp xỉ phân phối chuẩn, bất kể phân phối của quần thể gốc ban đầu có hình dạng như thế nào.
+    \item \textbf{Câu 23}: \textit{"Hiện tượng Sample Ratio Mismatch (SRM) trong A/B Testing là gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Là khi tỷ lệ phân bổ người dùng thực tế giữa nhóm Control và Treatment bị lệch có ý nghĩa thống kê so với tỷ lệ cấu hình ban đầu (ví dụ cấu hình 50:50 nhưng nhận về 55:45). Báo hiệu lỗi kỹ thuật nghiêm trọng làm vô hiệu hóa toàn bộ kết quả thử nghiệm.
+    \item \textbf{Câu 24}: \textit{"Tại sao Accuracy không phải là chỉ số tốt cho bài toán phát hiện gian lận (Fraud Detection)?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Do mất cân bằng dữ liệu cực độ (tỷ lệ gian lận chỉ 0.1\%). Một mô hình luôn đoán là "Bình thường" sẽ đạt Accuracy 99.9\% nhưng bỏ sót 100\% kẻ gian lận. Cần dùng Precision, Recall, PR-AUC hoặc F1-Score.
+    \item \textbf{Câu 25}: \textit{"Data Leakage là gì và cách phòng tránh tuyệt đối?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Là hiện tượng thông tin từ tập kiểm thử hoặc thông tin trong tương lai bị rò rỉ vào quá trình huấn luyện mô hình. Phòng tránh bằng cách luôn chia train/test TRƯỚC KHI tiền xử lý và đóng gói toàn bộ qua Scikit-Learn \texttt{Pipeline}.
+    \item \textbf{Câu 26}: \textit{"Độ đánh đổi giữa Bias và Variance (Bias-Variance Tradeoff) là gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: High Bias dẫn đến Underfitting (mô hình quá đơn giản, không học được quy luật). High Variance dẫn đến Overfitting (mô hình quá phức tạp, học vẹt cả nhiễu của tập train nhưng thất bại trên tập test). Mục tiêu là tìm điểm cân bằng cực tiểu hóa tổng sai số.
+    \item \textbf{Câu 27}: \textit{"Khác biệt cơ bản giữa Random Forest và Gradient Boosting (XGBoost)?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Random Forest dùng kỹ thuật Bagging (huấn luyện song song nhiều cây độc lập sâu rồi lấy trung bình để giảm Variance). Gradient Boosting dùng kỹ thuật Boosting (huấn luyện tuần tự các cây nông, mỗi cây sau cố gắng sửa sai số của các cây trước đó để giảm Bias).
+    \item \textbf{Câu 28}: \textit{"Giá trị SHAP trong giải thích mô hình Machine Learning đại diện cho điều gì?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Dựa trên lý thuyết trò chơi, SHAP value đo lường mức độ đóng góp cận biên của từng đặc trưng đầu vào vào việc làm tăng hay giảm xác suất dự báo so với giá trị kỳ vọng cơ sở của toàn bộ tập dữ liệu.
+    \item \textbf{Câu 29}: \textit{"Tại sao ta không nên kiểm tra p-value mỗi ngày trong suốt thời gian chạy A/B Test (Peeking Problem)?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Việc kiểm tra liên tục và dừng thử nghiệm khi thấy $p < 0.05$ làm sai lầm loại I (False Positive Rate) tích lũy tăng vọt từ 5\% lên tới 30--50\% do hiện tượng kiểm định nhiều lần ngẫu nhiên.
+    \item \textbf{Câu 30}: \textit{"Phân biệt Data Drift và Concept Drift trong sản xuất?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Data Drift là khi phân phối dữ liệu đầu vào thay đổi $P(X)$ nhưng mối quan hệ không đổi. Concept Drift là khi mối quan hệ giữa đầu vào và nhãn thay đổi $P(y|X)$ (hành vi bản chất của con người đã thay đổi).
+\end{enumerate}
+
+\subsection{10 Câu Hỏi Về Data Engineering, System Design \& Hạ Tầng}
+\begin{enumerate}
+    \item \textbf{Câu 31}: \textit{"Tại sao Parquet lại nhanh hơn CSV khi thực hiện các câu truy vấn phân tích?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Parquet lưu trữ dữ liệu theo dạng cột (Columnar format) kết hợp nén Snappy. Khi query chỉ cần lấy 3 cột trên bảng 100 cột, hệ thống chỉ đọc các khối dữ liệu của 3 cột đó từ ổ đĩa (I/O Pruning), giảm tới 95\% lưu lượng đọc đĩa.
+    \item \textbf{Câu 32}: \textit{"Broadcast Hash Join trong PySpark hoạt động như thế nào?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Khi nối bảng lớn với bảng nhỏ, Spark sao chép toàn bộ bảng nhỏ gửi tới bộ nhớ RAM của tất cả các Executor, cho phép thực hiện phép join nội bộ tại từng máy mà không cần shuffle dữ liệu lớn qua mạng.
+    \item \textbf{Câu 33}: \textit{"dbt giải quyết những điểm yếu nào của các script SQL truyền thống?"} \\
+    $\rightarrow$ \textbf{Trả lời}: dbt mang các chuẩn mực kỹ thuật phần mềm vào SQL: quản lý phiên bản với Git, quản lý phụ thuộc tự động qua lệnh \texttt{ref()}, tự động hóa kiểm thử dữ liệu, và tự động sinh biểu đồ Data Lineage.
+    \item \textbf{Câu 34}: \textit{"Tại sao cần đặt catchup=False trong Apache Airflow?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Nếu \texttt{catchup=True}, khi bật một DAG có \texttt{start\_date} trong quá khứ, Airflow Scheduler sẽ lập tức kích hoạt tất cả các mẻ chạy trong quá khứ chưa được thực thi, gây quá tải và làm sập toàn bộ hệ thống.
+    \item \textbf{Câu 35}: \textit{"Cơ chế Time Travel trong Delta Lake hoạt động như thế nào?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Delta Lake duy trì một nhật ký giao dịch tuần tự \texttt{\_delta\_log}. Dữ liệu cũ không bị xóa ngay mà được bảo toàn; Time Travel cho phép truy vấn lại trạng thái dữ liệu ở phiên bản commit hoặc mốc thời gian chỉ định trong quá khứ.
+    \item \textbf{Câu 36}: \textit{"Phân biệt SCD Type 1 và SCD Type 2 trong mô hình hóa dữ liệu?"} \\
+    $\rightarrow$ \textbf{Trả lời}: SCD Type 1 ghi đè trực tiếp dữ liệu mới lên dữ liệu cũ (mất lịch sử). SCD Type 2 tạo ra một dòng mới với khóa thay thế mới, duy trì lịch sử bằng các cột ngày bắt đầu, ngày kết thúc và cờ hiệu \texttt{is\_current}.
+    \item \textbf{Câu 37}: \textit{"Partitioning và Clustering trong BigQuery/Athena giúp tiết kiệm chi phí thế nào?"} \\
+    $\rightarrow$ \textbf{Trả lời}: BigQuery tính phí theo số byte dữ liệu được quét. Bằng cách phân vùng theo ngày và gom cụm theo ID, truy vấn có điều kiện lọc sẽ chỉ quét các khối dữ liệu cần thiết, giảm lượng byte quét và chi phí tới 90--99\%.
+    \item \textbf{Câu 38}: \textit{"Thiết kế một pipeline xử lý dữ liệu đơn hàng chịu lỗi (Fault-tolerant) như thế nào?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Thiết kế pipeline có tính lũy đẳng (Idempotent load); bổ sung cơ chế tự động thử lại (Retries with exponential backoff); đẩy các bản ghi lỗi vào Dead Letter Queue / Quarantine để kiểm tra sau; và cấu hình hệ thống cảnh báo tức thời qua Slack/PagerDuty.
+    \item \textbf{Câu 39}: \textit{"Sự khác nhau giữa Batch Processing và Stream Processing?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Batch processing xử lý các khối dữ liệu tĩnh tích lũy theo chu kỳ (mỗi giờ, mỗi ngày) với độ trễ từ vài phút đến vài giờ (Airflow, Spark Batch). Stream processing xử lý từng sự kiện ngay khi nó vừa phát sinh với độ trễ tính bằng mili-giây (Kafka, Flink, Spark Streaming).
+    \item \textbf{Câu 40}: \textit{"Một kỹ sư dữ liệu cấp Middle khác Fresher ở điểm nào khi thiết kế hệ thống?"} \\
+    $\rightarrow$ \textbf{Trả lời}: Fresher chỉ tập trung vào việc làm cho code chạy được; Middle tập trung vào tính bền vững: khả năng mở rộng (Scalability), giám sát chất lượng dữ liệu (Data Observability), tối ưu chi phí hạ tầng (FinOps), và khả năng tự động khôi phục sau sự cố (Disaster Recovery).
+\end{enumerate}

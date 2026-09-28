@@ -1,0 +1,211 @@
+\chapter{Level 10: MLOps \& Đưa Mô Hình Lên Production (Tuần 55--58)}
+
+\section{Khoảng Trống Giữa Jupyter Notebook \& Hệ Thống Sản Xuất}
+
+Thống kê của Gartner chỉ ra rằng hơn \textbf{85\% mô hình Machine Learning không bao giờ được đưa vào sản xuất}. Lý do không phải vì thuật toán toán học dở, mà vì các nhà khoa học dữ liệu quen làm việc trong môi trường Jupyter Notebook:
+\begin{itemize}
+    \item Các ô mã (cells) chạy lộn xộn, không theo thứ tự tuyến tính, không thể tái lập (Unreproducible).
+    \item Không có cơ chế kiểm thử tự động (Unit Tests / Integration Tests).
+    \item Không có giao diện lập trình ứng dụng (API) để các hệ thống khác (Web, Mobile App) gọi lấy kết quả dự báo thời gian thực.
+    \item Không có công cụ theo dõi xem mô hình có bị "lão hóa" và suy giảm độ chính xác theo thời gian hay không.
+\end{itemize}
+**MLOps (Machine Learning Operations)** chính là cây cầu kỹ thuật đưa mô hình từ một tệp thử nghiệm trong máy cá nhân trở thành một dịch vụ doanh nghiệp có độ tin cậy $99.9\%$.
+
+\section{MLflow: Quản Lý Vòng Đời Thử Nghiệm \& Model Registry}
+
+\begin{thuchanhbox}[Tự Động Theo Dõi Thử Nghiệm Với MLflow]
+Thay vì ghi chép các siêu tham số (Hyperparameters) và độ chính xác vào file Excel một cách thủ công, thư viện **MLflow** tự động lưu trữ toàn bộ lịch sử thử nghiệm:
+
+\begin{lstlisting}[language=Python]
+import mlflow
+import mlflow.sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_auc_score
+
+mlflow.set_experiment("Customer_Churn_Prediction")
+
+with mlflow.start_run(run_name="RandomForest_Depth8_Estimators200"):
+    # 1. Ghi lai cac tham so huan luyen (Parameters)
+    params = {"n_estimators": 200, "max_depth": 8, "random_state": 42}
+    mlflow.log_params(params)
+    
+    # 2. Huan luyen mo hinh
+    model = RandomForestClassifier(**params)
+    model.fit(X_train, y_train)
+    
+    # 3. Tinh toan va ghi lai cac chi so danh gia (Metrics)
+    y_pred_proba = model.predict_proba(X_test)[:, 1]
+    auc_score = roc_auc_score(y_test, y_pred_proba)
+    mlflow.log_metric("test_roc_auc", auc_score)
+    print(f"[*] Ket qua AUC luu vao MLflow: {auc_score:.4f}")
+    
+    # 4. Luu tru model artifact va dang ky vao Model Registry
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="churn_model",
+        registered_model_name="Production_Churn_Classifier"
+    )
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Phục Vụ Mô Hình Thời Gian Thực Với FastAPI}
+
+Trong sản xuất, ứng dụng di động cần biết ngay lập tức một khách hàng có nguy cơ rời bỏ hay không khi họ vừa mở app. **FastAPI** là framework Python hiện đại nhất hiện nay nhờ tốc độ thực thi tiệm cận Go/NodeJS và khả năng tự động kiểm tra dữ liệu bằng Pydantic:
+
+\begin{thuchanhbox}[Mã Nguồn Microservice Dự Báo Hoàn Chỉnh (FastAPI)]
+\begin{lstlisting}[language=Python]
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+import joblib
+import pandas as pd
+
+app = FastAPI(
+    title="Customer Churn Prediction API",
+    description="Dich vu Microservice du bao nguy co roi bo khach hang thoi gian thuc",
+    version="1.0.0"
+)
+
+# 1. Tai Pipeline da dong goi khi khoi dong server
+model_pipeline = joblib.load("models/churn_prediction_v1.joblib")
+
+# 2. Dinh nghia khuon mau du lieu dau vao (Input Contract)
+class CustomerFeatures(BaseModel):
+    tenure_months: int = Field(ge=0, description="So thang su dung dich vu")
+    monthly_charges: float = Field(gt=0, description="Cuoc phi hang thang")
+    total_transactions: int = Field(ge=0, description="Tong so giao dich")
+    days_since_last_login: int = Field(ge=0, description="So ngay tu lan dang nhap cuoi")
+    contract_type: str = Field(pattern="^(Month-to-Month|One-Year|Two-Year)$")
+    payment_method: str
+    gender: str
+
+# 3. Dinh nghia ket qua tra ve (Output Response)
+class PredictionResponse(BaseModel):
+    churn_probability: float
+    is_churn_risk: bool
+    recommended_action: str
+
+@app.post("/predict", response_model=PredictionResponse)
+def predict_churn(customer: CustomerFeatures):
+    try:
+        # Chuyen du lieu Pydantic thanh DataFrame 1 dong
+        input_data = pd.DataFrame([customer.model_dump()])
+        
+        # Tinh toan xac suat roi bo
+        prob = float(model_pipeline.predict_proba(input_data)[0, 1])
+        is_risk = prob >= 0.40
+        
+        action = "Tang Voucher giu chan 15%" if is_risk else "Cham soc tieu chuan"
+        
+        return PredictionResponse(
+            churn_probability=round(prob, 4),
+            is_churn_risk=is_risk,
+            recommended_action=action
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Loi du bao noi bo: {str(e)}")
+
+@app.get("/health")
+def health_check():
+    return {"status": "HEALTHY", "model_version": "v1.0.0"}
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Đóng Gói Docker \& CI/CD Với GitHub Actions}
+
+\begin{thuchanhbox}[Tệp Workflow CI/CD Tự Động Hóa (.github/workflows/mlops.yml)]
+Mỗi khi bạn đẩy (push) code mới lên nhánh \texttt{main}, GitHub Actions sẽ tự động khởi chạy môi trường kiểm thử và đóng gói Docker Image:
+
+\begin{lstlisting}[language=yaml]
+name: ML Model CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test_and_lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest flake8
+    - name: Lint Code with Flake8
+      run: flake8 src/ --count --max-line-length=120
+    - name: Run Unit Tests with Pytest
+      run: pytest tests/
+
+  build_docker_image:
+    needs: test_and_lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Docker Image
+      run: docker build -t my-ml-churn-api:latest .
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Giám Sát Mô Hình: Data Drift \& Concept Drift}
+
+Sau khi đưa mô hình lên sản xuất, chất lượng của nó sẽ luôn luôn bị suy giảm theo thời gian (Model Degradation):
+\begin{itemize}
+    \item \textbf{Data Drift (Lệch Dữ Liệu)}: Phân phối của dữ liệu đầu vào $P(X)$ thay đổi. Ví dụ: Trước đây khách hàng chủ yếu trong độ tuổi 20--30, nay công ty chạy chiến dịch mở rộng sang nhóm khách hàng trên 50 tuổi. Phân phối độ tuổi bị lệch hẳn!
+    \item \textbf{Concept Drift (Lệch Khái Niệm)}: Mối quan hệ giữa dữ liệu đầu vào và nhãn đầu ra $P(y|X)$ thay đổi. Ví dụ: Lạm phát kinh tế khiến một người có mức thu nhập 20 triệu trước đây thuộc nhóm chi tiêu thoải mái nay lại cắt giảm chi tiêu tối đa.
+    \item \textbf{Công cụ giám sát}: Sử dụng kiểm định thống kê \textbf{Kolmogorov-Smirnov Test (KS-Test)} hoặc chỉ số \textbf{Population Stability Index (PSI)}. Nếu giá trị $PSI > 0.25$, hệ thống cảnh báo tự động phát tín hiệu yêu cầu tái huấn luyện (Retrain) mô hình trên dữ liệu mới!
+\end{itemize}
+
+\section{PROJECT 10: Production ML Churn Prediction Microservice}
+
+Xây dựng hệ thống phục vụ mô hình hoàn chỉnh:
+\begin{enumerate}
+    \item Đóng gói mô hình Machine Learning tốt nhất vào MLflow Model Registry.
+    \item Xây dựng Microservice REST API bằng FastAPI với schema Pydantic.
+    \item Viết bộ kiểm thử tự động \texttt{pytest} bao gồm kiểm tra tính hợp lệ của response mã HTTP 200 và độ trễ phản hồi dưới 50ms.
+    \item Đóng gói Dockerfile đa tầng và thiết lập pipeline GitHub Actions tự động kiểm thử mỗi khi có commit.
+\end{enumerate}
+
+\section{Bài Tập Tự Luyện Level 10}
+
+\begin{baitapbox}[5 Bài Tập MLOps \& Production Engineering]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Pydantic Validation)}: Viết một schema Pydantic kiểm tra trường \texttt{email} phải đúng cú pháp RFC và trường \texttt{credit\_score} phải nằm trong đoạn $[300, 850]$. Bắn ra lỗi cụ thể nếu vi phạm.
+    \item \textbf{Bài 2 (Pytest cho Machine Learning)}: Viết một test case bằng thư viện \texttt{pytest} kiểm tra tính chất đơn điệu (Directional Invariance): Khi tăng trường \texttt{days\_since\_last\_login} từ 5 ngày lên 90 ngày (trong khi giữ nguyên các biến khác), xác suất rời bỏ (\texttt{churn\_probability}) của khách hàng bắt buộc phải tăng lên.
+    \item \textbf{Bài 3 (FastAPI Async)}: Viết một endpoint \texttt{/predict\_batch} trong FastAPI hỗ trợ nhận vào danh sách lên tới 1,000 khách hàng cùng lúc và thực hiện dự báo theo lô (Batch Inference) tối ưu.
+    \item \textbf{Bài 4 (PSI Calculation)}: Viết hàm Python tính toán chỉ số Population Stability Index (PSI) giữa tập dữ liệu huấn luyện tháng 1 và tập dữ liệu phục vụ thực tế tháng 6.
+    \item \textbf{Bài 5 (Docker Healthcheck)}: Thêm lệnh \texttt{HEALTHCHECK} vào file \texttt{Dockerfile} để Docker daemon tự động kiểm tra endpoint \texttt{/health} của FastAPI mỗi 30 giây một lần.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Dùng kiểu dữ liệu \texttt{EmailStr} (từ thư viện \texttt{pydantic[email]}) và \texttt{Field(ge=300, le=850)}.
+    \item \textbf{Bài 2}: Tạo 2 đối tượng mẫu: \texttt{cust1} có \texttt{days=5} và \texttt{cust2} có \texttt{days=90}. Gọi \texttt{model.predict\_proba} và kiểm tra \texttt{assert prob2 > prob1}.
+    \item \textbf{Bài 3}: Nhận tham số \texttt{customers: List[CustomerFeatures]}, dùng \texttt{pd.DataFrame([c.model\_dump() for c in customers])} và gọi hàm \texttt{predict\_proba} 1 lần duy nhất cho toàn bộ bảng.
+    \item \textbf{Bài 4}: Công thức PSI:
+    \[
+    PSI = \sum \left(Actual\% - Expected\%\right) \times \ln\left(\frac{Actual\%}{Expected\%}\right)
+    \]
+    \item \textbf{Bài 5}: Dòng lệnh trong Dockerfile:
+    \begin{lstlisting}[language=bash]
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+    \end{lstlisting}
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Kỹ Năng MLOps Vào CV]
+\textbf{Production Machine Learning Microservice | FastAPI, Docker, MLflow, CI/CD}
+\begin{itemize}
+    \item Đóng gói và triển khai mô hình học máy phân loại rời bỏ dưới dạng RESTful API Microservice sử dụng FastAPI và Pydantic, đạt độ trễ phản hồi dự báo thời gian thực dưới 25ms.
+    \item Quản lý vòng đời mô hình và theo dõi siêu tham số thử nghiệm thông qua MLflow Model Registry, đảm bảo khả năng tái lập và kiểm toán phiên bản mô hình 100\%.
+    \item Xây dựng đường ống tự động hóa kiểm thử và triển khai liên tục (CI/CD) với GitHub Actions và Docker, thiết lập bộ kiểm định chất lượng mã nguồn flake8 và kiểm thử chức năng mô hình tự động bằng pytest.
+\end{itemize}
+\end{cvtipbox}

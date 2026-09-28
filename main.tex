@@ -1,0 +1,271 @@
+\documentclass[11pt,a4paper,oneside]{book}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Liberation Sans}
+\setmonofont{Liberation Mono}
+
+\usepackage{geometry}
+\geometry{top=2.5cm,bottom=2.5cm,left=2.3cm,right=2.3cm,headheight=16pt}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+% Định nghĩa màu sắc chuẩn thiết kế sách chuyên nghiệp
+\definecolor{navyprimary}{HTML}{1A365D}
+\definecolor{tealsecondary}{HTML}{0D9488}
+\definecolor{violetaccent}{HTML}{6D28D9}
+\definecolor{emeraldcode}{HTML}{047857}
+\definecolor{amberwarn}{HTML}{B45309}
+\definecolor{rosecv}{HTML}{BE123C}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{bordergray}{HTML}{CBD5E1}
+\definecolor{darktext}{HTML}{0F172A}
+
+% Cấu hình đoạn văn và khoảng cách
+\linespread{1.18}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parindent}{0pt}
+
+% Cấu hình Header và Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{navyprimary}{\footnotesize\textbf{DATA MASTERY ALL-IN-ONE}}}
+\fancyhead[R]{\textcolor{gray}{\footnotesize\nouppercase{\rightmark}}}
+\fancyfoot[C]{\textcolor{navyprimary}{\small\textbf{\thepage}}}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Định dạng tiêu đề chương và mục
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{navyprimary}}
+  {\Large\textsc{Chương \thechapter}}
+  {1ex}
+  {\titlerule[2pt]\vspace{1.5ex}\Huge}
+  [\vspace{1.5ex}\titlerule]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{navyprimary}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{tealsecondary}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{violetaccent}}
+  {\thesubsubsection}{1em}{}
+
+% Cấu hình Listings cho Code blocks
+\lstset{
+  basicstyle=\ttfamily\small\color{darktext},
+  backgroundcolor=\color{lightbg},
+  frame=single,
+  rulecolor=\color{bordergray},
+  breaklines=true,
+  breakatwhitespace=true,
+  keepspaces=true,
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  xleftmargin=15pt,
+  framexleftmargin=15pt,
+  keywordstyle=\color{violetaccent}\bfseries,
+  commentstyle=\color{emeraldcode}\itshape,
+  stringstyle=\color{amberwarn},
+  columns=fullflexible
+}
+
+\lstdefinelanguage{json}{
+  basicstyle=\ttfamily\small\color{darktext},
+  stringstyle=\color{amberwarn},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{lightbg}
+}
+
+\lstdefinelanguage{yaml}{
+  basicstyle=\ttfamily\small\color{darktext},
+  stringstyle=\color{amberwarn},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{lightbg}
+}
+
+% Định nghĩa các TColorBox chuyên biệt
+% 1. Hộp Lý Thuyết Cốt Lõi
+\newtcolorbox{lythuyetbox}[1][]{
+  enhanced,
+  breakable,
+  colback=navyprimary!5!white,
+  colframe=navyprimary,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Kiến Thức Cốt Lõi: #1},
+  arc=3mm,
+  boxrule=1pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% 2. Hộp Thực Chiến & Code Mẫu
+\newtcolorbox{thuchanhbox}[1][]{
+  enhanced,
+  breakable,
+  colback=tealsecondary!5!white,
+  colframe=tealsecondary,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Thực Chiến \& Best Practices: #1},
+  arc=3mm,
+  boxrule=1pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% 3. Hộp AI Copilot & Prompt Engineering
+\newtcolorbox{aipromptbox}[1][]{
+  enhanced,
+  breakable,
+  colback=violetaccent!5!white,
+  colframe=violetaccent,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Bí Kíp AI Copilot \& Prompt Engineering: #1},
+  arc=3mm,
+  boxrule=1.2pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% 4. Hộp Bài Tập Tự Luyện
+\newtcolorbox{baitapbox}[1][]{
+  enhanced,
+  breakable,
+  colback=amberwarn!5!white,
+  colframe=amberwarn,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Bài Tập Tự Luyện: #1},
+  arc=3mm,
+  boxrule=1pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% 5. Hộp Lời Giải & Đối Chiếu
+\newtcolorbox{dapanbox}[1][]{
+  enhanced,
+  breakable,
+  colback=gray!10!white,
+  colframe=gray!70!black,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Lời Giải \& Hướng Dẫn Kiểm Tra: #1},
+  arc=3mm,
+  boxrule=0.8pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% 6. Hộp Lời Khuyên Tuyển Dụng & CV
+\newtcolorbox{cvtipbox}[1][]{
+  enhanced,
+  breakable,
+  colback=rosecv!5!white,
+  colframe=rosecv,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Góc Nhìn Tuyển Dụng \& Đưa Vào CV: #1},
+  arc=3mm,
+  boxrule=1pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+}
+
+% Cấu hình Hyperref
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navyprimary,
+  urlcolor=tealsecondary,
+  citecolor=violetaccent,
+  pdftitle={Data Mastery All-In-One: Giáo Trình Tự Học Thực Chiến DA - DS - DE},
+  pdfauthor={Data Mastery Team - 2026 Edition}
+}
+
+\begin{document}
+
+% TRANG BÌA SÁCH NGHỆ THUẬT
+\begin{titlepage}
+\begin{center}
+\vspace*{1.5cm}
+{\huge\bfseries\color{navyprimary} GIÁO TRÌNH TỰ HỌC THỰC CHIẾN TOÀN DIỆN}\\[0.6cm]
+{\Huge\bfseries\color{violetaccent} DATA MASTERY ALL-IN-ONE}\\[0.5cm]
+{\Large\color{tealsecondary}\textbf{Lộ Trình Từ Zero Đến Intern, Junior \& Middle}}\\[0.3cm]
+{\large\textbf{Data Analyst -- Data Scientist -- Data Engineer}}\\[1.5cm]
+
+\rule{\linewidth}{1.5pt}\\[0.6cm]
+\parbox{0.9\linewidth}{\centering\itshape\large
+Cẩm nang thực chiến chuyên sâu với 11 Flagship Projects, ứng dụng AI Copilot hiện đại, hệ thống bài tập tự luyện có lời giải chi tiết, và bộ công thức chuẩn hóa CV chinh phục mọi nhà tuyển dụng.
+}\\[0.6cm]
+\rule{\linewidth}{1.5pt}\\[2.5cm]
+
+\begin{tcolorbox}[enhanced,colback=navyprimary,colframe=navyprimary,arc=5mm,width=0.85\linewidth,center,halign=center]
+\vspace{0.3cm}
+{\color{white}\textbf{\Large TÁC GIẢ \& ĐỘI NGŨ BIÊN SOẠN}}\\[0.2cm]
+{\color{white}\normalsize Antigravity DeepMind Engineering Team \& Data Career Mentors}\\[0.1cm]
+{\color{white}\small Cập nhật xu hướng tuyển dụng mới nhất 2026}
+\vspace{0.3cm}
+\end{tcolorbox}
+
+\vfill
+{\large\textbf{Năm Xuất Bản: 2026}}
+\end{center}
+\end{titlepage}
+
+% MỤC LỤC
+\tableofcontents
+\newpage
+
+% NỘI DUNG CÁC CHƯƠNG
+\include{chapters/ch00_setup_environment}
+\include{chapters/ch01_overview}
+\include{chapters/ch02_level0_fundamentals}
+\include{chapters/ch03_level1_python}
+\include{chapters/ch04_level2_sql}
+\include{chapters/ch05_level3_stats}
+\include{chapters/ch06_level4_da_bi}
+\include{chapters/ch07_level5_de_etl}
+\include{chapters/ch08_level6_de_pro}
+\include{chapters/ch09_level7_ml}
+\include{chapters/ch10_level8_bigdata}
+\include{chapters/ch11_level9_cloud}
+\include{chapters/ch12_level10_mlops}
+\include{chapters/ch13_capstone}
+\include{chapters/ch14_career_cv_interview}
+
+% PHẦN WORKBOOK THỰC HÀNH 120 BÀI TẬP ALL-IN-ONE
+\include{workbook/part1_excel}
+\include{workbook/part2_python}
+\include{workbook/part3_sql}
+\include{workbook/part4_stats}
+\include{workbook/part5_business}
+\include{workbook/part6_de_mlops}
+
+\include{chapters/ch15_solutions}
+
+\end{document}

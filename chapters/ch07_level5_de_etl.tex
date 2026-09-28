@@ -1,0 +1,194 @@
+\chapter{Level 5: Data Engineering -- Data Modeling \& Core ETL (Tuần 25--30)}
+
+\section{Nền Tảng Data Warehousing: So Sánh Toàn Diện OLTP vs OLAP}
+
+Khi khối lượng dữ liệu doanh nghiệp vượt qua hàng chục triệu bản ghi, việc chạy các truy vấn phân tích trực tiếp trên cơ sở dữ liệu vận hành (Production OLTP) sẽ làm tê liệt toàn bộ hệ thống bán hàng. Đây là lý do kiến trúc Kho Dữ Liệu (\textbf{Data Warehouse - OLAP}) ra đời:
+
+\begin{center}
+\begin{tabular}{|l|p{6cm}|p{6cm}|}
+\hline
+\textbf{Tiêu Chí} & \textbf{Hệ Thống OLTP (Giao dịch)} & \textbf{Hệ Thống OLAP (Phân tích)} \\
+\hline
+\textbf{Mục Đích} & Hỗ trợ vận hành hàng ngày (Thêm giỏ hàng, đặt đơn, chuyển khoản) & Phục vụ báo cáo chiến lược, phân tích xu hướng, dự báo kinh doanh \\
+\hline
+\textbf{Bản Chất Dữ Liệu} & Dữ liệu thời gian thực hiện tại, thay đổi liên tục từng giây & Dữ liệu lịch sử tích lũy nhiều năm, bất biến (Immutable), ghi một lần đọc nhiều lần \\
+\hline
+\textbf{Mô Hình Dữ Liệu} & Chuẩn hóa cao độ (3NF) để tránh dư thừa và tối ưu hóa ghi (Write-optimized) & Phi chuẩn hóa (Star/Snowflake Schema) để tối ưu hóa đọc và kết nối (Read-optimized) \\
+\hline
+\textbf{Khối Lượng Thao Tác} & Hàng triệu giao dịch nhỏ mỗi giây, mỗi giao dịch chỉ sửa 1--2 dòng & Hàng nghìn truy vấn phức tạp mỗi ngày, mỗi truy vấn quét hàng triệu bản ghi \\
+\hline
+\textbf{Công Nghệ Tiêu Biểu} & PostgreSQL, MySQL, SQL Server, Oracle & Snowflake, Google BigQuery, ClickHouse, AWS Redshift, DuckDB \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Mô Hình Hóa Chiều Kimball (Kimball Dimensional Modeling)}
+
+Phương pháp tiếp cận của Ralph Kimball là tiêu chuẩn vàng của ngành kỹ thuật dữ liệu toàn cầu trong hơn 30 năm qua:
+
+\begin{lythuyetbox}[4 Bước Thiết Kế Mô Hình Chiều Chuẩn Mực]
+\begin{enumerate}
+    \item \textbf{Bước 1: Chọn Quy Trình Kinh Doanh (Business Process)}: Ví dụ: Giao dịch bán hàng, Sự kiện nhấp chuột, Quá trình giao vận.
+    \item \textbf{Bước 2: Tuyên Bố Độ Mịn Của Dữ Liệu (Declare the Grain)}: Định nghĩa chính xác một dòng trong bảng Fact đại diện cho cái gì? Ví dụ: \textit{"Mỗi dòng là một mặt hàng cụ thể trong một đơn hàng được thanh toán thành công"}.
+    \item \textbf{Bước 3: Xác Định Các Chiều (Identify Dimensions)}: Bối cảnh "Ai, Cái gì, Ở đâu, Khi nào, Tại sao?". Ví dụ: Khách hàng, Sản phẩm, Chi nhánh, Ngày tháng, Khuyến mãi.
+    \item \textbf{Bước 4: Xác Định Các Số Đo (Identify Facts)}: Các giá trị số định lượng có thể cộng trừ được: Doanh thu, Số lượng, Tiền chiết khấu, Phí ship.
+\end{enumerate}
+\end{lythuyetbox}
+
+\subsection{Xử Lý Chiều Biến Đổi Chậm (Slowly Changing Dimensions - SCD)}
+
+Khi khách hàng Nguyễn Văn A chuyển địa chỉ từ Hà Nội vào TP. Hồ Chí Minh, hệ thống Data Warehouse xử lý lịch sử như thế nào?
+\begin{itemize}
+    \item \textbf{SCD Type 1 (Ghi đè)}: Cập nhật đè trực tiếp Hà Nội thành TP. Hồ Chí Minh. \textit{Hậu quả}: Mất toàn bộ dấu vết lịch sử; các đơn hàng năm ngoái của ông A tại Hà Nội nay bị tính nhầm cho TP. Hồ Chí Minh!
+    \item \textbf{SCD Type 2 (Thêm dòng mới - Tiêu chuẩn ngành)}: Giữ nguyên dòng cũ, đánh dấu \texttt{is\_current = FALSE} và \texttt{valid\_to = '2026-03-01'}. Tạo thêm một dòng mới với Surrogate Key mới, địa chỉ là TP. Hồ Chí Minh, \texttt{is\_current = TRUE} và \texttt{valid\_from = '2026-03-01'}. Báo cáo lịch sử được bảo toàn tuyệt đối!
+\end{itemize}
+
+\section{Kiến Trúc ETL Hiện Đại \& Tính Lũy Đẳng (Idempotency)}
+
+\begin{lythuyetbox}[Nguyên Tắc Sống Còn Của Data Pipeline: Tính Lũy Đẳng (Idempotency)]
+Một Data Pipeline được gọi là \textbf{Idempotent (Lũy đẳng)} nếu việc thực thi lại đường ống đó 1 lần hay 10 lần đối với cùng một khoảng thời gian dữ liệu (ví dụ: ngày 28/09/2026) đều tạo ra \textbf{chính xác một trạng thái duy nhất trong Kho Dữ Liệu}, không gây trùng lặp bản ghi và không làm sai lệch số liệu!
+
+\textbf{Cách đạt được tính lũy đẳng}:
+\begin{enumerate}
+    \item \textbf{Chiến lược Delete-Insert / Partition Overwrite}: Trước khi nạp dữ liệu ngày $T$, tự động xóa sạch dữ liệu ngày $T$ cũ trong bảng đích:
+    \begin{lstlisting}[language=SQL]
+DELETE FROM fact_daily_sales WHERE sales_date = '2026-09-28';
+INSERT INTO fact_daily_sales SELECT ... FROM staging_sales WHERE sales_date = '2026-09-28';
+    \end{lstlisting}
+    \item \textbf{Chiến lược Upsert (Merge)}: Sử dụng câu lệnh \texttt{ON CONFLICT (primary\_key) DO UPDATE} trong PostgreSQL hoặc \texttt{MERGE INTO} trong BigQuery/Snowflake.
+\end{enumerate}
+\end{lythuyetbox}
+
+\section{PROJECT 5: Automated Batch ETL Pipeline Chuẩn Production}
+
+\subsection{Bài Toán Thực Tế}
+Xây dựng một đường ống ETL bằng Python chạy tự động mỗi đêm: Trích xuất giao dịch từ một REST API giả lập và tệp CSV vận hành, xác thực dữ liệu chặt chẽ bằng thư viện \textbf{Pydantic}, làm sạch và nạp lũy đẳng vào bảng Fact trong PostgreSQL Data Warehouse.
+
+\subsection{Mã Nguồn Pipeline Hoàn Chỉnh}
+
+\begin{lstlisting}[language=Python]
+import os
+import logging
+from datetime import datetime
+from typing import List, Optional
+import pandas as pd
+from pydantic import BaseModel, Field, ValidationError
+import psycopg2
+from psycopg2.extras import execute_batch
+
+# 1. Cau hinh Logging chuyen nghiep
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s'
+)
+logger = logging.getLogger("ETL_Pipeline")
+
+# 2. Dinh nghia Data Contract bang Pydantic
+class TransactionRecord(BaseModel):
+    order_id: str
+    customer_id: str
+    amount: float = Field(gt=0, description="Gia tri don hang phai lon hon 0")
+    order_status: str
+    created_at: datetime
+    discount: Optional[float] = 0.0
+
+# 3. Ham Extract & Validate
+def extract_and_validate(csv_path: str) -> List[TransactionRecord]:
+    logger.info(f"Dang doc va kiem tra du lieu tu: {csv_path}")
+    df = pd.read_csv(csv_path)
+    valid_records: List[TransactionRecord] = []
+    quarantine_records = []
+
+    for idx, row in df.iterrows():
+        try:
+            record = TransactionRecord(
+                order_id=str(row['order_id']),
+                customer_id=str(row['customer_id']),
+                amount=float(row['amount']),
+                order_status=str(row['order_status']).upper(),
+                created_at=pd.to_datetime(row['created_at']),
+                discount=float(row.get('discount', 0.0))
+            )
+            valid_records.append(record)
+        except (ValidationError, Exception) as e:
+            quarantine_records.append({"row_index": idx, "error": str(e), "raw_data": row.to_dict()})
+
+    logger.info(f"Kiem tra hoan tat: {len(valid_records)} hop le, {len(quarantine_records)} bi loai bo vao Quarantine!")
+    return valid_records
+
+# 4. Ham Load Luy Dang vao PostgreSQL (Idempotent Load)
+def load_to_warehouse(records: List[TransactionRecord], db_conn_str: str) -> None:
+    if not records:
+        logger.warning("Khong co ban ghi hop le nao de nap!")
+        return
+
+    insert_query = """
+    INSERT INTO fact_transactions (order_id, customer_id, amount, order_status, created_at, discount, loaded_at)
+    VALUES (%s, %s, %s, %s, %s, %s, NOW())
+    ON CONFLICT (order_id) DO UPDATE SET
+        customer_id = EXCLUDED.customer_id,
+        amount = EXCLUDED.amount,
+        order_status = EXCLUDED.order_status,
+        discount = EXCLUDED.discount,
+        loaded_at = NOW();
+    """
+
+    data_tuples = [
+        (r.order_id, r.customer_id, r.amount, r.order_status, r.created_at, r.discount)
+        for r in records
+    ]
+
+    try:
+        with psycopg2.connect(db_conn_str) as conn:
+            with conn.cursor() as cur:
+                execute_batch(cur, insert_query, data_tuples, page_size=1000)
+                conn.commit()
+                logger.info(f"[V] Nap thanh cong {len(records)} ban ghi vao PostgreSQL DWH!")
+    except Exception as e:
+        logger.error(f"[X] Loi khi nap vao Data Warehouse: {e}")
+        raise
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 5}
+
+\begin{baitapbox}[5 Bài Tập Mô Hình Hóa \& Lập Trình Pipeline]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Kimball Modeling)}: Thiết kế mô hình Star Schema cho ứng dụng gọi xe công nghệ (như Grab/Gojek). Xác định: Grain, 1 Fact Table và 4 Dimension Tables tương ứng.
+    \item \textbf{Bài 2 (SCD Type 2 SQL Trigger)}: Viết câu lệnh DDL khởi tạo bảng \texttt{dim\_customers\_scd2} có các cột \texttt{surrogate\_key}, \texttt{customer\_id}, \texttt{address}, \texttt{valid\_from}, \texttt{valid\_to}, \texttt{is\_current}.
+    \item \textbf{Bài 3 (Watermarking)}: Viết đoạn mã Python lưu trữ trạng thái \texttt{last\_max\_timestamp} vào một tệp JSON hoặc bảng metadata để pipeline chỉ trích xuất những bản ghi mới hơn giá trị mốc này ở lần chạy tiếp theo.
+    \item \textbf{Bài 4 (Dead Letter Queue)}: Thiết kế giải pháp xử lý cho 5\% các bản ghi bị lỗi dữ liệu (Invalid format) trong pipeline để không làm gián đoạn toàn bộ tiến trình xử lý nhưng vẫn đảm bảo có thể điều tra lại sau đó.
+    \item \textbf{Bài 5 (Data Quality Check)}: Viết một hàm kiểm tra chất lượng dữ liệu tự động xác minh tính toàn vẹn tham chiếu (Referential Integrity): Kiểm tra xem có đơn hàng nào trong \texttt{fact\_orders} chứa \texttt{customer\_id} không hề tồn tại trong \texttt{dim\_customers} hay không.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: 
+    - \textbf{Grain}: Mỗi dòng là một cuốc xe hoàn thành hoặc bị hủy.
+    - \textbf{Fact}: \texttt{fact\_trips(trip\_id, driver\_id, passenger\_id, date\_id, location\_id, fare\_amount, tip\_amount, distance\_km, duration\_mins)}.
+    - \textbf{Dimensions}: \texttt{dim\_driver}, \texttt{dim\_passenger}, \texttt{dim\_date}, \texttt{dim\_location}.
+    \item \textbf{Bài 2}:
+    \begin{lstlisting}[language=SQL]
+CREATE TABLE dim_customers_scd2 (
+    surrogate_key BIGSERIAL PRIMARY KEY,
+    customer_id VARCHAR(50) NOT NULL,
+    address TEXT NOT NULL,
+    valid_from TIMESTAMP NOT NULL,
+    valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59',
+    is_current BOOLEAN DEFAULT TRUE
+);
+    \end{lstlisting}
+    \item \textbf{Bài 3}: Sử dụng câu lệnh: \texttt{SELECT MAX(updated\_at) FROM fact\_table} sau mỗi mẻ nạp thành công và lưu vào bảng \texttt{etl\_watermark\_control}.
+    \item \textbf{Bài 4}: Tạo cơ chế \textbf{Quarantine / Dead Letter Queue (DLQ)}: Toàn bộ bản ghi sai định dạng được đẩy vào bảng riêng \texttt{quarantine\_transactions} kèm thông báo Slack/Email gửi tới Data Engineer trực ca.
+    \item \textbf{Bài 5}: Dùng truy vấn \texttt{LEFT JOIN ... WHERE dim.id IS NULL}. Nếu kết quả trả về $>0$, pipeline sẽ phát tín hiệu cảnh báo mức độ nghiêm trọng (Severity: High).
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Dự Án ETL Vào CV Kỹ Sư Dữ Liệu]
+\textbf{Automated Batch ETL Data Pipeline | Python, PostgreSQL, Pydantic, Logging}
+\begin{itemize}
+    \item Xây dựng đường ống trích xuất, biến đổi và nạp dữ liệu (ETL) tự động hàng ngày xử lý hơn 250,000 giao dịch từ REST APIs và tệp CSV vào kho dữ liệu PostgreSQL.
+    \item Áp dụng mô hình hóa chiều Kimball Star Schema với cơ chế quản lý lịch sử biến đổi chậm SCD Type 2 và thiết kế cơ chế nạp lũy đẳng (Idempotent Load) ngăn chặn hoàn toàn trùng lặp dữ liệu.
+    \item Tích hợp thư viện Pydantic và hệ thống giám sát kiểm định chất lượng dữ liệu (Data Quality Checks), giảm thiểu 95\% lỗi dữ liệu bẩn xâm nhập vào hệ thống báo cáo.
+\end{itemize}
+\end{cvtipbox}

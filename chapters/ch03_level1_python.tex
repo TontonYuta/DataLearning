@@ -1,0 +1,361 @@
+\chapter{Level 1: Lập Trình Python Từ Con Số 0 \& Phân Tích Khám Phá (EDA) (Tuần 3--8)}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: Bạn chỉ cần đã hoàn thành Chương 0 (đã cài đặt VS Code và Python 3.11 chạy được). \textbf{Không cần bất kỳ kinh nghiệm lập trình nào trước đó!}
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Nắm vững cú pháp Python từ con số 0: Biến, Kiểu dữ liệu, Toán tử, Cấu trúc rẽ nhánh, Vòng lặp, Hàm và Cấu trúc dữ liệu (\texttt{list, dict, tuple, set}).
+    \item Hiểu kỹ thuật lập trình nâng cao: Comprehensions, Generators (tiết kiệm RAM), Decorators, Type Hinting và Xử lý ngoại lệ (\texttt{try-except}).
+    \item Làm chủ thư viện \textbf{NumPy} với tính toán Vectorization thay thế vòng lặp for.
+    \item Trở thành bậc thầy thư viện \textbf{Pandas}: Thao tác DataFrame, GroupBy Aggregations, Nối bảng (Merge/Join), xử lý Missing Data và Outliers.
+    \item Hoàn thành \textbf{Project 1: E-commerce Sales Explorer} và trả lời 5 câu hỏi kinh doanh chiến lược của doanh nghiệp.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Python Căn Bản Từ Con Số 0}
+
+\subsection{1. Biến (Variables) \& 4 Kiểu Dữ Liệu Nguyên Thủy}
+
+Biến trong lập trình giống như một chiếc hộp có dán nhãn, dùng để lưu trữ dữ liệu trong bộ nhớ RAM của máy tính. Bạn gán giá trị cho biến bằng dấu bằng \texttt{=}.
+
+\begin{thuchanhbox}[Các Kiểu Dữ Liệu Cơ Bản Trong Python]
+\begin{lstlisting}[language=Python]
+# 1. So nguyen (int - Integer): So khong co phan thap phan
+customer_age = 28
+total_orders = 15
+
+# 2. So thuc (float - Floating-point): So co dau phay thap phan
+order_amount = 250.75
+vat_rate = 0.08
+
+# 3. Chuoi ky tu (str - String): Doan van ban dat trong dau nhay don hoac nhay kep
+customer_name = "Nguyen Van An"
+city = 'Ha Noi'
+
+# 4. Dung/Sai logic (bool - Boolean): Chi nhan 1 trong 2 gia tri: True hoac False
+is_active_member = True
+has_discount_coupon = False
+
+# In ra man hinh va kiem tra kieu du lieu bang ham type()
+print("Ten khach hang:", customer_name)
+print("Kieu du lieu cua order_amount la:", type(order_amount))  # <class 'float'>
+
+# Ep kieu du lieu (Type Casting)
+str_price = "500"               # Day la chuoi ky tu, khong the cong tru
+numeric_price = float(str_price) # Ep sang so thuc: 500.0
+print("Gia sau khi tinh thue:", numeric_price * 1.08)
+\end{lstlisting}
+\end{thuchanhbox}
+
+\subsection{2. Các Toán Tử Toán Học \& So Sánh}
+
+\begin{itemize}
+    \item \textbf{Toán tử số học}: \texttt{+} (cộng), \texttt{-} (trừ), \texttt{*} (nhân), \texttt{/} (chia thập phân), \texttt{//} (chia lấy phần nguyên: \texttt{7 // 2 = 3}), \texttt{\%} (chia lấy dư - modulo: \texttt{7 \% 2 = 1}), \texttt{**} (lũy thừa: \texttt{2 ** 3 = 8}).
+    \item \textbf{Toán tử so sánh (Trả về True hoặc False)}: \texttt{==} (bằng nhau), \texttt{!=} (khác nhau), \texttt{>} (lớn hơn), \texttt{<} (nhỏ hơn), \texttt{>=}, \texttt{<=}.
+    \item \textbf{Toán tử logic}: \texttt{and} (cả 2 cùng đúng), \texttt{or} (chỉ cần 1 trong 2 đúng), \texttt{not} (phủ định).
+\end{itemize}
+
+\subsection{3. Cấu Trúc Rẽ Nhánh Điều Kiện (if -- elif -- else)}
+
+Máy tính đưa ra quyết định dựa trên điều kiện logic. \textbf{Lưu ý sống còn}: Python sử dụng \textbf{thụt đầu dòng (Indentation - 4 dấu cách)} để xác định khối mã lệnh nào thuộc về điều kiện đó!
+
+\begin{lstlisting}[language=Python]
+total_spending = 450.0
+
+if total_spending >= 500.0:
+    discount = 0.15
+    customer_tier = "VIP"
+elif total_spending >= 200.0:
+    discount = 0.05
+    customer_tier = "Gold"
+else:
+    discount = 0.0
+    customer_tier = "Standard"
+
+final_payment = total_spending * (1 - discount)
+print(f"Hang: {customer_tier} | Giam gia: {discount*100}% | Can thanh toan: ${final_payment:.2f}")
+\end{lstlisting}
+
+\subsection{4. Vòng Lặp (for \& while)}
+
+\begin{lstlisting}[language=Python]
+# Vong lap for ket hop voi ham range(start, stop, step)
+print("Dem so chan tu 2 den 10:")
+for i in range(2, 11, 2):
+    print(i, end=" ")
+print("\n")
+
+# Duyet qua tung phan tu trong mot danh sach
+order_amounts = [120.0, 45.0, 300.0, 85.0]
+total_revenue = 0.0
+
+for amount in order_amounts:
+    if amount > 200.0:
+        print(f"[!] Phat hien don hang lon: ${amount}")
+    total_revenue += amount
+
+print(f"Tong doanh thu mẻ hàng: ${total_revenue}")
+\end{lstlisting}
+
+\subsection{5. Bốn Cấu Trúc Dữ Liệu Cốt Lõi: List, Dict, Tuple, Set}
+
+\begin{thuchanhbox}[So Sánh Bản Chất 4 Cấu Trúc Dữ Liệu]
+\begin{enumerate}
+    \item \textbf{List (Danh sách - Ký hiệu \texttt{[]})}: Có thứ tự, có thể thay đổi giá trị (Mutable), cho phép trùng lặp.
+    \begin{lstlisting}[language=Python]
+cities = ["Hanoi", "Saigon", "Danang"]
+cities.append("Cantho")        # Them vao cuoi: ['Hanoi', 'Saigon', 'Danang', 'Cantho']
+first_city = cities[0]         # Lay phan tu dau tien: 'Hanoi'
+last_city = cities[-1]         # Lay phan tu cuoi cung: 'Cantho'
+sub_list = cities[1:3]         # Cat lat (Slicing): ['Saigon', 'Danang']
+    \end{lstlisting}
+    \item \textbf{Dictionary (Từ điển - Ký hiệu \texttt{\{\}})}: Lưu trữ cặp Khóa -- Giá trị (\texttt{Key: Value}). Cực kỳ quan trọng để lưu thông tin bản ghi dữ liệu.
+    \begin{lstlisting}[language=Python]
+customer = {
+    "id": "CUST_1001",
+    "name": "Nguyen Van An",
+    "spending": 350.50,
+    "is_active": True
+}
+print(customer["name"])                  # Truy xuat: 'Nguyen Van An'
+customer["email"] = "an.nguyen@data.vn"  # Them khoa moi
+spending = customer.get("bonus", 0.0)    # Dung .get() de tranh loi neu khong ton tai key
+    \end{lstlisting}
+    \item \textbf{Tuple (Bộ giá trị - Ký hiệu \texttt{()})}: Có thứ tự nhưng \textbf{bất biến (Immutable)}, không thể thêm/sửa/xóa sau khi tạo. Dùng cho tọa độ, cấu hình.
+    \begin{lstlisting}[language=Python]
+coordinates = (21.0285, 105.8542)  # Vi do, kinh do Ha Noi
+    \end{lstlisting}
+    \item \textbf{Set (Tập hợp - Ký hiệu \texttt{\{phần tử\}})}: Không có thứ tự, \textbf{tự động loại bỏ hoàn toàn các phần tử trùng lặp}.
+    \begin{lstlisting}[language=Python]
+raw_categories = ["Tech", "Home", "Tech", "Beauty", "Home"]
+unique_categories = set(raw_categories)
+print(unique_categories)  # {'Tech', 'Home', 'Beauty'}
+    \end{lstlisting}
+\end{enumerate}
+\end{thuchanhbox}
+
+\subsection{6. Hàm (Functions) \& Xử Lý Lỗi (try -- except)}
+
+\begin{lstlisting}[language=Python]
+def calculate_net_income(revenue: float, tax_rate: float = 0.1) -> float:
+    """Tinh thu nhap rong sau thue voi gia tri thue mac dinh la 10%."""
+    if revenue < 0:
+        raise ValueError("Doanh thu khong the la so am!")
+    net_income = revenue * (1 - tax_rate)
+    return round(net_income, 2)
+
+# Su dung try-except de chuong trinh khong bi sap khi gap loi du lieu
+user_inputs = [1000.0, -50.0, 2500.0]
+
+for rev in user_inputs:
+    try:
+        net = calculate_net_income(rev)
+        print(f"Doanh thu: ${rev} -> Thu nhap thuc: ${net}")
+    except ValueError as err:
+        print(f"[!] Canh bao loi du lieu: {err}")
+\end{lstlisting}
+
+\section{Nâng Cấp Kỹ Năng Pythonic \& Tối Ưu Hiệu Năng}
+
+Sau khi đã nắm vững các cú pháp căn bản, đây là lúc bạn chuyển đổi tư duy từ người mới thành kỹ sư dữ liệu viết code sạch sẽ, tối ưu:
+
+\subsection{Comprehensions \& Generators Tiết Kiệm Bộ Nhớ}
+
+\begin{thuchanhbox}[List Comprehension vs Generator Memory Benchmark]
+Thay vì viết 5 dòng vòng lặp \texttt{for} để tạo một danh sách mới, hãy dùng cú pháp thanh thoát \textbf{List Comprehension}:
+\begin{lstlisting}[language=Python]
+# Cach viet cu ki (5 dong):
+squares = []
+for x in range(10):
+    if x % 2 == 0:
+        squares.append(x ** 2)
+
+# Cach viet Pythonic (1 dong duy nhat):
+squares_pythonic = [x ** 2 for x in range(10) if x % 2 == 0]
+\end{lstlisting}
+
+\textbf{Sức mạnh của Generator với \texttt{yield}}:
+Khi xử lý tệp log 20GB, \textbf{List Comprehension} sẽ tạo ra danh sách 20GB trong RAM và làm sập máy tính. Ngược lại, **Generator** chỉ sinh dữ liệu khi được gọi:
+\begin{lstlisting}[language=Python]
+def stream_large_log(file_path: str):
+    """Generator doc tung dong cua file dung luong cuc lon."""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if "ERROR" in line:
+                yield line.strip()
+
+# RAM tieu thu luon giu o muc gan nhu 0 MB!
+for err in stream_large_log("data/raw_transactions.csv"):
+    pass
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{NumPy: Sức Mạnh Tính Toán Vector (Vectorization)}
+
+\begin{lythuyetbox}[Tại Sao Vectorization Lại Nhanh Hơn Vòng Lặp For 150 Lần?]
+NumPy quản lý mảng \texttt{ndarray} trong các vùng nhớ liên tục của C-language. Khi bạn thực hiện phép tính trên 1 triệu phần tử, thay vì duyệt tuần tự 1 triệu lần trong môi trường máy ảo Python (Interpreter), NumPy phát các chỉ số phần cứng SIMD (Single Instruction, Multiple Data) của chip vi xử lý để tính toán đồng thời hàng nghìn phép tính trong một chu kỳ xung nhịp!
+\end{lythuyetbox}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import time
+
+# Tao mang 1 trieu phan tu
+arr = np.random.rand(1_000_000)
+
+# Cach 1: Vong lap For thuan tuy
+start = time.perf_counter()
+res_for = [x * 1.08 for x in arr]
+time_for = time.perf_counter() - start
+
+# Cach 2: Vectorization bang NumPy
+start = time.perf_counter()
+res_vec = arr * 1.08
+time_vec = time.perf_counter() - start
+
+print(f"Thoi gian dung For Loop   : {time_for:.4f}s")
+print(f"Thoi gian dung Vectorized : {time_vec:.4f}s")
+print(f"-> NumPy nhanh hon: {time_for / time_vec:.1f} LAN!")
+\end{lstlisting}
+
+\section{Pandas Masterclass: Trái Tim Của Xử Lý Dữ Liệu}
+
+Pandas cung cấp hai cấu trúc dữ liệu chính: \texttt{Series} (cột 1 chiều) và \texttt{DataFrame} (bảng 2 chiều có dòng và cột).
+
+\subsection{1. Đọc Dữ Liệu, Lọc \& Named Aggregations}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+
+# Doc du lieu Orders da sinh o Chuong 0
+df_orders = pd.read_csv("data/orders.csv", parse_dates=['order_purchase_timestamp'])
+
+# Xem 5 dong dau tien va kich thuoc bang
+print("Kich thuoc bang:", df_orders.shape)
+print(df_orders.head(3))
+
+# Loc don hang: Chi lay don COMPLETED trong nam 2025
+completed_2025 = df_orders[
+    (df_orders['order_status'] == 'COMPLETED') &
+    (df_orders['order_purchase_timestamp'] >= '2025-01-01')
+]
+print("So don hoan thanh:", len(completed_2025))
+\end{lstlisting}
+
+\subsection{2. Kết Nối Bảng (Merge / Join) \& Phép Gộp Nhóm (GroupBy)}
+
+\begin{lstlisting}[language=Python]
+# Doc bang chi tiet san pham
+df_items = pd.read_csv("data/order_items.csv")
+
+# Merge don hang voi chi tiet san pham giong nhu INNER JOIN trong SQL
+df_merged = pd.merge(df_orders, df_items, on='order_id', how='inner')
+
+# Named Aggregations: Tinh tong doanh thu va so luong san pham theo Category
+category_report = df_merged.groupby('category').agg(
+    total_revenue=('price', 'sum'),
+    avg_price=('price', 'mean'),
+    total_quantity=('quantity', 'sum'),
+    order_count=('order_id', 'nunique')
+).reset_index()
+
+category_report['total_revenue'] = category_report['total_revenue'].round(2)
+print("=== BAO CAO HIEU NANG DANH MUC SAN PHAM ===")
+print(category_report.sort_values(by='total_revenue', ascending=False))
+\end{lstlisting}
+
+\section{PROJECT 1: E-Commerce Sales Explorer}
+
+\subsection{Kịch Bản Thực Tế}
+Sử dụng bộ dữ liệu E-commerce đã tạo tại thư mục \texttt{data/} để tiến hành phân tích khám phá toàn diện, trả lời 5 câu hỏi kinh doanh của Ban Giám đốc:
+\begin{enumerate}
+    \item Doanh thu và tăng trưởng đơn hàng theo từng tháng (MoM Growth Rate).
+    \item Kiểm chứng quy luật Pareto: 20\% khách hàng đóng góp bao nhiêu \% doanh thu?
+    \item Tỷ lệ hủy/hoàn tiền theo từng phương thức thanh toán.
+    \item Danh mục sản phẩm bán chạy nhất theo từng quý.
+    \item Giá trị giỏ hàng trung bình (AOV - Average Order Value).
+\end{enumerate}
+
+\begin{lstlisting}[language=Python]
+import pandas as pd
+import numpy as np
+
+def run_project1():
+    print("[*] Dang tai cac tap du lieu E-commerce...")
+    orders = pd.read_csv("data/orders.csv", parse_dates=['order_purchase_timestamp'])
+    items = pd.read_csv("data/order_items.csv")
+    payments = pd.read_csv("data/payments.csv")
+    
+    # Merge cac bang
+    df = orders.merge(items, on='order_id', how='inner').merge(payments, on='order_id', how='inner')
+    
+    # 1. Doanh thu theo thang va tang truong MoM
+    df['order_month'] = df['order_purchase_timestamp'].dt.to_period('M')
+    monthly = df.groupby('order_month')['price'].agg(['sum', 'count']).reset_index()
+    monthly.columns = ['Month', 'Revenue', 'Orders']
+    monthly['MoM_Growth_%'] = (monthly['Revenue'].pct_change() * 100).round(2)
+    print("\n--- 1. TANG TRUONG DOANH THU THEO THANG ---")
+    print(monthly.head(6))
+    
+    # 2. Quy luat Pareto (80/20)
+    cust_rev = df.groupby('customer_id')['price'].sum().sort_values(ascending=False).reset_index()
+    total_rev = cust_rev['price'].sum()
+    cust_rev['cum_pct'] = (cust_rev['price'].cumsum() / total_rev) * 100
+    top_20_cust = int(len(cust_rev) * 0.20)
+    pareto_share = cust_rev.iloc[top_20_cust]['cum_pct']
+    print(f"\n--- 2. QUY LUAT PARETO ---")
+    print(f"Top 20% khach hang tao ra: {pareto_share:.2f}% tong doanh thu!")
+
+if __name__ == '__main__':
+    run_project1()
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 1}
+
+\begin{baitapbox}[5 Bài Tập Python \& Pandas Thực Chiến]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Căn bản)}: Viết một hàm nhận vào danh sách số nguyên, sử dụng vòng lặp để tìm số lớn nhất và tính giá trị trung bình mà không dùng hàm có sẵn \texttt{max()} và \texttt{sum()}.
+    \item \textbf{Bài 2 (Dictionary)}: Cho một danh sách các giao dịch bán hàng dạng list of dicts. Hãy viết code tính tổng tiền của từng khách hàng và xuất ra một dict mới dạng \texttt{\{customer\_id: total\_spent\}}.
+    \item \textbf{Bài 3 (Pandas Cleaning)}: Đọc file \texttt{data/input.csv}. Hãy lọc bỏ toàn bộ các dòng bị trùng lặp (\texttt{drop\_duplicates}), sau đó điền giá trị trung vị của cột \texttt{age} vào những dòng bị khuyết (\texttt{fillna}).
+    \item \textbf{Bài 4 (Pandas Datetime)}: Từ file \texttt{data/orders.csv}, hãy tạo thêm 2 cột mới: \texttt{day\_of\_week} (Thứ trong tuần: Monday, Tuesday...) và \texttt{is\_weekend} (True nếu là Thứ Bảy hoặc Chủ Nhật).
+    \item \textbf{Bài 5 (Pandas Pivot)}: Sử dụng hàm \texttt{pivot\_table} trên dữ liệu hợp nhất để hiển thị tổng doanh thu với dòng là các Tháng (\texttt{order\_month}) và cột là các Danh mục (\texttt{category}).
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Hướng Dẫn Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: Khởi tạo \texttt{max\_val = lst[0]}, \texttt{total = 0}. Duyệt qua từng phần tử \texttt{for x in lst: total += x; if x > max\_val: max\_val = x}. Trung bình là \texttt{total / len(lst)}.
+    \item \textbf{Bài 2}: 
+    \begin{lstlisting}[language=Python]
+res = {}
+for tx in transactions:
+    cid, amt = tx['customer_id'], tx['amount']
+    res[cid] = res.get(cid, 0.0) + amt
+    \end{lstlisting}
+    \item \textbf{Bài 3}:
+    \begin{lstlisting}[language=Python]
+df = pd.read_csv("data/input.csv").drop_duplicates()
+median_age = df['age'].median()
+df['age'] = df['age'].fillna(median_age)
+    \end{lstlisting}
+    \item \textbf{Bài 4}:
+    \begin{lstlisting}[language=Python]
+df['day_of_week'] = df['order_purchase_timestamp'].dt.day_name()
+df['is_weekend'] = df['order_purchase_timestamp'].dt.dayofweek.isin([5, 6])
+    \end{lstlisting}
+    \item \textbf{Bài 5}:
+    \begin{lstlisting}[language=Python]
+pivot_sales = df.pivot_table(index='order_month', columns='category', values='price', aggfunc='sum', fill_value=0)
+    \end{lstlisting}
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Dự Án Python Vào CV]
+\textbf{E-Commerce Exploratory Data Analysis Pipeline | Python, Pandas, NumPy, Data Cleaning}
+\begin{itemize}
+    \item Xây dựng pipeline phân tích khám phá (EDA) trên tập dữ liệu đa bảng gồm hơn 100,000 giao dịch bán lẻ, xử lý 3\% dữ liệu khuyết và khử trùng lặp bản ghi.
+    \item Ứng dụng kỹ thuật Vectorization của NumPy và Named Aggregations của Pandas, tối ưu hóa tốc độ xử lý gấp 50 lần so với vòng lặp truyền thống.
+    \item Trích xuất các chỉ số kinh doanh then chốt (MoM Growth Rate, Pareto 80/20 Share, AOV), trực tiếp hỗ trợ chiến lược tối ưu hóa nguồn hàng của bộ phận kinh doanh.
+\end{itemize}
+\end{cvtipbox}

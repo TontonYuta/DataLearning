@@ -1,0 +1,197 @@
+\chapter{Level 3: Thống Kê Kinh Doanh \& Thử Nghiệm A/B Testing (Tuần 15--18)}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: Bạn chỉ cần đã hoàn thành Chương 3 (Lập trình Python và Pandas cơ bản). \textbf{Không cần kiến thức toán cao cấp hay thống kê trước đó!}
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Hiểu từ con số 0 các loại dữ liệu thống kê: Định tính (Nominal, Ordinal) và Định lượng (Discrete, Continuous).
+    \item Tự tay tính toán và hiểu bản chất trực quan của Mean, Median, Mode, Phương sai (Variance) và Độ lệch chuẩn (Standard Deviation).
+    \item Nắm vững Định lý Giới Hạn Trung Tâm (CLT) và Phân phối chuẩn (Normal Distribution).
+    \item Hiểu cặn kẽ Thống kê suy luận: p-value, Khoảng tin cậy 95\%, Sai lầm Loại I ($\alpha$) và Loại II ($\beta$).
+    \item Tự tay thiết kế và phân tích thử nghiệm A/B Testing hoàn chỉnh (\textbf{Project 3}) bằng Python.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Thống Kê Mô Tả Từ Con Số 0}
+
+\subsection{1. Phân Loại Dữ Liệu Trong Thống Kê}
+Mọi dữ liệu bạn gặp trong doanh nghiệp đều thuộc một trong hai nhóm:
+\begin{enumerate}
+    \item \textbf{Dữ liệu định tính (Categorical Data - Dữ liệu chữ / phân loại)}:
+    \begin{itemize}
+        \item \textit{Định danh (Nominal)}: Không có thứ tự hơn kém. Ví dụ: Giới tính (Nam, Nữ), Thành phố (Hà Nội, Sài Gòn), Phương thức thanh toán (Thẻ, Ví điện tử).
+        \item \textit{Thứ bậc (Ordinal)}: Có thứ tự cao thấp rõ ràng. Ví dụ: Hạng khách hàng (Đồng, Bạc, Vàng, Kim Cương), Đánh giá sao (1 sao đến 5 sao).
+    \end{itemize}
+    \item \textbf{Dữ liệu định lượng (Numerical Data - Dữ liệu số tính toán được)}:
+    \begin{itemize}
+        \item \textit{Rời rạc (Discrete)}: Đếm được bằng số nguyên. Ví dụ: Số lượng đơn hàng (1, 2, 3 đơn), Số lượt nhấp chuột.
+        \item \textit{Liên tục (Continuous)}: Đo lường được trên trục số thực liên tục. Ví dụ: Doanh thu (\$125.50), Thời gian tải trang web (1.24 giây), Cân nặng.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{2. Mean, Median, Mode \& Ví Dụ Tính Bằng Tay}
+
+Giả sử một cửa hàng có 5 đơn hàng với giá trị: \texttt{[10, 12, 15, 18, 95]} (USD):
+\begin{itemize}
+    \item \textbf{Giá trị trung bình (Mean)}: 
+    \[
+    \bar{x} = \frac{10 + 12 + 15 + 18 + 95}{5} = \frac{150}{5} = 30\text{ USD}
+    \]
+    \item \textbf{Giá trị trung vị (Median)}: Sắp xếp các số theo thứ tự tăng dần và lấy số nằm chính giữa. Ở đây, giá trị trung vị là \textbf{15 USD}.
+    \item \textbf{Nhận xét sống còn}: Đơn hàng cá biệt 95 USD (Outlier) đã kéo mức trung bình lên 30 USD (gấp đôi mức chi tiêu thông thường của 80\% khách hàng!). Nếu báo cáo với giám đốc là \textit{"Khách hàng chi trung bình 30 USD"}, chiến lược giá của công ty sẽ bị định giá quá cao và thất bại! Do đó, **với dữ liệu lệch, luôn luôn dùng Median**.
+\end{itemize}
+
+\subsection{3. Phương Sai (Variance) \& Độ Lệch Chuẩn (Standard Deviation)}
+Để biết các con số phân tán rải rác hay tập trung sát quanh giá trị trung bình, ta dùng:
+\begin{itemize}
+    \item \textbf{Phương sai mẫu ($s^2$)}: Trung bình cộng của bình phương các khoảng cách từ từng điểm dữ liệu đến giá trị trung bình:
+    \[
+    s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n - 1}
+    \]
+    \item \textbf{Độ lệch chuẩn ($s = \sqrt{s^2}$)}: Căn bậc hai của phương sai, đưa độ phân tán về cùng đơn vị đo ban đầu (USD). Nếu $s$ nhỏ: doanh thu các ngày rất đều đặn; nếu $s$ lớn: doanh thu trồi sụt thất thường, rủi ro cao.
+\end{itemize}
+
+\section{Xác Suất \& Định Lý Giới Hạn Trung Tâm (CLT)}
+
+\begin{lythuyetbox}[Định Lý Giới Hạn Trung Tâm (Central Limit Theorem - CLT)]
+Cho dù tổng thể dữ liệu ban đầu có bất kỳ hình dạng phân phối nào (lệch, nhị thức, hay đồng đều), nếu ta lấy các mẫu ngẫu nhiên độc lập có kích thước đủ lớn ($n \ge 30$) từ tổng thể đó, thì \textbf{phân phối của các giá trị trung bình mẫu ($\bar{X}$) sẽ xấp xỉ phân phối chuẩn (Normal Distribution)}:
+\[
+\bar{X} \sim \mathcal{N}\left(\mu, \frac{\sigma^2}{n}\right)
+\]
+\textit{Ý nghĩa sống còn}: CLT là nền tảng toán học cho phép chúng ta ước lượng khoảng tin cậy (Confidence Interval) và thực hiện các kiểm định thống kê giả thuyết (như Z-test, T-test) trong A/B Testing mà không cần quan tâm phân phối ban đầu của từng người dùng là gì!
+\end{lythuyetbox}
+
+\section{Thống Kê Suy Luận \& Kiểm Định Giả Thuyết (Hypothesis Testing)}
+
+Mọi thử nghiệm A/B Testing đều bắt đầu từ việc thiết lập cặp giả thuyết:
+\begin{itemize}
+    \item \textbf{Giả thuyết vô hiệu ($H_0$)}: "Không có sự khác biệt có ý nghĩa thống kê giữa nhóm Control (A) và nhóm Treatment (B)".
+    \item \textbf{Giả thuyết đối ($H_1$)}: "Nhóm Treatment (B) tạo ra sự khác biệt có ý nghĩa thống kê so với nhóm Control (A)".
+\end{itemize}
+
+\subsection{Sai Lầm Loại I ($\alpha$), Loại II ($\beta$) \& Ý Nghĩa p-value}
+
+\begin{center}
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Thực Tế / Quyết Định} & \textbf{Chấp Nhận $H_0$ (Không đổi giao diện)} & \textbf{Bác Bỏ $H_0$ (Ra mắt giao diện mới)} \\
+\hline
+\textbf{$H_0$ Thực Sự Đúng} & Quyết định chính xác ($1 - \alpha$) & \textbf{Sai Lầm Loại I ($\alpha$ - False Positive)}: Báo động giả! Tưởng tính năng mới tốt nhưng thực ra chỉ là do may rủi. \\
+\hline
+\textbf{$H_0$ Thực Sự Sai} & \textbf{Sai Lầm Loại II ($\beta$ - False Negative)}: Bỏ lỡ cơ hội! Tính năng mới thực sự hiệu quả nhưng không phát hiện ra. & Quyết định chính xác: \textbf{Statistical Power ($1 - \beta$)} (Độ nhạy thử nghiệm). \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Định nghĩa chuẩn của p-value}: $p$-value là xác suất quan sát thấy sự chênh lệch lớn như trong thí nghiệm (hoặc cực đoan hơn), \textbf{giả định rằng giả thuyết vô hiệu $H_0$ là đúng}. Nếu $p$-value $< \alpha$ (thường là $0.05$), ta có đủ bằng chứng để bác bỏ $H_0$.
+
+\section{A/B Testing Thực Chiến: Sample Size \& Cạm Bẫy SRM}
+
+Trước khi bấm nút bắt đầu thử nghiệm, bạn phải tính toán kích thước mẫu tối thiểu (Sample Size) cần thu thập:
+\[
+n = \frac{2 \times \left(Z\_{1 - \alpha/2} + Z\_{1 - \beta}\right)^2 \times p(1 - p)}{\Delta^2}
+\]
+Trong đó: $\Delta$ là MDE (Minimum Detectable Effect - mức chênh lệch nhỏ nhất bạn muốn phát hiện), $p$ là tỷ lệ chuyển đổi hiện tại (Baseline Conversion Rate), $Z_{1-\alpha/2} = 1.96$ (với $\alpha = 0.05$), và $Z_{1-\beta} = 0.84$ (với Power $= 80\%$).
+
+\begin{thuchanhbox}[Cạm Bẫy SRM (Sample Ratio Mismatch)]
+Nếu bạn cấu hình chia traffic 50:50 cho nhóm Control và Treatment, nhưng khi kết thúc thử nghiệm nhận được: Control = 10,000 người, Treatment = 8,900 người.
+\textbf{ĐỪNG VỘI ĐỌC P-VALUE CỦA TỶ LỆ CHUYỂN ĐỔI!} 
+Sự lệch tỷ lệ này báo hiệu lỗi phân luồng kỹ thuật (Bot filtering, crash app ở nhóm B, hoặc lỗi caching). Bạn phải chạy kiểm định Chi-Square goodness-of-fit để kiểm tra SRM:
+\begin{lstlisting}[language=Python]
+from scipy.stats import chisquare
+
+observed = [10000, 8900]
+expected = [9450, 9450]
+stat, p_val = chisquare(observed, f_exp=expected)
+
+if p_val < 0.001:
+    print("[!] NGHAY LAP TUC HUY KET QUA: Phat hien loi nghiem trong SRM (Sample Ratio Mismatch)!")
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{PROJECT 3: Thử Nghiệm A/B Testing Tỷ Lệ Chuyển Đổi E-Commerce}
+
+\subsection{Kịch Bản Nghiệp Vụ \& Triển Khai Phân Tích}
+Đội ngũ Product vừa thiết kế lại trang Thanh toán (Checkout Page) nhằm tăng tỷ lệ chuyển đổi mua hàng (Conversion Rate). Dữ liệu thu thập sau 14 ngày gồm:
+\begin{itemize}
+    \item Nhóm Control: 25,000 lượt truy cập, 3,000 đơn hàng thành công (CR = 12.0\%).
+    \item Nhóm Treatment: 25,000 lượt truy cập, 3,250 đơn hàng thành công (CR = 13.0\%).
+\end{itemize}
+
+\subsection{Mã Nguồn Kiểm Định Thống Kê Bằng Python (SciPy \& Statsmodels)}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+from statsmodels.stats.proportion import proportions_ztest, confint_proportions_2indep
+
+# 1. Khai bao thong so thuc nghiem
+conversions = np.array([3250, 3000])  # [Treatment, Control]
+total_users = np.array([25000, 25000])
+
+cr_treatment = conversions[0] / total_users[0]
+cr_control = conversions[1] / total_users[1]
+absolute_lift = cr_treatment - cr_control
+relative_lift = (absolute_lift / cr_control) * 100
+
+print(f"[*] Baseline CR (Control)   : {cr_control:.4f} (12.0%)")
+print(f"[*] Treatment CR             : {cr_treatment:.4f} (13.0%)")
+print(f"[+] Relative Uplift          : +{relative_lift:.2f}%\n")
+
+# 2. Thuc hien Two-proportion Z-Test (Hai phia, alpha = 0.05)
+z_stat, p_value = proportions_ztest(count=conversions, nobs=total_users, alternative='two-sided')
+
+# 3. Tinh Khoang tin cay 95% cho muc chenh lech ty le
+ci_low, ci_upp = confint_proportions_2indep(
+    count1=conversions[0], nobs1=total_users[0],
+    count2=conversions[1], nobs2=total_users[1],
+    method='wald', alpha=0.05
+)
+
+print(f"[*] Z-statistic               : {z_stat:.4f}")
+print(f"[*] P-value                   : {p_value:.6f}")
+print(f"[*] 95% Confidence Interval   : [{ci_low*100:.3f}%, {ci_upp*100:.3f}%]")
+
+# 4. Dua ra ket luan kinh doanh
+if p_value < 0.05:
+    print("\n[V] KET LUAN: Chenh lech co y nghia thong ke (Statistically Significant)!")
+    print(f"    Giao dien moi giup tang CR it nhat {ci_low*100:.2f}% va nhieu nhat {ci_upp*100:.2f}%.")
+    print("    KHUYEN NGHI KINH DOANH: Trien khai 100% giao dien moi cho toan bo nguoi dung.")
+else:
+    print("\n[X] KET LUAN: Khong du bang chung thong ke de bac bo H0. Khong nen rollout.")
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 3}
+
+\begin{baitapbox}[5 Bài Tập Thống Kê \& Thiết Kế Thử Nghiệm Thực Tế]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Quy tắc 68-95-99.7)}: Thời gian phản hồi của API thanh toán tuân theo phân phối chuẩn với giá trị trung bình $\mu = 200$ms và độ lệch chuẩn $\sigma = 30$ms. Có bao nhiêu phần trăm yêu cầu sẽ mất hơn 260ms để xử lý?
+    \item \textbf{Bài 2 (Định lý Bayes)}: Giả sử tỷ lệ gian lận thẻ tín dụng trên hệ thống là 0.1\% ($P(Fraud) = 0.001$). Một mô hình AI phát hiện gian lận có độ nhạy (True Positive Rate) là 95\% và tỷ lệ báo động giả (False Positive Rate) là 1\%. Nếu hệ thống báo một giao dịch là "Gian lận", xác suất thực tế giao dịch đó đúng là gian lận là bao nhiêu?
+    \item \textbf{Bài 3 (Simpson's Paradox)}: Tìm hiểu nghịch lý Simpson trong phân tích dữ liệu. Hãy đưa ra một ví dụ thực tế về tỷ lệ chuyển đổi khi gộp chung hai nhóm người dùng Desktop và Mobile thì nhóm B thắng nhóm A, nhưng khi tách riêng từng thiết bị thì nhóm A lại thắng nhóm B ở cả hai thiết bị!
+    \item \textbf{Bài 4 (The Peeking Problem)}: Giải thích tại sao việc một Data Analyst kiểm tra giá trị $p$-value mỗi ngày một lần trong suốt 14 ngày thử nghiệm và dừng lại ngay khi $p < 0.05$ lại làm sai lầm Loại I thực tế tăng từ 5\% lên tới gần 30\%?
+    \item \textbf{Bài 5 (Tính Kích Thước Mẫu)}: Viết hàm Python tính toán số lượng mẫu tối thiểu cần thiết cho mỗi biến thể khi biết: Baseline Conversion Rate = 8\%, MDE mong muốn phát hiện = 10\% tương đối (tức là tăng lên 8.8\%), với $\alpha = 0.05$ và Power = 80\%.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: $260\text{ms} = \mu + 2\sigma$. Theo quy tắc phân phối chuẩn, có $95\%$ dữ liệu nằm trong $[\mu - 2\sigma, \mu + 2\sigma]$. Do đó phần đuôi vượt quá $+2\sigma$ chiếm $(100\% - 95\%) / 2 = 2.5\%$.
+    \item \textbf{Bài 2}: Áp dụng định lý Bayes:
+    \[
+    P(\text{Fraud}|\text{Alert}) = \frac{P(\text{Alert}|\text{Fraud}) P(\text{Fraud})}{P(\text{Alert})} = \frac{0.95 \times 0.001}{(0.95 \times 0.001) + (0.01 \times 0.999)} \approx 8.69\%
+    \]
+    Kết quả gây kinh ngạc: Dù AI chính xác 95\%, khi có báo động, khả năng đúng chỉ là 8.69\% vì tỷ lệ gian lận cơ sở cực kỳ hiếm (Base Rate Fallacy)!
+    \item \textbf{Bài 3}: Nghịch lý Simpson xảy ra do biến gây nhiễu (Confounding variable - ở đây là loại thiết bị) phân bổ không đều giữa 2 nhóm. Nếu nhóm B nhận nhiều traffic Mobile hơn (vốn có tỷ lệ chuyển đổi tự nhiên thấp hơn Desktop), tổng kết quả bị kéo tụt xuống.
+    \item \textbf{Bài 4}: Đây là vấn đề "Multiple Hypothesis Testing". Mỗi lần peeking tương đương một lần tung xúc xắc độc lập. Xác suất tích lũy xuất hiện ít nhất một lần $p < 0.05$ ngẫu nhiên qua 14 ngày tăng vọt theo công thức $1 - (1 - 0.05)^{14} \approx 51\%$!
+    \item \textbf{Bài 5}: Dùng \texttt{statsmodels.stats.power.NormalIndPower().solve\_power}. Kích thước mẫu cần khoảng 47,500 người dùng cho MỖI biến thể (tổng cộng 95,000 người dùng).
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Dự Án Thống Kê \& A/B Testing Vào CV]
+\textbf{E-Commerce Conversion Rate Optimization via A/B Testing | Python, SciPy, Experimentation}
+\begin{itemize}
+    \item Thiết kế và phân tích thử nghiệm A/B Testing quy mô 50,000 người dùng nhằm đánh giá hiệu quả của quy trình thanh toán mới, đảm bảo các tiêu chuẩn kiểm tra Sample Ratio Mismatch (SRM).
+    \item Thực hiện kiểm định tỷ lệ Two-proportion Z-test và ước lượng khoảng tin cậy 95\%, chứng minh tính năng mới giúp nâng tỷ lệ chuyển đổi thêm +8.3\% với độ tin cậy thống kê cao ($p = 0.004$).
+    \item Biên soạn báo cáo phân tích rủi ro và khuyến nghị kinh doanh, loại trừ các ảnh hưởng của nghịch lý Simpson và hiệu ứng Novelty Effect trước khi triển khai 100\%.
+\end{itemize}
+\end{cvtipbox}

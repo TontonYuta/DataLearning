@@ -1,0 +1,182 @@
+\chapter{Level 4: Data Analyst \& Business Intelligence Chuyên Nghiệp (Tuần 19--24)}
+
+\section{Excel Nâng Cao: Tự Động Hóa Với Power Query \& Dynamic Arrays}
+
+Nhiều người mới thường xem thường Excel và cho rằng chỉ có Python/SQL mới là "dân chuyên". Tuy nhiên, trong thực tế doanh nghiệp, hơn 80\% các cuộc họp chiến lược của ban giám đốc vẫn xoay quanh các bảng tính Excel. Kỹ năng Excel chuyên nghiệp giúp bạn giải quyết nhanh các bài toán ad-hoc chỉ trong 5 phút thay vì mất nửa ngày viết script:
+
+\begin{thuchanhbox}[Bộ Công Thức Hiện Đại Thay Thế VLOOKUP Cũ Kỹ]
+\begin{itemize}
+    \item \textbf{XLOOKUP (Thay thế hoàn toàn VLOOKUP và HLOOKUP)}:
+    \texttt{=XLOOKUP(lookup\_value, lookup\_array, return\_array, [if\_not\_found], [match\_mode])}. Không bị giới hạn tìm kiếm từ trái sang phải, không bị lỗi khi chèn thêm cột mới.
+    \item \textbf{Dynamic Array Formulas}:
+    \begin{itemize}
+        \item Lọc dữ liệu động: \texttt{=FILTER(A2:D100, (C2:C100="Tech") * (D2:D100>500), "Khong co du lieu")}
+        \item Lấy danh sách duy nhất và sắp xếp: \texttt{=SORT(UNIQUE(B2:B100))}
+    \end{itemize}
+    \item \textbf{Power Query (ETL trong Excel)}: Kết nối trực tiếp vào thư mục chứa 12 file doanh thu hàng tháng, tự động gộp bảng, unpivot cột ngày tháng và làm sạch dữ liệu chỉ bằng một nút bấm \textit{"Refresh All"}.
+\end{itemize}
+\end{thuchanhbox}
+
+\section{Power BI \& Nghệ Thuật Mô Hình Hóa Dữ Liệu (Data Modeling)}
+
+Một báo cáo Power BI chạy chậm chạp hoặc ra số sai lệch 99\% là do mô hình hóa dữ liệu cẩu thả, không phải do giao diện hiển thị!
+
+\begin{lythuyetbox}[Mô Hình Star Schema (Mô Hình Ngôi Sao)]
+Trong Business Intelligence, luôn luôn tái cấu trúc dữ liệu về dạng \textbf{Star Schema}:
+\begin{itemize}
+    \item \textbf{Bảng Sự Kiện (Fact Table - Ở trung tâm)}: Chứa các số đo định lượng (Measures) phát sinh liên tục theo thời gian: \texttt{fact\_sales}, \texttt{fact\_transactions}. Chứa các khóa ngoại (Foreign Keys) và số liệu (Số lượng, Đơn giá, Chiết khấu).
+    \item \textbf{Bảng Chiều/Danh Mục (Dimension Tables - Xung quanh cánh sao)}: Chứa thông tin ngữ cảnh để lọc và cắt lát dữ liệu: \texttt{dim\_customer}, \texttt{dim\_product}, \texttt{dim\_date}, \texttt{dim\_store}.
+    \item \textbf{Nguyên tắc kết nối}: Mối quan hệ luôn là \textbf{1-Nhiều ($1 - *)$}, với hướng lọc một chiều (Single Cross-Filter Direction) từ Dimension Table sang Fact Table.
+    \item \textbf{Tuyệt đối tránh hướng lọc hai chiều (Both)}: Lọc hai chiều gây nhập nhằng quan hệ (Ambiguous paths) và làm suy giảm nghiêm trọng hiệu năng của động cơ VertiPaq.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Ngôn Ngữ DAX Chuyên Sâu: Filter Context \& Time Intelligence}
+
+DAX (Data Analysis Expressions) không phải là Excel Formula. DAX hoạt động dựa trên hai khái niệm trừu tượng: **Row Context** (ngữ cảnh dòng) và **Filter Context** (ngữ cảnh bộ lọc).
+
+\begin{lythuyetbox}[Hàm Vạn Năng CALCULATE() \& Chuyển Đổi Ngữ Cảnh]
+Hàm \texttt{CALCULATE()} là hàm duy nhất trong DAX có khả năng **sửa đổi, ghi đè hoặc mở rộng Filter Context hiện tại**:
+\[
+\text{CALCULATE}(\langle\text{Expression}\rangle, \langle\text{Filter}\_1\rangle, \langle\text{Filter}\_2\rangle, \dots)
+\]
+Khi \texttt{CALCULATE} được gọi, nó thực hiện:
+\begin{enumerate}
+    \item Đánh giá các bộ lọc mới được truyền vào.
+    \item Thay thế hoặc gộp các bộ lọc này vào Filter Context ban đầu của visual.
+    \item Chuyển đổi mọi Row Context hiện hữu thành Filter Context tương đương (\textbf{Context Transition}).
+\end{enumerate}
+\end{lythuyetbox}
+
+\subsection{Các Công Thức DAX Kinh Điển Chuẩn Doanh Nghiệp}
+
+\begin{lstlisting}
+// 1. Tong Doanh Thu Co Ban (Explicit Measure)
+Total Sales = SUM(fact_sales[sales_amount])
+
+// 2. Doanh Thu Cung Ky Nam Truoc (Same Period Last Year)
+Sales SPLY = 
+CALCULATE(
+    [Total Sales],
+    SAMEPERIODLASTYEAR(dim_date[Date])
+)
+
+// 3. Ty Le Tang Truong Doanh Thu So Voi Nam Truoc (% YoY Growth)
+YoY Sales Growth % = 
+VAR CurrentSales = [Total Sales]
+VAR PreviousSales = [Sales SPLY]
+RETURN
+DIVIDE(CurrentSales - PreviousSales, PreviousSales, 0.0)
+
+// 4. Doanh Thu Luy Ke Tu Dau Nam (Year-To-Date)
+Sales YTD = 
+TOTALYTD([Total Sales], dim_date[Date])
+
+// 5. Ty Trong Doanh Thu So Voi Toan Bo Danh Muc (% of All Category)
+Sales Contribution % = 
+DIVIDE(
+    [Total Sales],
+    CALCULATE([Total Sales], ALL(dim_product[Category])),
+    0.0
+)
+\end{lstlisting}
+
+\section{Tư Duy Thiết Kế Dashboard: KPI Architecture Chuẩn Doanh Nghiệp}
+
+\begin{thuchanhbox}[Mô Hình Báo Cáo 3 Tầng Cho Lãnh Đạo]
+Đừng bao giờ nhồi nhét mọi biểu đồ lên một trang duy nhất. Hãy tổ chức cấu trúc báo cáo theo 3 tầng kim tự tháp:
+\begin{enumerate}
+    \item \textbf{Tầng 1: Executive Dashboard (Dành cho C-Level - CEO, CFO)}:
+    \begin{itemize}
+        \item Chỉ hiển thị 4--6 thẻ KPI cốt lõi nhất: Doanh thu, Lợi nhuận gộp, Số lượng khách hàng mới, CAC, LTV.
+        \item Luôn đi kèm so sánh với Target (Mục tiêu) và Kỳ trước (MoM, YoY) qua màu sắc trực quan (Xanh/Đỏ).
+    \end{itemize}
+    \item \textbf{Tầng 2: Tactical Dashboard (Dành cho Trưởng phòng - Marketing/Sales Manager)}:
+    \begin{itemize}
+        \item Cắt lát theo chiều: Kênh bán hàng (Online vs Offline), Vùng địa lý, Nhóm sản phẩm.
+        \item Phân tích xu hướng biến động theo tuần/tháng.
+    \end{itemize}
+    \item \textbf{Tầng 3: Operational Detail (Dành cho Chuyên viên vận hành)}:
+    \begin{itemize}
+        \item Bảng chi tiết từng đơn hàng, danh sách khách hàng có nguy cơ rời bỏ (Churn Risk Table), hỗ trợ xuất Excel để xử lý tức thời.
+    \end{itemize}
+\end{enumerate}
+\end{thuchanhbox}
+
+\section{Bí Kíp AI Copilot: Sinh Công Thức DAX \& Tạo Data Dictionary}
+
+\begin{aipromptbox}[Prompt Tạo DAX Phức Tạp \& Viết KPI Dictionary]
+\textit{"Đóng vai trò là Microsoft Certified Fabric \& Power BI Solution Architect.
+Tôi có mô hình Star Schema gồm:
+- Fact Table: `fact\_orders(order\_id, customer\_id, order\_date, revenue)`
+- Dimension Tables: `dim\_date(date, year, month, quarter)`, `dim\_customers(customer\_id, segment)`.
+Hãy viết các mã DAX chuẩn mực sau:
+1. `New Customer Revenue`: Tính tổng doanh thu chỉ đến từ các khách hàng thực hiện đơn hàng đầu tiên trong tháng được chọn trên bộ lọc.
+2. `Churned Customers Count`: Đếm số lượng khách hàng đã từng mua hàng trong quá khứ nhưng không có đơn hàng nào trong 90 ngày tính đến ngày lọc cuối cùng.
+Yêu cầu: Sử dụng biến `VAR ... RETURN` để code trong sáng, tối ưu hiệu năng bộ nhớ và giải thích rõ cách thức hoạt động của Filter Context trong từng công thức."}
+\end{aipromptbox}
+
+\section{MỐC ỨNG TUYỂN 1: Bắt Đầu Apply Data Analyst Intern / Fresher!}
+
+\begin{cvtipbox}[Chiến Lược Nộp Hồ Sơ Tại Tuần 24]
+Đến thời điểm này (Tuần 24), bạn đã trang bị đủ 100\% các kỹ năng bắt buộc của một **Data Analyst**:
+\begin{itemize}
+    \item \textbf{Kỹ năng}: SQL nâng cao, Python/Pandas EDA, Thống kê \& A/B Testing, Excel Power Query, Power BI \& DAX.
+    \item \textbf{Hồ sơ GitHub}: Đã có 4 dự án thực chiến (Data CLI, E-commerce EDA, SQL Analytics DB, Power BI Executive Dashboard).
+\end{itemize}
+\textbf{HÀNH ĐỘNG NGAY}: Đừng chờ đợi đến khi học xong Machine Learning hay Big Data mới xin việc! 
+Hãy hoàn thiện CV 1 trang theo mẫu ở Chương 14, tạo tài khoản trên ITviec, LinkedIn, TopCV và nộp đơn vào các vị trí:
+\begin{itemize}
+    \item \textit{Data Analyst Intern / Trainee}
+    \item \textit{Junior BI Developer / Business Analyst (Technical)}
+    \item \textit{Data Operations Specialist}
+\end{itemize}
+Việc vừa đi làm thực tế tại doanh nghiệp vừa học tiếp các chương về Data Engineering và Machine Learning sẽ giúp bạn tiến bộ nhanh gấp 3 lần so với chỉ tự học ở nhà!
+\end{cvtipbox}
+
+\section{Bài Tập Tự Luyện Level 4}
+
+\begin{baitapbox}[5 Bài Tập Mô Hình Hóa \& Viết DAX Doanh Nghiệp]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Date Table)}: Viết câu lệnh DAX khởi tạo một bảng lịch \texttt{dim\_date} đầy đủ các cột: \texttt{Date}, \texttt{Year}, \texttt{Month Number}, \texttt{Month Name}, \texttt{Quarter}, \texttt{Year-Month} từ ngày 01/01/2023 đến 31/12/2026.
+    \item \textbf{Bài 2 (DAX - SUM vs SUMX)}: Phân tích sự khác biệt về bản chất giữa \texttt{SUM(fact\_sales[amount])} và \texttt{SUMX(fact\_sales, fact\_sales[quantity] * fact\_sales[unit\_price])}. Khi nào bắt buộc phải dùng \texttt{SUMX}?
+    \item \textbf{Bài 3 (DAX - Moving Average)}: Viết measure DAX tính toán trung bình động doanh thu 30 ngày gần nhất (\texttt{30-Day Rolling Revenue}) dựa trên bảng ngày chuẩn.
+    \item \textbf{Bài 4 (Data Modeling)}: Một doanh nghiệp có 2 bảng Fact: \texttt{fact\_actual\_sales} (ghi nhận doanh số thực tế theo ngày) và \texttt{fact\_sales\_target} (ghi nhận mục tiêu doanh số theo tháng). Hãy thiết kế mô hình quan hệ chuẩn Star Schema để có thể so sánh Actual vs Target trên cùng một biểu đồ Power BI mà không nối trực tiếp 2 bảng Fact với nhau.
+    \item \textbf{Bài 5 (DAX - Cumulative Total)}: Viết công thức DAX tính tổng doanh thu tích lũy từ ngày đầu tiên thành lập công ty cho đến ngày hiện tại đang được chọn (Running Total).
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}:
+    \begin{lstlisting}
+dim_date = 
+ADDCOLUMNS(
+    CALENDAR(DATE(2023, 1, 1), DATE(2026, 12, 31)),
+    "Year", YEAR([Date]),
+    "MonthNum", MONTH([Date]),
+    "MonthName", FORMAT([Date], "mmmm"),
+    "Quarter", "Q" & FORMAT([Date], "q"),
+    "YearMonth", FORMAT([Date], "yyyy-mm")
+)
+    \end{lstlisting}
+    \item \textbf{Bài 2}: \texttt{SUM} chỉ cộng dồn một cột đã có sẵn trong bảng. \texttt{SUMX} là hàm lặp (Iterator), nó tạo ra một Row Context ảo duyệt từng dòng, nhân \texttt{quantity * unit\_price} rồi mới cộng tổng, giúp tiết kiệm bộ nhớ RAM vì không cần tạo thêm cột vật lý trong bảng dữ liệu.
+    \item \textbf{Bài 3}:
+    \begin{lstlisting}
+30D Rolling Sales = 
+CALCULATE(
+    [Total Sales],
+    DATESINPERIOD(dim_date[Date], MAX(dim_date[Date]), -30, DAY)
+)
+    \end{lstlisting}
+    \item \textbf{Bài 4}: Sử dụng mô hình \textbf{Shared Dimensions (Chiều Dùng Chung)}: Tạo 2 bảng Dimension dùng chung là \texttt{dim\_date} và \texttt{dim\_product}. Cả 2 bảng Fact \texttt{fact\_actual\_sales} và \texttt{fact\_sales\_target} đều nối quan hệ $1 - *$ với các bảng Dimension dùng chung này.
+    \item \textbf{Bài 5}:
+    \begin{lstlisting}
+Running Total = 
+CALCULATE(
+    [Total Sales],
+    FILTER(ALL(dim_date[Date]), dim_date[Date] <= MAX(dim_date[Date]))
+)
+    \end{lstlisting}
+\end{itemize}
+\end{dapanbox}

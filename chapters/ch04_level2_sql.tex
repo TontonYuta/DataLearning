@@ -1,0 +1,325 @@
+\chapter{Level 2: SQL \& Cơ Sở Dữ Liệu Quan Hệ Từ Con Số 0 (Tuần 9--14)}
+
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+\textbf{Tiền đề bắt buộc}: Bạn chỉ cần đã cài đặt DBeaver và PostgreSQL ở Chương 0. \textbf{Không cần bất kỳ kiến thức cơ sở dữ liệu nào trước đó!}
+
+\textbf{Mục tiêu chương này}:
+\begin{itemize}
+    \item Hiểu tường tận bản chất Cơ sở dữ liệu quan hệ (RDBMS): Bảng, Cột, Dòng, Khóa chính (Primary Key), Khóa ngoại (Foreign Key).
+    \item Viết thành thạo từ con số 0 các câu lệnh DDL (\texttt{CREATE TABLE}), DML (\texttt{INSERT, UPDATE, DELETE}) và DQL (\texttt{SELECT, WHERE, ORDER BY, LIMIT, GROUP BY, HAVING}).
+    \item Làm chủ các loại phép nối bảng: \texttt{INNER JOIN, LEFT JOIN, FULL JOIN, SELF JOIN} và cách phòng tránh cạm bẫy Fan-Out nhân bản doanh thu.
+    \item Nắm vững kỹ thuật SQL phân tích nâng cao: CTEs (Common Table Expressions) và \textbf{Window Functions} (\texttt{ROW\_NUMBER, RANK, DENSE\_RANK, LAG, LEAD, Running Total}).
+    \item Hiểu cơ chế hoạt động bên dưới của Index B-Tree và đọc hiểu kế hoạch thực thi câu lệnh qua \texttt{EXPLAIN ANALYZE}.
+    \item Hoàn thành \textbf{Project 2: E-commerce Analytics Database} với 50 câu truy vấn phân tích nghiệp vụ thực tế.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Cơ Sở Dữ Liệu Quan Hệ (RDBMS) Từ Con Số 0}
+
+\subsection{1. Tại Sao Không Dùng Excel Để Lưu Trữ Dữ Liệu Công Ty?}
+Một bảng tính Excel chỉ chứa tối đa $1,048,576$ dòng, không hỗ trợ nhiều người cùng ghi dữ liệu một lúc mà không bị xung đột, và cực kỳ dễ bị xóa nhầm công thức. Cơ sở dữ liệu quan hệ (RDBMS - Relational Database Management System) như **PostgreSQL** được thiết kế để:
+\begin{itemize}
+    \item Lưu trữ hàng trăm triệu bản ghi an toàn tuyệt đối ngay cả khi mất điện đột ngột (chuẩn ACID).
+    \item Phục vụ hàng nghìn người dùng và ứng dụng truy vấn đồng thời cùng lúc.
+    \item Quản lý quan hệ chặt chẽ giữa các đối tượng kinh doanh (Khách hàng $\rightarrow$ Đơn hàng $\rightarrow$ Sản phẩm).
+\end{itemize}
+
+\subsection{2. Bảng, Cột, Khóa Chính \& Khóa Ngoại}
+\begin{itemize}
+    \item \textbf{Bảng (Table)}: Một tập hợp dữ liệu được tổ chức dưới dạng hai chiều gồm các cột và các dòng.
+    \item \textbf{Cột (Column / Field)}: Đại diện cho một thuộc tính của dữ liệu (ví dụ: \texttt{email, age, signup\_date}). Mỗi cột phải có một kiểu dữ liệu cố định.
+    \item \textbf{Dòng (Row / Record)}: Đại diện cho một đối tượng duy nhất (ví dụ: một khách hàng cụ thể hoặc một đơn hàng cụ thể).
+    \item \textbf{Khóa Chính (Primary Key - PK)}: Một hoặc nhiều cột có giá trị \textbf{duy nhất và không được phép để trống (NOT NULL)} dùng để định danh cho từng dòng trong bảng (ví dụ: \texttt{customer\_id}).
+    \item \textbf{Khóa Ngoại (Foreign Key - FK)}: Cột trong bảng này tham chiếu đến Khóa Chính của một bảng khác, tạo ra sợi dây liên kết quan hệ giữa 2 bảng.
+\end{itemize}
+
+\section{Ngôn Ngữ SQL Căn Bản Từ Con Số 0}
+
+SQL (Structured Query Language) là ngôn ngữ chuẩn quốc tế để giao tiếp với cơ sở dữ liệu, chia làm 3 nhóm câu lệnh chính:
+
+\subsection{1. Tạo Bảng Với DDL (Data Definition Language)}
+
+\begin{thuchanhbox}[Các Kiểu Dữ Liệu Cốt Lõi Trong PostgreSQL]
+\begin{itemize}
+    \item Số: \texttt{INTEGER} (Số nguyên thường), \texttt{BIGINT} (Số nguyên lớn), \texttt{NUMERIC(12, 2)} (Số tiền chính xác có 2 chữ số thập phân).
+    \item Chuỗi: \texttt{VARCHAR(50)} (Chuỗi giới hạn 50 ký tự), \texttt{TEXT} (Đoạn văn bản dài bất kỳ).
+    \item Thời gian: \texttt{DATE} (YYYY-MM-DD), \texttt{TIMESTAMP} (Ngày giờ chính xác đến giây).
+    \item Logic: \texttt{BOOLEAN} (\texttt{TRUE} hoặc \texttt{FALSE}).
+\end{itemize}
+\end{thuchanhbox}
+
+\begin{lstlisting}[language=SQL]
+-- Tao bang Danh muc Khach hang tu con so 0
+CREATE TABLE dim_customers (
+    customer_id VARCHAR(50) PRIMARY KEY,     -- Khoa chinh, khong trung lap
+    customer_name VARCHAR(100) NOT NULL,     -- Bat buoc phai co ten
+    email VARCHAR(100) UNIQUE,               -- Khong duoc phep trung email
+    age INT CHECK (age >= 18 AND age <= 100),-- Rang buoc tuoi phai hop le
+    city VARCHAR(50) DEFAULT 'Chua xac dinh',-- Gia tri mac dinh neu de trong
+    signup_date DATE NOT NULL
+);
+\end{lstlisting}
+
+\subsection{2. Thêm, Sửa, Xóa Dữ Liệu Với DML (INSERT, UPDATE, DELETE)}
+
+\begin{lstlisting}[language=SQL]
+-- 1. Chen du lieu moi (INSERT)
+INSERT INTO dim_customers (customer_id, customer_name, email, age, city, signup_date)
+VALUES 
+    ('CUST_001', 'Nguyen Van A', 'an.nguyen@email.com', 25, 'Hanoi', '2025-01-15'),
+    ('CUST_002', 'Tran Thi B', 'b.tran@email.com', 32, 'Saigon', '2025-02-10');
+
+-- 2. Cap nhat du lieu (UPDATE)
+-- CANH BAO: Luon luon phai co menh de WHERE!
+UPDATE dim_customers
+SET city = 'Da Nang', age = 26
+WHERE customer_id = 'CUST_001';
+
+-- 3. Xoa du lieu (DELETE)
+-- CANH BAO: Neu khong co WHERE, toan bo du lieu trong bang se bi xoa sach!
+DELETE FROM dim_customers
+WHERE customer_id = 'CUST_002';
+\end{lstlisting}
+
+\subsection{3. Truy Vấn Dữ Liệu Cơ Bản (SELECT \& WHERE)}
+
+\begin{lstlisting}[language=SQL]
+-- Cu phap tong quat: SELECT cot1, cot2 FROM ten_bang WHERE dieu_kien;
+
+-- Lay tat ca khach hang o Hanoi co do tuoi tren 20
+SELECT 
+    customer_id,
+    customer_name,
+    age,
+    city
+FROM dim_customers
+WHERE city = 'Hanoi' AND age >= 20;
+
+-- Cac toan tu loc pho bien trong WHERE:
+-- 1. Khoang gia tri:
+SELECT * FROM fact_orders WHERE order_amount BETWEEN 100 AND 500;
+
+-- 2. Danh sach lua chon (IN):
+SELECT * FROM dim_customers WHERE city IN ('Hanoi', 'Saigon', 'Danang');
+
+-- 3. Tim kiem chuoi gan dung (LIKE):
+-- Dau % dai dien cho chuoi ky tu bat ky
+SELECT * FROM dim_customers WHERE customer_name LIKE 'Nguyen%'; -- Bat dau bang Nguyen
+SELECT * FROM dim_customers WHERE email LIKE '%@gmail.com';     -- Duoi gmail
+
+-- 4. Kiem tra gia tri trong (NULL):
+-- LUU Y: Khong bao gio duoc viet WHERE age = NULL, ma bat buoc phai la IS NULL!
+SELECT * FROM dim_customers WHERE email IS NULL;
+\end{lstlisting}
+
+\subsection{4. Sắp Xếp, Giới Hạn \& Khử Trùng Lặp (ORDER BY, LIMIT, DISTINCT)}
+
+\begin{lstlisting}[language=SQL]
+-- Sap xep giam dan (DESC) theo doanh thu va lay Top 5
+SELECT order_id, customer_id, order_amount
+FROM fact_orders
+ORDER BY order_amount DESC
+LIMIT 5;
+
+-- Lay danh sach cac thanh pho duy nhat khong bi trung lap
+SELECT DISTINCT city
+FROM dim_customers
+ORDER BY city ASC;
+\end{lstlisting}
+
+\subsection{5. Các Hàm Tổng Hợp (Aggregates) \& Phép Gom Nhóm (GROUP BY, HAVING)}
+
+\begin{lythuyetbox}[Bản Chất Phép Gom Nhóm \& Sự Khác Biệt Giữa WHERE và HAVING]
+\begin{itemize}
+    \item \textbf{WHERE}: Lọc từng dòng dữ liệu ban đầu \textbf{TRƯỚC KHI} gom nhóm. Bạn không thể viết: \texttt{WHERE SUM(amount) > 1000} vì lúc này hàm SUM chưa hề được tính!
+    \item \textbf{GROUP BY}: Gom tất cả các dòng có cùng giá trị trên một cột thành một nhóm duy nhất.
+    \item \textbf{HAVING}: Lọc các nhóm \textbf{SAU KHI} các hàm tổng hợp (\texttt{COUNT, SUM, AVG, MIN, MAX}) đã được tính toán xong cho từng nhóm.
+\end{itemize}
+\end{lythuyetbox}
+
+\begin{lstlisting}[language=SQL]
+-- Tinh tong doanh thu va so don hang cua tung thanh pho
+-- Chi giu lai nhung thanh pho co tong doanh thu tren 50,000 USD
+SELECT 
+    c.city,
+    COUNT(o.order_id) AS total_orders,
+    SUM(o.order_amount) AS total_revenue,
+    ROUND(AVG(o.order_amount), 2) AS avg_order_value
+FROM fact_orders o
+JOIN dim_customers c ON o.customer_id = c.customer_id
+WHERE o.order_status = 'COMPLETED'          -- 1. Loc tung don hang COMPLETED truoc
+GROUP BY c.city                             -- 2. Gom nhom theo tung thanh pho
+HAVING SUM(o.order_amount) >= 50000.0       -- 3. Chi lay cac thanh pho dat doanh thu cao
+ORDER BY total_revenue DESC;                -- 4. Sap xep giam dan
+\end{lstlisting}
+
+\section{SQL Nâng Cao: JOINs, CTEs \& Window Functions}
+
+Sau khi đã thuần thục nền tảng cơ bản, đây là những vũ khí tối thượng giúp bạn giải quyết các bài toán dữ liệu lớn trong doanh nghiệp:
+
+\subsection{1. Các Loại JOIN \& Cạm Bẫy Fan-Out Trùng Lặp Dữ Liệu}
+
+\begin{itemize}
+    \item \textbf{INNER JOIN}: Chỉ giữ lại các bản ghi có khóa xuất hiện ở CẢ HAI bảng.
+    \item \textbf{LEFT JOIN}: Giữ lại TOÀN BỘ bản ghi ở bảng bên trái; nếu bảng bên phải không có dữ liệu khớp thì điền \texttt{NULL}.
+    \item \textbf{Cạm bẫy Fan-Out Trap}: Khi nối bảng Đơn hàng (1 dòng) với Chi tiết đơn hàng (3 dòng), bảng Đơn hàng bị nhân bản thành 3 dòng. Nếu vội vàng tính \texttt{SUM(order\_total)}, doanh thu sẽ bị tính khống gấp 3 lần! Hãy dùng CTE để tính tiền tổng hợp trước khi JOIN.
+\end{itemize}
+
+\subsection{2. CTE (Common Table Expressions) -- Tư Duy Module Hóa SQL}
+
+Thay vì lồng các subqueries hỗn loạn khó đọc, CTE sử dụng mệnh đề \texttt{WITH} để tạo ra các bảng tạm ảo có cấu trúc tuần tự, trong sáng:
+
+\begin{lstlisting}[language=SQL]
+WITH monthly_revenue AS (
+    SELECT 
+        DATE_TRUNC('month', order_date)::DATE AS sales_month,
+        SUM(order_amount) AS revenue
+    FROM fact_orders
+    WHERE order_status = 'COMPLETED'
+    GROUP BY DATE_TRUNC('month', order_date)::DATE
+),
+monthly_growth AS (
+    SELECT 
+        sales_month,
+        revenue,
+        LAG(revenue, 1) OVER(ORDER BY sales_month) AS prev_month_revenue
+    FROM monthly_revenue
+)
+SELECT 
+    sales_month,
+    revenue,
+    prev_month_revenue,
+    ROUND((revenue - prev_month_revenue) / prev_month_revenue * 100.0, 2) AS mom_growth_pct
+FROM monthly_growth;
+\end{lstlisting}
+
+\subsection{3. Window Functions: ROW\_NUMBER, RANK, DENSE\_RANK}
+
+Window Function thực hiện tính toán trên một tập hợp các dòng có liên quan mà vẫn \textbf{bảo toàn từng dòng dữ liệu gốc ban đầu}:
+\begin{lstlisting}[language=SQL]
+SELECT 
+    category,
+    product_id,
+    revenue,
+    -- Luon danh so thu tu lien tuc khong nhay coc: 1, 2, 3, 4
+    ROW_NUMBER() OVER(PARTITION BY category ORDER BY revenue DESC) AS row_num,
+    -- Bang nhau thi chung hang, nhung nhay coc: 1, 2, 2, 4
+    RANK() OVER(PARTITION BY category ORDER BY revenue DESC) AS rnk,
+    -- Bang nhau thi chung hang, khong nhay coc: 1, 2, 2, 3 (Pho bien nhat de lay Top N)
+    DENSE_RANK() OVER(PARTITION BY category ORDER BY revenue DESC) AS dense_rnk
+FROM product_sales;
+\end{lstlisting}
+
+\section{PROJECT 2: E-Commerce Analytics Database}
+
+Khởi tạo schema hoàn chỉnh trong PostgreSQL và viết các truy vấn phân tích nghiệp vụ then chốt:
+
+\begin{lstlisting}[language=SQL]
+-- 1. SCHEMA KHO DU LIEU E-COMMERCE
+CREATE TABLE dim_customers_dwh (
+    customer_id VARCHAR(50) PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    city VARCHAR(50),
+    signup_date DATE NOT NULL
+);
+
+CREATE TABLE fact_orders_dwh (
+    order_id VARCHAR(50) PRIMARY KEY,
+    customer_id VARCHAR(50) REFERENCES dim_customers_dwh(customer_id),
+    order_date TIMESTAMP NOT NULL,
+    order_status VARCHAR(20) NOT NULL,
+    order_amount NUMERIC(12, 2) NOT NULL
+);
+
+-- Tao Index B-Tree tang toc truy van theo khach hang va thoi gian
+CREATE INDEX idx_orders_cust_date ON fact_orders_dwh (customer_id, order_date);
+\end{lstlisting}
+
+\subsection{Truy Vấn Phân Hạng Khách Hàng (RFM Segmentation)}
+
+\begin{lstlisting}[language=SQL]
+WITH rfm_base AS (
+    SELECT 
+        customer_id,
+        MAX(order_date) AS last_order_date,
+        COUNT(order_id) AS frequency,
+        SUM(order_amount) AS monetary
+    FROM fact_orders_dwh
+    WHERE order_status = 'COMPLETED'
+    GROUP BY customer_id
+),
+rfm_scores AS (
+    SELECT 
+        customer_id,
+        NTILE(4) OVER(ORDER BY last_order_date ASC) AS r_score,   -- Recency (Gan day nhat)
+        NTILE(4) OVER(ORDER BY frequency DESC) AS f_score,        -- Frequency (Tan suat)
+        NTILE(4) OVER(ORDER BY monetary DESC) AS m_score          -- Monetary (Gia tri)
+    FROM rfm_base
+)
+SELECT 
+    customer_id,
+    r_score, f_score, m_score,
+    CASE 
+        WHEN r_score = 4 AND f_score = 4 AND m_score = 4 THEN 'Champions (VIP nhat)'
+        WHEN f_score >= 3 AND m_score >= 3 THEN 'Loyal Customers (Trung thanh)'
+        WHEN r_score = 1 THEN 'At Risk (Nguy co mat khach)'
+        ELSE 'General (Thong thuong)'
+    END AS customer_segment
+FROM rfm_scores;
+\end{lstlisting}
+
+\section{Bài Tập Tự Luyện Level 2}
+
+\begin{baitapbox}[5 Bài Tập SQL Phỏng Vấn Sát Thủ]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Căn bản)}: Viết câu lệnh tạo bảng \texttt{dim\_products} với các cột: \texttt{product\_id} (Khóa chính), \texttt{product\_name} (Bắt buộc), \texttt{price} (Kiểm tra phải $> 0$), và \texttt{category}.
+    \item \textbf{Bài 2 (Gom nhóm)}: Viết câu lệnh truy vấn tìm ra các danh mục (\texttt{category}) có từ 5 sản phẩm trở lên và có giá bán trung bình lớn hơn 100 USD.
+    \item \textbf{Bài 3 (Top N Per Group)}: Viết câu lệnh lấy ra Top 2 đơn hàng có giá trị cao nhất của TỪNG khách hàng bằng \texttt{DENSE\_RANK()}.
+    \item \textbf{Bài 4 (Tăng trưởng)}: Viết câu lệnh sử dụng \texttt{LAG()} để tính chênh lệch doanh thu tuyệt đối giữa đơn hàng hiện tại và đơn hàng liền trước đó của từng khách hàng.
+    \item \textbf{Bài 5 (Index Optimization)}: Phân tích vì sao truy vấn sau bị chạy chậm (Sequential Scan): \texttt{SELECT * FROM fact\_orders WHERE LOWER(customer\_id) = 'cust\_101';} và đưa ra giải pháp sửa đổi.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Hướng Dẫn Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}:
+    \begin{lstlisting}[language=SQL]
+CREATE TABLE dim_products (
+    product_id VARCHAR(50) PRIMARY KEY,
+    product_name VARCHAR(150) NOT NULL,
+    price NUMERIC(10, 2) CHECK (price > 0),
+    category VARCHAR(50)
+);
+    \end{lstlisting}
+    \item \textbf{Bài 2}:
+    \begin{lstlisting}[language=SQL]
+SELECT category, COUNT(product_id) AS prod_count, AVG(price) AS avg_price
+FROM dim_products GROUP BY category
+HAVING COUNT(product_id) >= 5 AND AVG(price) > 100.0;
+    \end{lstlisting}
+    \item \textbf{Bài 3}:
+    \begin{lstlisting}[language=SQL]
+WITH ranked_orders AS (
+    SELECT order_id, customer_id, order_amount,
+           DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_amount DESC) AS rnk
+    FROM fact_orders_dwh
+)
+SELECT * FROM ranked_orders WHERE rnk <= 2;
+    \end{lstlisting}
+    \item \textbf{Bài 4}:
+    \begin{lstlisting}[language=SQL]
+SELECT order_id, customer_id, order_date, order_amount,
+       order_amount - LAG(order_amount, 1) OVER(PARTITION BY customer_id ORDER BY order_date) AS diff_prev
+FROM fact_orders_dwh;
+    \end{lstlisting}
+    \item \textbf{Bài 5}: Do bọc hàm \texttt{LOWER()} quanh cột, chỉ mục thông thường bị vô hiệu hóa. Giải pháp: Chuẩn hóa dữ liệu viết thường ngay từ khi nạp (không cần bọc hàm lúc query), hoặc tạo một Functional Index: \texttt{CREATE INDEX idx\_lower\_cust ON fact\_orders (LOWER(customer\_id));}.
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Kỹ Năng SQL Vào CV]
+\textbf{E-Commerce SQL Analytics Database | PostgreSQL, Schema Design, Window Functions}
+\begin{itemize}
+    \item Thiết kế kiến trúc cơ sở dữ liệu quan hệ chuẩn hóa 3NF trên PostgreSQL gồm 5 bảng, tối ưu hóa các chỉ mục B-Tree và Composite Indexes giúp giảm 70\% thời gian quét đĩa.
+    \item Xây dựng hơn 40 truy vấn phân tích nghiệp vụ phức tạp sử dụng CTEs và Window Functions để thực hiện phân tích giữ chân khách hàng (Cohort Retention) và phân khúc khách hàng (RFM Segmentation).
+\end{itemize}
+\end{cvtipbox}

@@ -1,0 +1,63 @@
+\chapter{Phụ Lục: Checklist Năng Lực \& Tổng Kết Hành Trình Data Pro}
+
+\section{Checklist 35 Tiêu Chí Đánh Giá Năng Lực Trước Khi Ứng Tuyển}
+
+Đừng nộp hồ sơ dựa trên cảm tính. Hãy tự đánh giá bản thân một cách trung thực dựa trên bảng 35 tiêu chí kiểm định năng lực thực chiến dưới đây. Chỉ cần bạn đạt được \textbf{80\% số tiêu chí của từng cấp độ}, bạn đã hoàn toàn sẵn sàng vượt qua các vòng phỏng vấn kỹ thuật khắt khe nhất:
+
+\begin{center}
+\begin{tabular}{|c|p{13.2cm}|c|}
+\hline
+\textbf{STT} & \textbf{Tiêu Chí Kỹ Thuật Bắt Buộc} & \textbf{Đạt ($\checkmark$)} \\
+\hline
+\multicolumn{3}{|c|}{\textbf{TẦNG 1: NỀN TẢNG BẮT BUỘC (Tuần 1--14)}} \\
+\hline
+1 & Sử dụng thành thạo Git (Branch, Merge, PR, Gitignore bảo mật). & $\square$ \\
+2 & Thao tác dòng lệnh Linux để phân tích tệp log nhanh (\texttt{grep, awk, cut, sort, uniq}). & $\square$ \\
+3 & Phân biệt rõ sự khác nhau về cơ chế I/O giữa CSV, JSON và Parquet. & $\square$ \\
+4 & Viết mã Pythonic: Sử dụng Comprehensions, Generators, Type Hints, và Decorator. & $\square$ \\
+5 & Thành thạo NumPy Vectorization và các phép biến đổi ma trận thay thế vòng lặp for. & $\square$ \\
+6 & Thành thạo Pandas: GroupBy Aggregations, Reshaping, Merge/Join, Datetime operations. & $\square$ \\
+7 & Nắm vững thứ tự thực thi logic của câu lệnh SQL (FROM $\rightarrow$ WHERE $\rightarrow$ GROUP BY). & $\square$ \\
+8 & Viết thành thạo các loại Window Functions (\texttt{ROW\_NUMBER, RANK, DENSE\_RANK, LAG, LEAD}). & $\square$ \\
+9 & Sử dụng thành thạo CTEs và Recursive CTE để xử lý dữ liệu cấu trúc cây. & $\square$ \\
+10 & Hiểu cơ chế Index B-Tree, nguyên tắc Leftmost Prefix và đọc được \texttt{EXPLAIN ANALYZE}. & $\square$ \\
+\hline
+\multicolumn{3}{|c|}{\textbf{TẦNG 2: SẴN SÀNG ĐI LÀM DATA ANALYST (Tuần 15--24)}} \\
+\hline
+11 & Phân biệt rõ Mean vs Median trên dữ liệu lệch và phát hiện Outliers qua IQR. & $\square$ \\
+12 & Nắm vững Định lý Giới Hạn Trung Tâm (CLT) và ước lượng Khoảng Tin Cậy 95\%. & $\square$ \\
+13 & Hiểu bản chất p-value, Sai lầm Loại I ($\alpha$) và Sai lầm Loại II ($\beta$). & $\square$ \\
+14 & Thiết kế được thử nghiệm A/B Testing: Tính Sample Size, MDE, và kiểm tra SRM. & $\square$ \\
+15 & Thành thạo Excel nâng cao: XLOOKUP, Dynamic Arrays, và Power Query ETL. & $\square$ \\
+16 & Thiết kế mô hình Star Schema chuẩn mực trong Power BI (Quan hệ $1-*$, Single Direction). & $\square$ \\
+17 & Làm chủ hàm \texttt{CALCULATE()} trong DAX và hiểu cơ chế Context Transition. & $\square$ \\
+18 & Viết thành thạo các hàm Time Intelligence DAX (YTD, YoY Growth \%, Rolling Average). & $\square$ \\
+19 & Xây dựng được Executive Dashboard 3 tầng phục vụ trực tiếp cho ban lãnh đạo. & $\square$ \\
+20 & Có ít nhất 3 dự án portfolio hoàn chỉnh trên GitHub (CLI, EDA, SQL DB, Power BI). & $\square$ \\
+\hline
+\multicolumn{3}{|c|}{\textbf{TẦNG 3: CHUYÊN SÂU DATA ENGINEER \& DATA SCIENTIST (Tuần 25--58)}} \\
+\hline
+21 & Nắm vững phương pháp mô hình hóa chiều Kimball (Fact, Dimension, Surrogate Key). & $\square$ \\
+22 & Thiết kế được bảng lịch sử biến đổi chậm SCD Type 2. & $\square$ \\
+23 & Xây dựng Data Pipeline có tính lũy đẳng (Idempotency) và trích xuất tăng dần (Incremental). & $\square$ \\
+24 & Sử dụng Pydantic để xác thực dữ liệu và ghi log hệ thống chuẩn sản xuất. & $\square$ \\
+25 & Khởi chạy hệ sinh thái dữ liệu đa dịch vụ bằng Docker Compose. & $\square$ \\
+26 & Viết được Apache Airflow DAG theo TaskFlow API với cơ chế Retry và Alerting. & $\square$ \\
+27 & Xây dựng mô hình biến đổi dữ liệu đa tầng bằng dbt (Staging $\rightarrow$ Marts) và viết test tự động. & $\square$ \\
+28 & Đóng gói toàn bộ tiền xử lý ML qua Scikit-Learn Pipeline ngăn chặn 100\% Data Leakage. & $\square$ \\
+29 & Đánh giá mô hình dựa trên Confusion Matrix, Precision-Recall và ROC-AUC thay vì Accuracy. & $\square$ \\
+30 & Ứng dụng SHAP values để giải thích tác động của từng đặc trưng mô hình đến kinh doanh. & $\square$ \\
+31 & Viết mã PySpark tối ưu hóa: Áp dụng Broadcast Hash Join và kiểm soát Partitioning. & $\square$ \\
+32 & Hiểu kiến trúc Lakehouse với Delta Lake: ACID Transactions và Time Travel. & $\square$ \\
+33 & Hiểu kiến trúc Serverless Cloud Ingestion (AWS S3 + Lambda / GCP BigQuery). & $\square$ \\
+34 & Đóng gói mô hình Machine Learning thành Microservice FastAPI với độ trễ dưới 30ms. & $\square$ \\
+35 & Thiết lập đường ống CI/CD tự động kiểm thử với GitHub Actions và Docker. & $\square$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Lời Kết: Tinh Thần Của Một Kỹ Sư Dữ Liệu Chân Chính}
+
+Ngành dữ liệu là một cuộc chạy marathon, không phải một cuộc chạy nước rút. Không ai có thể trở thành chuyên gia chỉ sau một đêm. Tuy nhiên, nếu bạn kiên trì đi qua từng chương của cuốn sách này, gõ từng dòng mã nguồn, tự tay sửa các lỗi phát sinh trong từng bài tập tự luyện và biến các dự án thành sản phẩm sống trên GitHub của riêng mình, bạn sẽ nhận ra rằng: **Khoảng cách giữa bạn và những kỹ sư hàng đầu tại các tập đoàn công nghệ lớn thực chất chỉ là số giờ bạn đã thực sự ngồi xuống và giải quyết các bài toán dữ liệu thực tế.**
+
+Hãy luôn giữ cho mình ngọn lửa tò mò về bản chất toán học của các thuật toán, tư duy kỷ luật của kỹ thuật phần mềm, và sự nhạy bén đối với các quyết định kinh doanh. Chúc bạn gặt hái thành công rực rỡ trên con đường chinh phục thế giới dữ liệu!

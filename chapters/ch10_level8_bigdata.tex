@@ -1,0 +1,125 @@
+\chapter{Level 8: Big Data \& Lakehouse Architecture Với PySpark (Tuần 45--50)}
+
+\section{Khi Nào Cần Big Data \& Giới Hạn Của Pandas}
+
+Một hiểu lầm tai hại của nhiều kỹ sư trẻ là sử dụng Spark cho mọi tác vụ chỉ để "làm đẹp CV". Nếu tập dữ liệu của bạn chỉ có 2 triệu dòng (khoảng 500MB), việc nạp vào Spark thực chất sẽ **chậm hơn gấp 5 lần so với Pandas** do chi phí khởi tạo cụm phân tán (Cluster Overhead), tuần tự hóa đối tượng (Serialization), và truyền tải mạng!
+
+\begin{lythuyetbox}[Ngưỡng Chuyển Đổi Kỹ Thuật (Technology Threshold)]
+\begin{itemize}
+    \item \textbf{Dưới 10GB}: Sử dụng \textbf{Pandas, Polars, hoặc DuckDB} trên một máy chủ duy nhất (Single Node). DuckDB có thể xử lý 10GB dữ liệu trong vài giây mà không tốn chi phí hạ tầng.
+    \item \textbf{Từ 10GB đến 100GB}: Tối ưu hóa bộ nhớ RAM với DuckDB hoặc dùng máy chủ cấu hình cao (Vertical Scaling).
+    \item \textbf{Trên 100GB đến hàng Terabytes/Petabytes}: Bắt buộc sử dụng hệ thống tính toán phân tán \textbf{Apache Spark} (Horizontal Scaling).
+\end{itemize}
+\end{lythuyetbox}
+
+\section{Kiến Trúc Apache Spark Chuyên Sâu}
+
+Apache Spark là động cơ tính toán phân tán trong bộ nhớ (In-Memory Distributed Engine).
+
+\begin{lythuyetbox}[Driver, Executors \& Phân Loại Biến Đổi (Transformations)]
+\begin{itemize}
+    \item \textbf{Driver Program}: Bộ não trung tâm. Phân tích mã nguồn, tối ưu hóa qua \textbf{Catalyst Optimizer}, chuyển đổi thành đồ thị thực thi \textbf{DAG} và giao việc cho các Executors.
+    \item \textbf{Executors}: Các tiến trình thợ chạy song song trên các máy tính khác nhau trong cụm, lưu trữ dữ liệu phân mảnh (Partitions) và thực thi các tính toán.
+    \item \textbf{Narrow Transformation (Biến đổi hẹp)}: Dữ liệu ở một partition đầu vào chỉ cần tính toán trong chính partition đó, không cần truyền tải qua mạng (\texttt{select}, \texttt{filter}, \texttt{map}). Cực kỳ nhanh!
+    \item \textbf{Wide Transformation (Biến đổi rộng)}: Dữ liệu cần phải được gom nhóm lại từ tất cả các máy trong cụm (\texttt{groupBy}, \texttt{join}, \texttt{distinct}). Đây là nguyên nhân gây ra hiện tượng \textbf{Shuffle (Giao tiếp mạng tốn kém)} - kẻ thù số 1 làm chậm Spark!
+\end{itemize}
+\end{lythuyetbox}
+
+\section{PySpark Thực Chiến \& Kỹ Thuật Broadcast Join}
+
+\begin{thuchanhbox}[Tối Ưu Hóa Phép Nối Với Broadcast Hash Join]
+Khi bạn cần nối một bảng giao dịch khổng lồ 500 triệu dòng (\texttt{fact\_sales} - 200GB) với một bảng danh mục nhỏ (\texttt{dim\_store} - 5MB):
+\begin{itemize}
+    \item \textbf{Sort-Merge Join mặc định}: Spark sẽ băm nhỏ và truyền tải cả 200GB dữ liệu qua đường truyền mạng của cụm để gom nhóm các khóa trùng nhau $\rightarrow$ Mất 40 phút!
+    \item \textbf{Broadcast Join}: Spark sao chép bảng nhỏ 5MB gửi tới bộ nhớ của TẤT CẢ các Executors. Mỗi máy tự động join trực tiếp trong RAM mà \textbf{không cần shuffle một byte dữ liệu nào qua mạng} $\rightarrow$ Hoàn thành chỉ trong 1.5 phút!
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import broadcast, col, sum, round
+
+# Khoi tao SparkSession toi uu
+spark = SparkSession.builder \
+    .appName("EcommerceBigDataOptimization") \
+    .config("spark.sql.shuffle.partitions", "200") \
+    .config("spark.driver.memory", "4g") \
+    .config("spark.executor.memory", "8g") \
+    .getOrCreate()
+
+# Doc du lieu lon dang Parquet
+fact_sales = spark.read.parquet("s3a://data-lake/raw/sales_transactions/")
+dim_store = spark.read.parquet("s3a://data-lake/raw/dim_stores/")
+
+# Ap dung Broadcast Join chu dong
+optimized_sales = fact_sales.join(
+    broadcast(dim_store),
+    fact_sales.store_id == dim_store.store_id,
+    how="inner"
+).groupBy("store_region").agg(
+    round(sum("amount"), 2).alias("total_regional_revenue")
+)
+
+# Thuc thi Action ghi ket qua
+optimized_sales.write.mode("overwrite").parquet("s3a://data-lake/gold/regional_summary/")
+\end{lstlisting}
+\end{thuchanhbox}
+
+\section{Kiến Trúc Lakehouse Hiện Đại Với Delta Lake}
+
+Trước đây, Data Lake (lưu trên Amazon S3 hoặc Hadoop HDFS) gặp vô số nhược điểm: không hỗ trợ giao dịch ACID (nếu đang ghi file bị mất điện thì dữ liệu bị hỏng hoàn toàn), không thể cập nhật từng dòng (\texttt{UPDATE/DELETE}), và không có Schema Enforcement.
+
+\begin{lythuyetbox}[Sức Mạnh Của Delta Lake (ACID Trên Data Lake)]
+\textbf{Delta Lake} biến đổi Data Lake thô thành một \textbf{Lakehouse} chuyên nghiệp bằng cách bổ sung một cuốn sổ nhật ký giao dịch tuần tự dạng JSON mang tên \texttt{\_delta\_log}:
+\begin{itemize}
+    \item \textbf{ACID Transactions}: Hoặc là toàn bộ mẻ nạp thành công, hoặc là không có gì thay đổi. Không bao giờ xuất hiện file rác hỏng hóc.
+    \item \textbf{Time Travel (Du hành thời gian)}: Khả năng truy vấn lại dữ liệu chính xác như nó đã từng tồn tại ở một thời điểm trong quá khứ hoặc phiên bản commit cụ thể:
+    \begin{lstlisting}[language=Python]
+df_historical = spark.read.format("delta") \
+    .option("timestampAsOf", "2026-02-15 00:00:00") \
+    .load("/delta/customer_profiles")
+    \end{lstlisting}
+    \item \textbf{Schema Enforcement}: Ngăn chặn việc đẩy dữ liệu sai kiểu cột vào hồ dữ liệu, bảo vệ tính toàn vẹn của hệ thống.
+\end{itemize}
+\end{lythuyetbox}
+
+\section{PROJECT 8: Big Data Transformation Engine (10+ Triệu Dòng)}
+
+Xây dựng pipeline PySpark đọc 15 triệu bản ghi sự kiện clickstream của người dùng dạng JSON thô từ Cloud Storage, thực hiện parsing, gộp nhóm hành vi theo phiên truy cập (Sessionization) bằng Window Functions, và ghi ra bảng Delta Lake được tối ưu hóa bằng kỹ thuật phân vùng \texttt{partitionBy('event\_date')}.
+
+\section{Bài Tập Tự Luyện Level 8}
+
+\begin{baitapbox}[5 Bài Tập PySpark \& Lakehouse]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Repartition vs Coalesce)}: Phân tích sự khác biệt về mặt cơ chế mạng giữa \texttt{df.repartition(10)} và \texttt{df.coalesce(10)}. Khi nào dùng \texttt{coalesce} để tối ưu hóa việc xuất file?
+    \item \textbf{Bài 2 (Window Function trong Spark)}: Viết đoạn mã PySpark tính toán trung bình động 7 ngày của cột doanh thu (\texttt{sales\_amount}) theo từng mã sản phẩm (\texttt{product\_id}).
+    \item \textbf{Bài 3 (Xử lý Data Skew)}: Trình bày kỹ thuật "Salting" trong Spark để giải quyết vấn đề Data Skew khi một giá trị khóa chiếm tới 80\% tổng số bản ghi trong bảng.
+    \item \textbf{Bài 4 (Delta Lake Compaction)}: Khi một bảng Delta có hàng triệu tệp tin Parquet siêu nhỏ (Small File Problem), hãy viết lệnh \texttt{OPTIMIZE} và \texttt{Z-ORDER BY} để dọn dẹp và tăng tốc độ truy vấn.
+    \item \textbf{Bài 5 (UDF Optimization)}: Tại sao việc viết Python UDF (\texttt{@udf}) thông thường trong PySpark lại làm giảm nghiêm trọng hiệu năng so với việc dùng \texttt{pyspark.sql.functions} có sẵn hoặc Pandas UDF (Vectorized UDF với Apache Arrow)?
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Gợi Ý Kiểm Tra]
+\begin{itemize}
+    \item \textbf{Bài 1}: \texttt{coalesce} chỉ gộp các partition liền kề trên cùng máy chủ để giảm số lượng partition mà KHÔNG gây full shuffle mạng. \texttt{repartition} tạo ra một full shuffle qua mạng và chia đều dữ liệu ra số partition mới. Dùng \texttt{coalesce(1)} khi muốn xuất đúng 1 file CSV/Parquet duy nhất.
+    \item \textbf{Bài 2}:
+    \begin{lstlisting}[language=Python]
+from pyspark.sql.window import Window
+from pyspark.sql.functions import avg
+w = Window.partitionBy("product_id").orderBy("event_date").rowsBetween(-6, 0)
+df.withColumn("rolling_avg_7d", avg("sales_amount").over(w))
+    \end{lstlisting}
+    \item \textbf{Bài 3}: Kỹ thuật Salting: Ghép thêm một số ngẫu nhiên từ 0 đến $K-1$ vào khóa bị lệch: \texttt{concat(skewed\_key, lit("\_"), rand() * K)} để phân tán các bản ghi sang nhiều executor khác nhau, sau đó tính toán 2 lần để gộp kết quả.
+    \item \textbf{Bài 4}: Lệnh SQL trong Spark:
+    \texttt{OPTIMIZE delta\_table ZORDER BY (customer\_id, event\_date);}
+    \item \textbf{Bài 5}: Python UDF thông thường buộc Spark JVM phải tuần tự hóa từng dòng dữ liệu và bắn qua tiến trình Python bên ngoài (gây nghẽn IPC - Inter-Process Communication). Trong khi đó, các hàm native chạy trực tiếp trên Java bytecode của JVM, và Pandas UDF sử dụng bộ nhớ chia sẻ Apache Arrow cực nhanh.
+\end{itemize}
+\end{dapanbox}
+
+\begin{cvtipbox}[Cách Ghi Kỹ Năng PySpark Vào CV]
+\textbf{Distributed Big Data Lakehouse Pipeline | PySpark, Delta Lake, AWS S3, Parquet}
+\begin{itemize}
+    \item Thiết kế và triển khai đường ống dữ liệu lớn PySpark xử lý hơn 15 triệu sự kiện tương tác người dùng hàng ngày, tối ưu hóa kích thước partition và áp dụng Broadcast Joins giúp giảm thời gian xử lý từ 2.5 giờ xuống còn 35 phút.
+    \item Xây dựng kiến trúc Lakehouse hiện đại sử dụng Delta Lake trên AWS S3, hỗ trợ tính năng ACID Transactions và cơ chế Time Travel kiểm toán lịch sử thay đổi dữ liệu.
+    \item Tối ưu hóa cấu trúc tệp tin thông qua Z-Ordering và Data Compaction, giúp cắt giảm 70\% lượng dữ liệu cần quét khi thực hiện các truy vấn phân tích định kỳ.
+\end{itemize}
+\end{cvtipbox}

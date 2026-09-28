@@ -1,0 +1,78 @@
+\chapter{Workbook Phần 3: 20 Bài Tập Thực Hành SQL \& Cơ Sở Dữ Liệu Nâng Cao}
+
+\begin{lythuyetbox}[Mục Tiêu Luyện Tập Phần 3]
+Phần này cung cấp \textbf{20 bài tập SQL thực chiến} từ các câu hỏi phỏng vấn kỹ thuật thực tế tại các công ty công nghệ lớn, kiểm tra từ tư duy thiết kế schema đến tối ưu hóa truy vấn phức tạp.
+\end{lythuyetbox}
+
+\begin{baitapbox}[Hệ Thống 20 Bài Tập SQL Thực Chiến]
+\begin{enumerate}
+    \item \textbf{Bài 1 (DDL \& Constraints)}: Viết câu lệnh tạo bảng \texttt{dim\_employees} có các ràng buộc: \texttt{emp\_id} là khóa chính, \texttt{email} duy nhất, \texttt{salary} phải $> 0$, và \texttt{hire\_date} mặc định là ngày hiện tại.
+    \item \textbf{Bài 2 (Conditional Update)}: Viết câu lệnh cập nhật tăng lương 10\% cho tất cả nhân viên thuộc phòng ban \texttt{'Engineering'} có thâm niên làm việc trên 2 năm.
+    \item \textbf{Bài 3 (Tìm Khách Hàng Không Mua Hàng)}: Cho bảng \texttt{customers} và bảng \texttt{orders}. Viết truy vấn tìm tất cả khách hàng chưa từng thực hiện bất kỳ đơn hàng nào bằng 2 cách: (a) Dùng \texttt{LEFT JOIN}; (b) Dùng \texttt{NOT EXISTS}.
+    \item \textbf{Bài 4 (Aggregation với HAVING)}: Tìm tất cả người bán (\texttt{seller\_id}) có tổng doanh thu vượt quá \$100,000 và đã bán được trên 500 đơn hàng trong năm 2025.
+    \item \textbf{Bài 5 (Xử Lý Trùng Lặp Fan-Out Trap)}: Cho bảng \texttt{orders} và bảng \texttt{payments}. Một đơn hàng có thể thanh toán qua nhiều đợt. Viết truy vấn tính tổng doanh thu chính xác của từng khách hàng mà không bị nhân đôi số tiền do phép JOIN.
+    \item \textbf{Bài 6 (Self Join -- Cặp Đôi Cùng Thành Phố)}: Viết truy vấn tìm tất cả các cặp khách hàng khác nhau nhưng sống cùng một thành phố, đảm bảo không bị trùng lặp hoán vị (tức là nếu có cặp (A, B) thì không xuất hiện cặp (B, A)).
+    \item \textbf{Bài 7 (Window Function -- ROW\_NUMBER vs DENSE\_RANK)}: Viết câu lệnh tìm 3 sản phẩm đắt nhất của TỪNG danh mục (\texttt{category}). Giải thích vì sao nên dùng \texttt{DENSE\_RANK()} thay vì \texttt{ROW\_NUMBER()} nếu có các sản phẩm bằng giá nhau.
+    \item \textbf{Bài 8 (Tính Doanh Thu Tích Lũy -- Running Total)}: Viết câu lệnh tính doanh thu tích lũy cộng dồn từ đầu tháng đến ngày hiện tại (Month-To-Date Running Total) theo từng ngày bán hàng.
+    \item \textbf{Bài 9 (Window Function -- LEAD \& Chênh Lệch Thời Gian)}: Cho bảng lịch sử chuyển trạng thái đơn hàng. Viết truy vấn sử dụng hàm \texttt{LEAD()} để tính thời gian (số giờ) một đơn hàng nằm ở trạng thái \texttt{'PROCESSING'} trước khi chuyển sang trạng thái tiếp theo.
+    \item \textbf{Bài 10 (Window Function -- NTILE Phân Hạng)}: Chia toàn bộ người dùng thành 5 nhóm bằng nhau (Quintiles: 1 đến 5) dựa trên số lượt xem trang web trong tháng qua.
+    \item \textbf{Bài 11 (Tăng Trưởng Doanh Thu MoM)}: Viết truy vấn sử dụng CTE và hàm \texttt{LAG()} để tính tỷ lệ phần trăm tăng trưởng doanh thu so với tháng trước (\% MoM Growth) cho từng tháng trong năm 2025.
+    \item \textbf{Bài 12 (Tìm Chuỗi Hoạt Động Liên Tục -- Consecutive Days)}: Cho bảng nhật ký đăng nhập \texttt{logins(user\_id, login\_date)}. Tìm tất cả người dùng đã đăng nhập hệ thống liên tục từ 5 ngày trở lên.
+    \item \textbf{Bài 13 (Recursive CTE -- Cây Danh Mục Sản Phẩm)}: Cho bảng danh mục \texttt{categories(cat\_id, cat\_name, parent\_id)}. Viết một Recursive CTE để hiển thị toàn bộ cây phả hệ danh mục kèm cấp bậc độ sâu (Level: 1, 2, 3...).
+    \item \textbf{Bài 14 (Pivot Dữ Liệu Bằng CASE WHEN)}: Chuyển đổi dữ liệu doanh số từ dạng dọc sang dạng ngang: Viết truy vấn hiển thị doanh thu của từng nhân viên phân tách thành 4 cột riêng biệt: \texttt{Q1\_Sales, Q2\_Sales, Q3\_Sales, Q4\_Sales}.
+    \item \textbf{Bài 15 (Truy Vấn Tương Quan -- Correlated Subquery)}: Viết truy vấn tìm các nhân viên có mức lương cao hơn mức lương trung bình của chính phòng ban mà người đó đang làm việc.
+    \item \textbf{Bài 16 (Xóa Bản Ghi Trùng Lặp Bằng CTE)}: Một bảng bị lỗi hệ thống khiến một số đơn hàng bị nhân bản 2--3 dòng hoàn toàn giống nhau. Viết lệnh \texttt{DELETE} kết hợp CTE và \texttt{ROW\_NUMBER()} để chỉ giữ lại đúng 1 bản ghi duy nhất cho mỗi đơn hàng.
+    \item \textbf{Bài 17 (Phân Tích Cohort Retention)}: Viết truy vấn tính toán tỷ lệ giữ chân khách hàng (Retention Rate \%) theo từng tháng kể từ tháng mua hàng đầu tiên (Tháng 0, Tháng 1, Tháng 2...).
+    \item \textbf{Bài 18 (Tối Ưu Hóa Query Chậm Bằng EXPLAIN)}: Phân tích lý do câu lệnh sau bị \texttt{Seq Scan}: \texttt{SELECT * FROM orders WHERE order\_date + INTERVAL '7 days' > NOW();}. Viết lại câu lệnh tối ưu (Sargable Query) để tận dụng B-Tree Index trên cột \texttt{order\_date}.
+    \item \textbf{Bài 19 (Chỉ Mục Bao Phủ -- Covering Index)}: Giải thích khái niệm Covering Index với mệnh đề \texttt{INCLUDE} trong PostgreSQL. Viết lệnh DDL tạo Index giúp câu lệnh sau đạt trạng thái \textbf{Index Only Scan}: \texttt{SELECT order\_id, total\_amount FROM orders WHERE customer\_id = 'C01';}.
+    \item \textbf{Bài 20 (Upsert với ON CONFLICT)}: Viết câu lệnh nạp dữ liệu vào bảng \texttt{dim\_user\_profiles}: Nếu \texttt{user\_id} chưa tồn tại thì chèn mới; nếu đã tồn tại thì cập nhật \texttt{last\_login = NOW()} và \texttt{login\_count = login\_count + 1}.
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Lời Giải Ngắn Gọn Cho 20 Bài Tập SQL]
+\begin{itemize}
+    \item \textbf{Bài 1}: 
+    \begin{lstlisting}[language=SQL]
+CREATE TABLE dim_employees (
+    emp_id VARCHAR(50) PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    salary NUMERIC(12, 2) CHECK (salary > 0),
+    hire_date DATE DEFAULT CURRENT_DATE
+);
+    \end{lstlisting}
+    \item \textbf{Bài 2}: \texttt{UPDATE dim\_employees SET salary = salary * 1.10 WHERE dept = 'Engineering' AND hire\_date <= CURRENT\_DATE - INTERVAL '2 years';}.
+    \item \textbf{Bài 3}: (a) \texttt{SELECT c.* FROM customers c LEFT JOIN orders o ON c.id = o.cust\_id WHERE o.id IS NULL;}\\
+    (b) \texttt{SELECT * FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.cust\_id = c.id);}.
+    \item \textbf{Bài 4}: \texttt{SELECT seller\_id, SUM(price), COUNT(order\_id) FROM order\_items WHERE EXTRACT(YEAR FROM order\_date) = 2025 GROUP BY seller\_id HAVING SUM(price) > 100000 AND COUNT(order\_id) > 500;}.
+    \item \textbf{Bài 5}: Dùng CTE tiền tổng hợp thanh toán: \texttt{WITH pay AS (SELECT order\_id, SUM(amount) AS tot FROM payments GROUP BY order\_id) SELECT o.customer\_id, SUM(p.tot) FROM orders o JOIN pay p ON o.order\_id = p.order\_id GROUP BY o.customer\_id;}.
+    \item \textbf{Bài 6}: \texttt{SELECT a.name, b.name, a.city FROM customers a JOIN customers b ON a.city = b.city AND a.id < b.id;}.
+    \item \textbf{Bài 7}: \texttt{DENSE\_RANK} giữ nguyên thứ tự không nhảy cóc khi có đồng giá: \texttt{WITH r AS (SELECT *, DENSE\_RANK() OVER(PARTITION BY category ORDER BY price DESC) AS rnk FROM products) SELECT * FROM r WHERE rnk <= 3;}.
+    \item \textbf{Bài 8}: \texttt{SUM(amount) OVER(PARTITION BY DATE\_TRUNC('month', order\_date) ORDER BY order\_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)}.
+    \item \textbf{Bài 9}: \texttt{EXTRACT(EPOCH FROM (LEAD(status\_time) OVER(PARTITION BY order\_id ORDER BY status\_time) - status\_time)) / 3600.0}.
+    \item \textbf{Bài 10}: \texttt{NTILE(5) OVER(ORDER BY pageviews DESC)}.
+    \item \textbf{Bài 11}: \texttt{ROUND((rev - LAG(rev) OVER(ORDER BY month)) / LAG(rev) OVER(ORDER BY month) * 100.0, 2)}.
+    \item \textbf{Bài 12}: Dùng kỹ thuật \texttt{login\_date - (ROW\_NUMBER() OVER(PARTITION BY user\_id ORDER BY login\_date) * INTERVAL '1 day') AS grp}, sau đó \texttt{GROUP BY user\_id, grp HAVING COUNT(*) >= 5}.
+    \item \textbf{Bài 13}:
+    \begin{lstlisting}[language=SQL]
+WITH RECURSIVE cat_tree AS (
+    SELECT cat_id, cat_name, parent_id, 1 AS depth FROM categories WHERE parent_id IS NULL
+    UNION ALL
+    SELECT c.cat_id, c.cat_name, c.parent_id, ct.depth + 1 FROM categories c JOIN cat_tree ct ON c.parent_id = ct.cat_id
+) SELECT * FROM cat_tree ORDER BY depth, cat_name;
+    \end{lstlisting}
+    \item \textbf{Bài 14}: \texttt{SUM(CASE WHEN EXTRACT(QUARTER FROM sale\_date) = 1 THEN amount ELSE 0 END) AS Q1\_Sales...}.
+    \item \textbf{Bài 15}: \texttt{SELECT * FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE dept\_id = e.dept\_id);}.
+    \item \textbf{Bài 16}: \texttt{WITH dupes AS (SELECT ctid, ROW\_NUMBER() OVER(PARTITION BY order\_id ORDER BY ctid) AS rn FROM orders) DELETE FROM orders WHERE ctid IN (SELECT ctid FROM dupes WHERE rn > 1);}.
+    \item \textbf{Bài 17}: Xác định \texttt{cohort\_month = MIN(order\_date)}, đếm số khách hàng hoạt động ở các tháng $T+0, T+1, T+2$ chia cho quy mô cohort ban đầu.
+    \item \textbf{Bài 18}: Bỏ phép tính quanh cột: Đổi thành \texttt{WHERE order\_date > NOW() - INTERVAL '7 days'}.
+    \item \textbf{Bài 19}: \texttt{CREATE INDEX idx\_cust\_incl ON orders (customer\_id) INCLUDE (order\_id, total\_amount);}.
+    \item \textbf{Bài 20}:
+    \begin{lstlisting}[language=SQL]
+INSERT INTO dim_user_profiles (user_id, last_login, login_count)
+VALUES ('USR101', NOW(), 1)
+ON CONFLICT (user_id) DO UPDATE SET
+    last_login = NOW(),
+    login_count = dim_user_profiles.login_count + 1;
+    \end{lstlisting}
+\end{itemize}
+\end{dapanbox}

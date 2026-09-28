@@ -1,0 +1,55 @@
+\chapter{Workbook Phần 4: 20 Bài Tập Xác Suất, Thống Kê \& A/B Testing}
+
+\begin{lythuyetbox}[Mục Tiêu Luyện Tập Phần 4]
+Phần này cung cấp \textbf{20 bài tập tính toán và giải thích thống kê chuyên sâu}, rèn luyện tư duy định lượng vững chắc để trả lời các câu hỏi phỏng vấn hóc búa nhất về A/B Testing và suy luận dữ liệu.
+\end{lythuyetbox}
+
+\begin{baitapbox}[Hệ Thống 20 Bài Tập Thống Kê \& A/B Testing]
+\begin{enumerate}
+    \item \textbf{Bài 1 (Mean vs Median)}: Cho tập dữ liệu thời gian phản hồi máy chủ: \texttt{[120, 125, 130, 135, 140, 145, 1200]} (mili-giây). Hãy tính Mean và Median. Giải thích tại sao trong giám sát hệ thống hạ tầng (SRE/DE), người ta luôn dùng Percentile (P95, P99) thay vì Mean.
+    \item \textbf{Bài 2 (Độ Lệch Chuẩn \& Quy Tắc 3-Sigma)}: Tỷ lệ nhấp chuột (CTR) trung bình là $\mu = 5.0\%$ với độ lệch chuẩn $\sigma = 0.5\%$. Giả sử CTR tuân theo phân phối chuẩn, có bao nhiêu phần trăm khả năng CTR trong một ngày sẽ rơi vào khoảng $[4.0\%, 6.0\%]$?
+    \item \textbf{Bài 3 (Định Lý Giới Hạn Trung Tâm -- CLT)}: Một quần thể có phân phối lệch phải rất nặng với trung bình $\mu = 50$ và phương sai $\sigma^2 = 100$. Nếu ta lấy mẫu ngẫu nhiên gồm $n = 100$ quan sát, hãy xác định phân phối, kỳ vọng và sai số chuẩn (Standard Error) của giá trị trung bình mẫu $\bar{X}$.
+    \item \textbf{Bài 4 (Ước Lượng Khoảng Tin Cậy 95\%)}: Một mẫu gồm $n = 400$ người dùng cho thấy chi tiêu trung bình là $\bar{x} = \$120$ với độ lệch chuẩn mẫu $s = \$30$. Hãy tính khoảng tin cậy 95\% (95\% Confidence Interval) cho mức chi tiêu trung bình của toàn bộ người dùng.
+    \item \textbf{Bài 5 (Tính Kích Thước Mẫu A/B Test)}: Doanh nghiệp muốn chạy A/B Testing trên nút Mua Hàng. Baseline Conversion Rate hiện tại là $p = 10\%$. Bạn muốn phát hiện mức tăng tương đối tối thiểu $MDE = 10\%$ (tức là tăng lên $11\%$), với mức ý nghĩa $\alpha = 0.05$ và độ nhạy thống kê $Power = 80\%$. Tính số lượng người dùng tối thiểu cần cho mỗi nhóm.
+    \item \textbf{Bài 6 (Kiểm Tra Lỗi Phân Luồng SRM)}: Bạn cấu hình chia traffic 50:50 cho 2 nhóm. Sau 7 ngày, nhóm Control nhận được 52,000 lượt truy cập, nhóm Treatment nhận được 48,000 lượt. Sử dụng kiểm định Chi-Square goodness-of-fit để xác định xem thử nghiệm có bị dính lỗi Sample Ratio Mismatch (SRM) không.
+    \item \textbf{Bài 7 (Two-Proportion Z-Test)}: Nhóm Control có $n_1 = 10,000$ người và $x_1 = 800$ chuyển đổi ($CR_1 = 8.0\%$). Nhóm Treatment có $n_2 = 10,000$ người và $x_2 = 900$ chuyển đổi ($CR_2 = 9.0\%$). Tính Z-statistic và đưa ra kết luận kinh doanh ở mức ý nghĩa $\alpha = 0.05$.
+    \item \textbf{Bài 8 (Ý Nghĩa Thực Sự Của P-Value)}: Một thử nghiệm A/B Testing cho kết quả $p = 0.03$. Phát biểu sau đây đúng hay sai: \textit{"Có 97\% khả năng là nhóm Treatment tốt hơn nhóm Control"}? Hãy giải thích định nghĩa chuẩn xác của $p$-value.
+    \item \textbf{Bài 9 (Sai Lầm Loại I vs Loại II)}: Trong bài toán phát hiện giao dịch gian lận ngân hàng, sai lầm Loại I ($\alpha$) và sai lầm Loại II ($\beta$) tương ứng với tình huống nghiệp vụ nào? Doanh nghiệp nên ưu tiên giảm thiểu sai lầm nào hơn?
+    \item \textbf{Bài 10 (Nghịch Lý Simpson)}: Một sàn TMĐT thử nghiệm tính năng mới: Trên máy tính (Desktop), tính năng mới tăng CR từ 10\% lên 12\%; Trên điện thoại (Mobile), tính năng mới tăng CR từ 2\% lên 3\%. Nhưng khi gộp chung cả hai thiết bị, CR của nhóm mới lại THẤP HƠN nhóm cũ! Hãy phân tích nguyên nhân toán học gây ra nghịch lý này.
+    \item \textbf{Bài 11 (Peeking Problem \& Early Stopping)}: Tại sao việc kiểm tra dashboard kết quả A/B Test mỗi ngày một lần và bấm nút dừng thử nghiệm ngay khi thấy $p < 0.05$ lại là hành vi sai lầm nghiêm trọng?
+    \item \textbf{Bài 12 (Hiệu Ứng Novelty Effect)}: Khi ra mắt một giao diện hoàn toàn mới, số liệu lượt nhấp tăng vọt trong tuần đầu tiên nhưng giảm dần và đi ngang ở tuần thứ 3. Đây là hiệu ứng gì và cách khắc phục trong thiết kế thử nghiệm?
+    \item \textbf{Bài 13 (Định Lý Bayes Trong Kiểm Tra Sức Khỏe)}: Tỷ lệ mắc một căn bệnh hiếm là $0.1\%$ ($P(Disease) = 0.001$). Một xét nghiệm y tế có độ nhạy (True Positive Rate) là 99\% và tỷ lệ dương tính giả (False Positive Rate) là 5\%. Nếu một người nhận kết quả dương tính, xác suất người đó thực sự mắc bệnh là bao nhiêu?
+    \item \textbf{Bài 14 (Confusion Matrix \& Imbalanced Classes)}: Cho mô hình phân loại nợ xấu (Default): $TP = 80, FP = 20, FN = 120, TN = 9,780$. Hãy tính Accuracy, Precision, Recall và F1-Score. Nhận xét về chỉ số Accuracy trong trường hợp này.
+    \item \textbf{Bài 15 (Precision-Recall Trade-off)}: Làm thế nào để điều chỉnh ngưỡng xác suất phân loại (Classification Threshold) nhằm tăng Recall từ 60\% lên 85\%? Việc này sẽ ảnh hưởng như thế nào đến chỉ số Precision?
+    \item \textbf{Bài 16 (Ý Nghĩa Của Đường Cong ROC-AUC)}: Chỉ số AUC = 0.85 có ý nghĩa xác suất như thế nào khi lấy ngẫu nhiên 1 mẫu tích cực (Positive) và 1 mẫu tiêu cực (Negative)?
+    \item \textbf{Bài 17 (Kiểm Định Chi-Square Độc Lập)}: Bảng quan sát giữa Thiết bị (Mobile vs Desktop) và Quyết định mua hàng (Mua vs Không mua). Trình bày các bước tính giá trị kỳ vọng (Expected Frequencies) và thống kê Chi-Square.
+    \item \textbf{Bài 18 (Phân Phối Poisson)}: Trung bình một trung tâm dữ liệu gặp $\lambda = 2$ sự cố phần cứng mỗi tuần. Tính xác suất để trong một tuần cụ thể, trung tâm này không gặp bất kỳ sự cố nào ($k = 0$).
+    \item \textbf{Bài 19 (Kiểm Định Student's T-Test)}: Khi nào bắt buộc phải sử dụng kiểm định t-test thay vì Z-test khi so sánh giá trị trung bình của hai nhóm?
+    \item \textbf{Bài 20 (Power Analysis)}: Nếu kích thước mẫu thu thập được trong thực tế nhỏ hơn kích thước mẫu tính toán ban đầu, điều này ảnh hưởng trực tiếp như thế nào đến độ nhạy thống kê ($Power = 1 - \beta$) và nguy cơ của doanh nghiệp là gì?
+\end{enumerate}
+\end{baitapbox}
+
+\begin{dapanbox}[Đáp Án \& Lời Giải Ngắn Gọn Cho 20 Bài Tập Thống Kê]
+\begin{itemize}
+    \item \textbf{Bài 1}: $\text{Mean} = 265$ms; $\text{Median} = 135$ms. Ngoại lai 1200ms làm sai lệch Mean; P95/P99 phản ánh trải nghiệm của 95--99\% người dùng thực tế.
+    \item \textbf{Bài 2}: $[4.0\%, 6.0\%] = [\mu - 2\sigma, \mu + 2\sigma]$. Theo quy tắc phân phối chuẩn, có \textbf{95.45\%} dữ liệu rơi vào khoảng này.
+    \item \textbf{Bài 3}: Theo CLT, với $n = 100$, $\bar{X} \sim \mathcal{N}(\mu = 50, SE = \sigma/\sqrt{n} = 10/10 = 1.0)$.
+    \item \textbf{Bài 4}: $SE = 30 / \sqrt{400} = 1.5$. Khoảng tin cậy 95\%: $120 \pm 1.96 \times 1.5 = [117.06, 122.94]$ USD.
+    \item \textbf{Bài 5}: $MDE = 10\% \times 10\% = 0.01$. Áp dụng công thức cỡ mẫu: cần khoảng \textbf{31,200 người dùng cho MỖI nhóm} (tổng cộng 62,400 người dùng).
+    \item \textbf{Bài 6}: $\text{Expected} = 50,000$. $\chi^2 = (52000-50000)^2/50000 + (48000-50000)^2/50000 = 80 + 80 = 160$. Với bậc tự do 1, ngưỡng tới hạn là 3.84; $\chi^2 = 160 \gg 3.84 \rightarrow p < 10^{-15}$. Khẳng định chắc chắn thử nghiệm bị lỗi phân luồng SRM nghiêm trọng!
+    \item \textbf{Bài 7}: Pooled $p = 1700/20000 = 0.085$. $SE = \sqrt{0.085 \times 0.915 \times (2/10000)} \approx 0.00394$. $Z = (0.09 - 0.08) / 0.00394 \approx 2.536$. Vì $Z = 2.536 > 1.96$ ($p \approx 0.011 < 0.05$), sự gia tăng có ý nghĩa thống kê!
+    \item \textbf{Bài 8}: Phát biểu đó HOÀN TOÀN SAI. P-value là $P(\text{Dữ liệu cực đoan như vậy} | H_0 \text{ đúng})$, không phải xác suất của giả thuyết $P(H_1 | \text{Data})$.
+    \item \textbf{Bài 9}: Loại I: Khách hàng lương thiện bị chặn giao dịch. Loại II: Kẻ gian lận lọt lưới. Ngân hàng ưu tiên giảm Loại II (tăng Recall) vì thiệt hại tài chính do gian lận lớn hơn chi phí xác minh lại.
+    \item \textbf{Bài 10}: Do phân bổ tỷ trọng traffic không đều (Confounding Variable). Nếu nhóm mới nhận quá nhiều traffic Mobile (vốn có CR tự nhiên thấp), tổng số chuyển đổi bị kéo tụt xuống dù ở từng thiết bị nó đều thắng.
+    \item \textbf{Bài 11}: Vi phạm kiểm định giả thuyết nhiều lần (Multiple Testing Problem), làm tỷ lệ dương tính giả tích lũy tăng từ 5\% lên tới gần 30--50\%.
+    \item \textbf{Bài 12}: Hiệu ứng hiếu kỳ (Novelty Effect). Khắc phục: Chạy thử nghiệm ít nhất 2--3 tuần và chỉ phân tích trên tập người dùng quen (không tính người dùng mới).
+    \item \textbf{Bài 13}: $P(D|+) = \frac{0.99 \times 0.001}{(0.99 \times 0.001) + (0.05 \times 0.999)} = \frac{0.00099}{0.05094} \approx \textbf{1.94\%}$.
+    \item \textbf{Bài 14}: $\text{Accuracy} = (80 + 9780)/10000 = \textbf{98.6\%}$ (Ảo tưởng!); $\text{Precision} = 80/100 = 80\%$; $\text{Recall} = 80/200 = \textbf{40\%}$ (Bỏ lọt 60\% nợ xấu!); $\text{F1} = 2 \times 0.8 \times 0.4 / (0.8 + 0.4) \approx 0.533$.
+    \item \textbf{Bài 15}: Hạ thấp ngưỡng phân loại (ví dụ từ 0.5 xuống 0.35) sẽ giúp bắt được nhiều ca tích cực hơn (tăng Recall), nhưng chấp nhận số lượng báo động giả tăng lên (làm giảm Precision).
+    \item \textbf{Bài 16}: Xác suất để mô hình xếp hạng điểm số (predicted score) của một mẫu Positive cao hơn một mẫu Negative ngẫu nhiên là đúng bằng 85\%.
+    \item \textbf{Bài 17}: $E_{ij} = (\text{Tổng dòng } i \times \text{Tổng cột } j) / \text{Tổng số quan sát}$. Sau đó tính $\chi^2 = \sum (O_{ij} - E_{ij})^2 / E_{ij}$.
+    \item \textbf{Bài 18}: $P(X = 0) = \frac{e^{-2} \times 2^0}{0!} = e^{-2} \approx \textbf{13.53\%}$.
+    \item \textbf{Bài 19}: Bắt buộc dùng t-test khi kích thước mẫu nhỏ ($n < 30$) và phương sai tổng thể $\sigma^2$ chưa được biết (phải ước lượng qua độ lệch chuẩn mẫu $s$).
+    \item \textbf{Bài 20}: Power giảm xuống dưới 80\%. Doanh nghiệp đối mặt nguy cơ tăng Sai lầm Loại II: Tính năng mới thực sự tốt nhưng không đủ nhạy để phát hiện, dẫn đến quyết định hủy bỏ tính năng một cách oan uổng.
+\end{itemize}
+\end{dapanbox}
