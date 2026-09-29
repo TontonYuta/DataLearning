@@ -1,0 +1,127 @@
+\chapter{Level 11: Kiến Trúc Mô Hình Ngôn Ngữ Lớn \& Transformers Từ Bên Trong}
+
+\begin{theorybox}[TỔNG QUAN NĂNG LỰC LEVEL 11: AI \& LLM INTERNALS]
+Kỷ nguyên AI hiện đại đòi hỏi một kỹ sư dữ liệu không chỉ biết gọi API từ OpenAI hay Anthropic, mà phải hiểu sâu sắc \textbf{cơ chế toán học và kiến trúc nội tại} của mô hình ngôn ngữ lớn (LLM). 
+
+Chương này giải phẫu toàn diện mô hình Transformer từ bên trong (tham khảo trực tiếp từ giáo trình chuẩn quốc tế \textit{AI Engineering Course} của Amit Shekhar): từ thuật toán mã hóa Tokenizer BPE, cơ chế tự chú ý (Self-Attention) với ma trận $Q, K, V$, tại sao bắt buộc phải chia cho $\sqrt{d_k}$, cơ chế xoay vector RoPE, chuẩn hóa RMSNorm thay thế LayerNorm trong Llama 3, kiến trúc Mixture of Experts (MoE) của DeepSeek, đến kỹ thuật tinh chỉnh tham số LoRA và thuật toán căn chỉnh hành vi GRPO.
+\end{theorybox}
+
+\section{Từ Văn Bản Đến Số Học: BPE Tokenization \& Embeddings}
+
+\subsection{Thuật Toán Byte Pair Encoding (BPE)}
+Mô hình ngôn ngữ không thể đọc trực tiếp các chuỗi ký tự hay từ ngữ thông thường. Nếu sử dụng cấp độ từ (Word-level), kích thước từ điển sẽ bùng nổ lên hàng triệu từ và không thể xử lý được các từ mới (Out-of-Vocabulary - OOV). Nếu sử dụng cấp độ ký tự (Character-level), độ dài chuỗi token tăng gấp 5--10 lần, nhanh chóng làm tràn cửa sổ ngữ cảnh (Context Window) của Transformer.
+
+\textbf{Byte Pair Encoding (BPE)} là giải pháp cân bằng hoàn hảo ở cấp độ từ con (Subword-level):
+\begin{enumerate}
+    \item \textbf{Khởi tạo}: Bắt đầu bằng việc tách từng từ thành các ký tự độc lập, kết thúc bằng ký tự đặc biệt (ví dụ \texttt{</w>}).
+    \item \textbf{Đếm tần suất}: Quét toàn bộ kho ngữ liệu để đếm tần suất xuất hiện của các cặp ký tự liền kề (byte pairs).
+    \item \textbf{Hợp nhất (Merge)}: Chọn cặp xuất hiện nhiều nhất và gộp chúng lại thành một token duy nhất trong bảng từ vựng:
+    \begin{equation}
+    (c_1, c_2)^* = \arg\max_{(c_1, c_2)} \text{Frequency}(c_1, c_2)
+    \end{equation}
+    \item \textbf{Lặp lại}: Tiếp tục quá trình cho đến khi từ vựng đạt dung lượng mục tiêu (ví dụ 100,000 tokens trong bộ mã hóa \texttt{cl100k\_base} của GPT-4).
+\end{enumerate}
+
+\subsection{Không Gian Vector Embeddings \& Khoảng Cách Cosine}
+Mỗi token được ánh xạ thành một vector số thực nhiều chiều $d_{\text{model}}$ (thường từ 768 đến 4096 chiều). Để so sánh độ tương đồng ngữ nghĩa giữa hai vector $\mathbf{u}$ và $\mathbf{v}$, ta sử dụng khoảng cách Cosine thay vì khoảng cách Euclid (Euclidean Distance):
+\begin{equation}
+\cos(\mathbf{u}, \mathbf{v}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\|_2 \|\mathbf{v}\|_2} = \frac{\sum_{i=1}^d u_i v_i}{\sqrt{\sum_{i=1}^d u_i^2} \sqrt{\sum_{i=1}^d v_i^2}}
+\end{equation}
+\textit{Lợi thế của Cosine Similarity}: Khoảng cách Euclid bị méo mó bởi độ dài của đoạn văn bản (đoạn dài có độ lớn vector lớn hơn). Cosine chỉ đo góc giữa hai vector, do đó hai đoạn văn cùng chủ đề sẽ có Cosine xấp xỉ 1.0 bất kể độ dài ngắn.
+
+\section{Trọng Tâm Của Transformer: Toán Học Attention $Q, K, V$}
+
+\subsection{Cơ Chế Scaled Dot-Product Attention}
+Trong kiến trúc Transformer (Vaswani et al., 2017), mỗi từ trong câu tính toán mối quan hệ ngữ nghĩa với mọi từ khác thông qua 3 ma trận chiếu tuyến tính:
+\begin{itemize}
+    \item \textbf{Query ($Q$)}: Đại diện cho câu hỏi hoặc thông tin mà token hiện tại đang tìm kiếm.
+    \item \textbf{Key ($K$)}: Đại diện cho nhãn hoặc từ khóa mà token khác đang lưu giữ.
+    \item \textbf{Value ($V$)}: Đại diện cho giá trị thông tin thực tế được truyền đi.
+\end{itemize}
+
+Công thức tính ma trận trọng số chú ý:
+\begin{equation}
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}} + M\right) V
+\end{equation}
+
+\begin{guidelinebox}[TẠI SAO BẮT BUỘC PHẢI CHIA CHO $\sqrt{d_k}$?]
+Đây là câu hỏi kinh điển trong mọi cuộc phỏng vấn AI Engineer:
+Giả sử các thành phần của vector $q$ và $k$ là các biến ngẫu nhiên độc lập có kỳ vọng bằng 0 và phương sai bằng 1: $\mathbb{E}[q_i] = \mathbb{E}[k_i] = 0, \text{Var}(q_i) = \text{Var}(k_i) = 1$.
+Tích vô hướng là tổng của $d_k$ tích số: $S = q \cdot k = \sum_{i=1}^{d_k} q_i k_i$.
+Phương sai của tổng các biến độc lập bằng tổng các phương sai:
+\begin{equation}
+\text{Var}(S) = \sum_{i=1}^{d_k} \text{Var}(q_i k_i) = \sum_{i=1}^{d_k} \left(\text{Var}(q_i)\text{Var}(k_i)\right) = d_k \times (1 \times 1) = d_k
+\end{equation}
+Khi $d_k$ lớn (ví dụ $d_k = 128$), giá trị tích vô hướng có độ lệch chuẩn $\sigma = \sqrt{128} \approx 11.3$. Khi nạp các giá trị quá lớn này vào hàm $\text{softmax}(z_i) = \frac{e^{z_i}}{\sum e^{z_j}}$, một phần tử lớn nhất sẽ có xác suất tiến sát 1.0 còn các phần tử khác tiến về 0. Điều này làm \textbf{gradient bị bão hòa} ($\frac{\partial \text{softmax}}{\partial z} \approx 0$), khiến mạng nơ-ron hoàn toàn ngừng học! 
+
+Chia cho $\sqrt{d_k}$ kéo phương sai trở về đúng bằng 1: $\text{Var}\left(\frac{S}{\sqrt{d_k}}\right) = \frac{\text{Var}(S)}{d_k} = 1$, giúp hàm Softmax hoạt động trong vùng gradient ổn định nhất.
+\end{guidelinebox}
+
+\subsection{Causal Masking Trong Mô Hình Tự Hồi Quy (Autoregressive)}
+Khi mô hình sinh từ từng bước (GPT-4, Llama 3), token ở vị trí $i$ tuyệt đối không được nhìn thấy các token ở vị trí $i+1, i+2, \dots$. Để thực thi điều này trong quá trình huấn luyện song song, ta cộng thêm ma trận mặt nạ tam giác trên $M$:
+\begin{equation}
+M_{ij} = \begin{cases} 
+0 & \text{khi } i \ge j \quad (\text{quá khứ và hiện tại}) \\
+-\infty & \text{khi } i < j \quad (\text{tương lai})
+\end{cases}
+\end{equation}
+Vì $e^{-\infty} = 0$, hàm Softmax sẽ tự động gán trọng số bằng 0 tuyệt đối cho mọi vị trí trong tương lai.
+
+\section{Kiến Trúc Tối Ưu Hiện Đại: RoPE, RMSNorm \& MoE}
+
+\subsection{Rotary Position Embedding (RoPE)}
+Các mô hình cũ (như BERT, GPT-2) sử dụng vector vị trí tuyệt đối cộng trực tiếp vào embedding: $x_i = e_i + p_i$. Nhược điểm là mô hình khó khái quát hóa khi độ dài văn bản vượt quá chiều dài huấn luyện tối đa.
+
+\textbf{RoPE (Su et al., 2021)} mã hóa vị trí bằng cách \textbf{xoay vector Query và Key trong không gian phức 2 chiều}:
+Cho vector $q$ tại vị trí $m$, ta nhân với ma trận quay góc $m\theta$:
+\begin{equation}
+R_{\Theta, m} = \begin{pmatrix} \cos(m\theta) & -\sin(m\theta) \\ \sin(m\theta) & \cos(m\theta) \end{pmatrix}
+\end{equation}
+Nhờ tính chất lượng giác, tích vô hướng giữa Query ở vị trí $m$ và Key ở vị trí $n$ thỏa mãn:
+\begin{equation}
+(R_{\Theta, m} q)^T (R_{\Theta, n} k) = q^T R_{\Theta, n - m} k
+\end{equation}
+Tích số chỉ phụ thuộc vào khoảng cách tương đối $(n - m)$ mà không phụ thuộc vào vị trí tuyệt đối của từ trong văn bản. Đây là bí quyết giúp Llama 3 và DeepSeek mở rộng cửa sổ ngữ cảnh lên tới 128,000 tokens thông qua kỹ thuật RoPE Interpolation.
+
+\subsection{Root Mean Square Layer Normalization (RMSNorm)}
+Trong Llama 3 và DeepSeek, LayerNorm truyền thống đã bị thay thế hoàn toàn bởi RMSNorm:
+\begin{equation}
+\text{RMSNorm}(x) = \frac{x}{\text{RMS}(x)} \odot \gamma, \quad \text{với } \text{RMS}(x) = \sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2 + \epsilon}
+\end{equation}
+Khác với LayerNorm phải trừ đi giá trị trung bình $\mu$, RMSNorm giả định mean xấp xỉ 0 và chỉ điều chỉnh theo độ lớn biên độ. Việc loại bỏ bước tính mean giúp giảm 15--20\% thời gian tính toán trên GPU mà vẫn bảo toàn độ ổn định số học.
+
+\subsection{Kiến Trúc Mixture of Experts (MoE) \& DeepSeek}
+Thay vì sử dụng một tầng Feed-Forward Network (FFN) dày đặc (Dense) nơi mọi token đều kích hoạt toàn bộ tham số, kiến trúc MoE chia tầng FFN thành $N$ mạng con gọi là các \textbf{Experts}.
+Một mạng định tuyến (\textbf{Gating / Router Network}) sẽ tính toán xác suất và chỉ chuyển token tới Top-$K$ chuyên gia phù hợp nhất:
+\begin{equation}
+y = \sum_{i \in \text{TopK}} g_i(x) \cdot \text{Expert}_i(x)
+\end{equation}
+\textbf{Đột phá của DeepSeek-V3/V4}: Sở hữu 671 tỷ tham số (Total Parameters) nhưng mỗi token chỉ kích hoạt 37 tỷ tham số (Activated Parameters). Điều này giúp mô hình đạt sức mạnh tương đương GPT-4 nhưng chi phí vận hành rẻ hơn gấp 10 lần.
+
+\section{Kỹ Thuật Tinh Chỉnh Tham Số Hiệu Quả (PEFT) \& Căn Chỉnh}
+
+\subsection{LoRA (Low-Rank Adaptation)}
+Huấn luyện lại toàn bộ hàng chục tỷ tham số của LLM (Full Fine-Tuning) đòi hỏi hàng trăm card đồ họa cao cấp. Hu et al. (2021) phát hiện rằng ma trận cập nhật trọng số $\Delta W$ có \textbf{hạng nội tại rất thấp (low intrinsic rank)}.
+
+LoRA đóng băng ma trận trọng số ban đầu $W_0 \in \mathbb{R}^{d \times k}$ và phân rã phần cập nhật thành tích của 2 ma trận nhỏ:
+\begin{equation}
+W = W_0 + \Delta W = W_0 + \frac{\alpha}{r} (B \times A)
+\end{equation}
+Trong đó $A \in \mathbb{R}^{r \times k}$ (khởi tạo ngẫu nhiên theo phân phối chuẩn) và $B \in \mathbb{R}^{d \times r}$ (khởi tạo bằng 0), với hạng $r \ll \min(d, k)$ (thường chọn $r = 8$ hoặc $16$).
+\begin{itemize}
+    \item Số tham số cần huấn luyện giảm hơn \textbf{99\%}.
+    \item Không phát sinh thêm độ trễ khi suy luận vì có thể cộng gộp trực tiếp $W_{\text{final}} = W_0 + B A$.
+    \item Kết hợp với lượng tử hóa trọng số 4-bit (QLoRA), ta có thể tinh chỉnh mô hình Llama-8B ngay trên một chiếc laptop có GPU 16GB VRAM!
+\end{itemize}
+
+\subsection{Căn Chỉnh Hành Vi: Từ RLHF Đến DPO \& GRPO}
+Sau giai đoạn tiền huấn luyện (Pre-training), LLM chỉ biết dự đoán từ tiếp theo. Để trở thành trợ lý hữu ích và an toàn, mô hình cần được căn chỉnh (Alignment):
+\begin{enumerate}
+    \item \textbf{RLHF (Reinforcement Learning from Human Feedback)}: Sử dụng thuật toán PPO để huấn luyện mô hình theo điểm số từ Reward Model. Nhược điểm: Phức tạp, dễ mất ổn định số học và tốn kém tài nguyên.
+    \item \textbf{DPO (Direct Preference Optimization)}: Tối ưu trực tiếp hàm mất mát phân loại trên cặp dữ liệu $(y_{\text{win}}, y_{\text{lose}})$ mà không cần huấn luyện Reward Model riêng biệt.
+    \item \textbf{GRPO (Group Relative Policy Optimization)}: Bước đột phá làm nên tên tuổi của mô hình \textbf{DeepSeek-R1}. GRPO loại bỏ hoàn toàn mạng Critic (tiết kiệm 50\% bộ nhớ) bằng cách sinh ra một nhóm $G$ câu trả lời cho cùng một câu hỏi và chuẩn hóa điểm số tương đối trong nội bộ nhóm:
+    \begin{equation}
+    A_i = \frac{R_i - \text{mean}(R)}{\text{std}(R)}
+    \end{equation}
+    Mô hình tự động học được chuỗi suy luận nội tâm (Thinking Process) và tự sửa sai khi giải các bài toán logic phức tạp.
+\end{enumerate}
