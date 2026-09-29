@@ -1,82 +1,272 @@
-\chapter{Đồ Án Flagship Capstone: Modern Enterprise Data \& AI Platform (Project 11)}
+\chapter{Tuyển Tập 20 Đồ Án Dữ Liệu Thực Chiến Chuyên Sâu (20 Deep-Dive Enterprise Projects)}
 
-\section{Tầm Nhìn Của Dự Án Flagship Capstone}
-
-Đa phần ứng viên trên thị trường nộp vào CV những đồ án rời rạc: một file notebook phân tích dữ liệu Titanic, một file SQL vài câu lệnh cơ bản, hoặc một biểu đồ dashboard đơn điệu. Những dự án này không chứng minh được bạn có khả năng làm việc trong một môi trường doanh nghiệp thực tế.
-
-\textbf{Dự Án Flagship Capstone (Project 11)} được thiết kế để trở thành **tâm điểm sáng nhất trong Portfolio của bạn**. Đây là một nền tảng dữ liệu và trí tuệ nhân tạo hoàn chỉnh từ đầu đến cuối (End-to-End Platform), tích hợp mượt mà cả ba trụ cột:
-\begin{enumerate}
-    \item \textbf{Data Engineering}: Tự động hóa trích xuất từ nhiều nguồn, nạp vào Data Lake S3/MinIO, điều phối bằng Apache Airflow, mô hình hóa và kiểm thử tự động bằng dbt, tối ưu hóa lưu trữ trong Data Warehouse PostgreSQL.
-    \item \textbf{Data Science}: Huấn luyện và theo dõi mô hình học máy phân loại nguy cơ rời bỏ khách hàng (Churn Prediction) với MLflow, đóng gói thành Microservice FastAPI phục vụ thời gian thực qua container Docker.
-    \item \textbf{Data Analytics}: Xây dựng mô hình Star Schema chuẩn Kimball, tính toán các chỉ số tài chính nâng cao bằng DAX và thiết kế Executive Dashboard trên Power BI phục vụ ban lãnh đạo.
-\end{enumerate}
-
-\section{Kiến Trúc Kỹ Thuật Toàn Cảnh (End-to-End Architecture)}
-
-\begin{lythuyetbox}[Luồng Dữ Liệu 6 Tầng Chuẩn Doanh Nghiệp Hiện Đại]
-\begin{enumerate}
-    \item \textbf{Tầng Nguồn (Source Systems)}: Hệ thống giả lập các giao dịch E-commerce phát sinh liên tục (REST APIs) và tệp dữ liệu khách hàng CRM (CSV/Parquet).
-    \item \textbf{Tầng Hồ Dữ Liệu Thô (Bronze Layer - Data Lake)}: Dữ liệu thô chưa qua xử lý được lưu trữ nguyên trạng trên MinIO (tương thích hoàn toàn với Amazon S3) theo cấu trúc thư mục \texttt{raw/year=2026/month=03/}.
-    \item \textbf{Tầng Điều Phối (Orchestration)}: **Apache Airflow** kích hoạt DAG theo lịch định kỳ, kiểm tra tính khả dụng của file nguồn, thực thi xác thực dữ liệu và gọi dbt.
-    \item \textbf{Tầng Biến Đổi Dữ Liệu (Silver \& Gold Layers - dbt)}:
-    \begin{itemize}
-        \item \textit{Silver Layer (Staging)}: dbt làm sạch dữ liệu, khử trùng lặp, chuẩn hóa kiểu ngày tháng và tên cột.
-        \item \textit{Gold Layer (Marts)}: dbt xây dựng các bảng Fact và Dimension (Star Schema), thực thi hơn 30 bài kiểm định chất lượng tự động (\texttt{dbt test}).
-    \end{itemize}
-    \item \textbf{Tầng Phục Vụ Máy Học (Machine Learning Layer)}: Mô hình Scikit-Learn/XGBoost lấy dữ liệu từ Gold Layer, trích xuất đặc trưng RFM, tính toán xác suất rời bỏ và xuất ra REST API FastAPI với độ trễ dưới 25ms.
-    \item \textbf{Tầng Ra Quyết Định Kinh Doanh (BI \& Consumption Layer)}: **Power BI** kết nối trực tiếp vào Data Warehouse để hiển thị các chỉ số kinh doanh cốt lõi (Doanh thu, Tăng trưởng, Khách hàng trung thành, Danh sách cảnh báo rủi ro).
-\end{enumerate}
+\begin{lythuyetbox}[Tầm Quan Trọng Của Một Portfolio 20 Dự Án Chuẩn Doanh Nghiệp]
+Hầu hết ứng viên ứng tuyển Intern và Middle trên thị trường đều bị loại từ vòng gửi xe vì đưa vào CV những dự án đồ chơi (Toy Projects): phân tích dữ liệu Titanic, giá nhà Boston, hoặc vài câu lệnh SQL đơn giản. Những dự án đó không thể hiện được:
+\begin{itemize}
+    \item Tư duy giải quyết vấn đề kinh doanh thực tế (Business Problem Solving).
+    \item Xử lý các rủi ro hệ thống: Dữ liệu bẩn, Data Leakage, Data Skew, Idempotency, Phân vùng và Quản trị chi phí Cloud.
+    \item Khả năng đo lường tác động (Impact): Tăng doanh thu bao nhiêu \%, giảm thời gian chạy pipeline bao nhiêu lần.
+\end{itemize}
+Chương này cung cấp \textbf{20 Đồ Án Thực Chiến Chuyên Sâu} bao quát đầy đủ 3 hướng: \textbf{Data Analytics (DA), Data Engineering (DE), và Data Science / MLOps (DS)}. Mỗi đồ án đều được mổ xẻ tường tận theo chuẩn kiến trúc doanh nghiệp lớn.
 \end{lythuyetbox}
 
-\section{Cấu Trúc Repository Chuẩn Doanh Nghiệp (Enterprise Monorepo)}
+% ==============================================================================
+% NHÓM 1: 5 DỰ ÁN DATA ANALYTICS & BUSINESS INTELLIGENCE CHUYÊN SÂU
+% ==============================================================================
+\section{Nhóm 1: 5 Dự Án Data Analytics \& Business Intelligence (DA)}
 
-Một dự án chuyên nghiệp phải được tổ chức khoa học để bất kỳ kỹ sư nào trong nhóm cũng có thể khởi chạy toàn bộ hệ sinh thái chỉ bằng một lệnh duy nhất:
+\subsection{Project 1: Phân Tích Cohort Retention \& Giá Trị Trọn Đời (CLV) Đa Kênh E-Commerce}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Data Analyst (E-Commerce / Retail / D2C).
+    \item \textbf{Bối cảnh nghiệp vụ}: Sàn TMĐT chi \$200,000/tháng cho tiếp thị đa kênh nhưng không đo lường được kênh nào mang lại khách hàng trung thành, dẫn đến việc đốt ngân sách vào kênh có tỷ lệ rời bỏ (Churn) cao.
+    \item \textbf{Tech Stack}: PostgreSQL, Python (Pandas, Seaborn), Power BI, RFM Segmentation.
+    \item \textbf{Kiến trúc luồng dữ liệu}: Trích xuất 500,000 giao dịch từ PostgreSQL $\rightarrow$ Tính toán Monthly Cohort Heatmap bằng Python $\rightarrow$ Phân cụm RFM (Recency, Frequency, Monetary) $\rightarrow$ Mô hình hóa Star Schema và dựng Heatmap trên Power BI.
+    \item \textbf{Thách thức kỹ thuật}: Hiện tượng méo mó giá trị trung bình do 1\% khách sỉ (Wholesale Outliers). \textit{Giải pháp}: Sử dụng phân vị (Median \& Trimmed Mean) và tách riêng phân khúc B2B để tính CLV chính xác.
+    \item \textbf{Tác động kinh doanh}: Phát hiện kênh Google Search có M3 Retention cao gấp 2.8 lần TikTok Ads dù chi phí ban đầu cao hơn 20\%; tối ưu hóa ngân sách tiếp thị giúp tiết kiệm \$35,000/tháng.
+    \item \textbf{Câu hỏi phỏng vấn đào sâu}: \textit{"Tại sao bạn dùng Net Retention Rate thay vì Gross Retention Rate khi phân tích Cohort?"} \\
+    $\rightarrow$ \textit{Trả lời}: Gross Retention chỉ đo lường sự sụt giảm do khách hủy đơn, trong khi Net Retention phản ánh cả Expansion MRR (khách hàng cũ mua thêm), cho cái nhìn toàn diện về sức khỏe tăng trưởng tự thân của sản phẩm.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Phân tích hành vi mua sắm của 500,000 khách hàng bằng SQL và Python Cohort Matrix, tối ưu hóa ngân sách tiếp thị đa kênh giúp tăng 18\% Customer Lifetime Value và tiết kiệm \$35,000 chi phí quảng cáo hàng tháng."}
+\end{itemize}
 
-\begin{lstlisting}[language=bash]
-modern-ecommerce-data-platform/
-├── .github/
-│   └── workflows/
-│       └── ci_cd.yml              # Pipeline kiem thu va build tu dong
-├── airflow/
-│   ├── dags/
-│   │   └── ecommerce_master_dag.py # DAG dieu phoi chinh
-│   └── plugins/
-├── dbt_ecommerce/
-│   ├── dbt_project.yml
-│   ├── models/
-│   │   ├── staging/               # Silver Layer
-│   │   └── marts/                 # Gold Layer (Star Schema)
-│   └── tests/                     # Kiem dinh toan ven du lieu
-├── ml_service/
-│   ├── src/
-│   │   ├── app.py                 # FastAPI microservice
-│   │   └── model_trainer.py       # Script huan luyen va log MLflow
-│   ├── tests/
-│   │   └── test_api.py            # Unit tests voi pytest
-│   └── Dockerfile
-├── dashboards/
-│   └── executive_performance.pbix # File Power BI Dashboard hoan chinh
-├── data/                          # Du lieu mau mock testing
-├── docker-compose.yml             # Khoi chay Postgres, Airflow, MinIO, FastAPI
-├── Makefile                       # Lenh tat thao tac: make up, make test, make run
-├── requirements.txt
-└── README.md                      # Tai lieu huong dan dinh cao (Architecture + Metrics)
-\end{lstlisting}
+\subsection{Project 2: Tối Ưu Hóa Phễu Chuyển Đổi \& Thử Nghiệm A/B Testing Luồng Thanh Toán}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Product Data Analyst / Growth Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Tỷ lệ bỏ giỏ hàng (Cart Abandonment) của ứng dụng đạt mức kỷ lục 72\%, cần tái cấu trúc luồng Checkout một bước (One-Step Checkout) và chứng minh hiệu quả qua thử nghiệm định lượng.
+    \item \textbf{Tech Stack}: Python (SciPy, Statsmodels), SQL, Amplitude/Mixpanel, A/B Testing Framework.
+    \item \textbf{Kiến trúc dữ liệu}: Clickstream tracking ghi nhận sự kiện từ Frontend $\rightarrow$ Phân rã phễu 5 bước: Xem SP $\rightarrow$ Thêm giỏ $\rightarrow$ Bấm thanh toán $\rightarrow$ Điền thông tin $\rightarrow$ Hoàn tất $\rightarrow$ Phân luồng 50,000 người dùng cho A/B Test.
+    \item \textbf{Thách thức kỹ thuật}: Kiểm soát lỗi Sample Ratio Mismatch (SRM) do người dùng đổi thiết bị và xử lý hiện tượng hiệu ứng hiếu kỳ (Novelty Effect). \textit{Giải pháp}: Kiểm định $\chi^2$ goodness-of-fit hàng ngày và chạy thử nghiệm kéo dài đủ 3 chu kỳ tuần hoàn (21 ngày).
+    \item \textbf{Tác động kinh doanh}: Khẳng định giao diện mới giúp tăng tỷ lệ chuyển đổi toàn phễu (End-to-End CR) thêm $+1.3\%$ điểm phần trăm ($+10.96\%$ tương đối), mang lại thêm \$180,000 doanh thu ròng mỗi tháng.
+    \item \textbf{Câu hỏi phỏng vấn đào sâu}: \textit{"Nếu p-value = 0.03 ở ngày thứ 4, bạn có dừng thử nghiệm sớm để ship tính năng không?"} \\
+    $\rightarrow$ \textit{Trả lời}: Tuyệt đối không! Việc dừng sớm (Peeking Problem) làm tăng vọt tỷ lệ dương tính giả (False Positive) từ 5\% lên trên 30\%. Cần chạy đủ kích thước mẫu đã tính trước (Sample Sizing) và đủ số chu kỳ ngày trong tuần để khử tính mùa vụ (Day-of-Week Effect).
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Thiết kế và phân tích thử nghiệm A/B Testing trên 50,000 người dùng bằng Python Two-Proportion Z-Test và kiểm định SRM, tối ưu hóa luồng Checkout giúp tăng 10.96\% tỷ lệ chuyển đổi, đóng góp thêm \$180,000 doanh thu hàng tháng."}
+\end{itemize}
 
-\section{Kịch Bản 15 Phút Trình Bày Dự Án Chinh Phục Nhà Tuyển Dụng}
+\subsection{Project 3: Cây Chỉ Số Nghiệp Vụ \& Executive P\&L Dashboard Trên Power BI}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: BI Analyst / Financial Data Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Ban giám đốc cần một hệ thống báo cáo quản trị hợp nhất theo dõi kết quả hoạt động kinh doanh (P\&L), tự động phân rã nguyên nhân khi lợi nhuận ròng biến động.
+    \item \textbf{Tech Stack}: Power BI, DAX nâng cao, Tabular Editor, Snowflake, SQL Server.
+    \item \textbf{Kiến trúc dữ liệu}: Thiết kế Star Schema với 2 bảng Fact (\texttt{fact\_sales}, \texttt{fact\_operating\_costs}) liên kết với 5 bảng Dim qua quan hệ $1-*$, Single Direction. Viết 30+ Measures DAX phân cấp theo cây chỉ số: $\text{Lợi Nhuận} \rightarrow \text{Doanh Thu} - \text{Chi Phí}$.
+    \item \textbf{Thách thức kỹ thuật}: Tối ưu hóa Context Transition trong các phép tính Time Intelligence đa năm và ẩn các chỉ số không áp dụng cho từng cấp phòng ban qua Row-Level Security (RLS). \textit{Giải pháp}: Sử dụng DAX Studio đánh giá Query Plan, thay thế hàm \texttt{FILTER(ALL())} bằng \texttt{KEEPFILTERS} giúp giảm thời gian render visual từ 4.2s xuống 0.6s.
+    \item \textbf{Tác động kinh doanh}: Tự động hóa hoàn toàn báo cáo tài chính hàng tháng vốn mất 4 ngày làm việc thủ công trên Excel của đội kế toán, cung cấp khả năng phân tích nguyên nhân biến động chỉ trong 3 cú nhấp chuột.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Xây dựng hệ thống Executive P\&L Dashboard 3 tầng trên Power BI kết nối Snowflake với 30+ công thức DAX tối ưu, tự động hóa 100\% quy trình báo cáo quản trị tài chính hàng tháng và cắt giảm thời gian tổng hợp số liệu từ 4 ngày xuống còn 0 phút."}
+\end{itemize}
 
-Khi người phỏng vấn đề nghị: \textit{"Em hãy trình bày dự án ấn tượng nhất mà em từng xây dựng"}, hãy áp dụng kịch bản 4 phần:
-\begin{enumerate}
-    \item \textbf{Phần 1: Bối Cảnh Nghiệp Vụ \& Mục Tiêu (3 phút)}:
-    \textit{"Em nhận thấy bài toán phổ biến của các sàn TMĐT là dữ liệu giao dịch bị phân mảnh ở nhiều nơi khiến báo cáo kinh doanh bị chậm trễ và không kịp thời giữ chân khách hàng có nguy cơ rời bỏ. Vì vậy, em đã tự mình thiết kế và xây dựng một nền tảng dữ liệu toàn diện Modern Data Platform xử lý hơn 100,000 giao dịch/ngày, tích hợp giữa hạ tầng dữ liệu và mô hình trí tuệ nhân tạo."}
-    \item \textbf{Phần 2: Kiến Trúc Kỹ Thuật \& Đánh Đổi Lựa Chọn (5 phút)}:
-    Giải thích vì sao bạn chọn công nghệ này mà không chọn công nghệ khác:
+\subsection{Project 4: Mô Hình Phân Bổ Tiếp Thị Đa Kênh (Multi-Touch Attribution) \& ROAS}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Marketing Data Analyst / AdTech Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Đội Marketing dùng Last-Touch Attribution dẫn đến việc cắt toàn bộ ngân sách kênh Facebook/TikTok (kênh đầu phễu) vì tưởng không hiệu quả, khiến nguồn khách mới sụt giảm 40\%.
+    \item \textbf{Tech Stack}: Python, BigQuery SQL, Markov Chains, Shapley Value Attribution, Google Analytics 4 API.
+    \item \textbf{Kiến trúc dữ liệu}: Thu thập chuỗi sự kiện Touchpoints theo phiên của người dùng $\rightarrow$ Xây dựng ma trận chuyển đổi trạng thái Markov (Markov Transition Matrix) $\rightarrow$ Tính tỷ lệ Removal Effect để phân bổ giá trị doanh thu công bằng cho từng kênh.
+    \item \textbf{Thách thức kỹ thuật}: Hành trình khách hàng kéo dài hơn 60 ngày với hàng chục điểm chạm rác (Spam Clicks). \textit{Giải pháp}: Áp dụng cửa sổ phân bổ (Attribution Window) 30 ngày và thuật toán gộp phiên (Session Stitching) theo User ID.
+    \item \textbf{Tác động kinh doanh}: Tái phân bổ ngân sách 30\% từ Google Ads sang Content SEO và Facebook Retargeting, nâng chỉ số Blended ROAS của toàn công ty từ 2.4 lên 3.6.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Phát triển mô hình phân bổ tiếp thị đa kênh dựa trên thuật toán Markov Chain trong Python và BigQuery, tái cơ cấu ngân sách \$150,000/tháng và nâng chỉ số ROAS toàn chiến dịch từ 2.4 lên 3.6."}
+\end{itemize}
+
+\subsection{Project 5: Tối Ưu Hóa Tồn Kho Chuỗi Cung Ứng \& Hệ Thống Cảnh Báo Đứt Hàng}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Supply Chain Data Analyst / Operations Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Chuỗi bán lẻ 50 cửa hàng liên tục gặp tình trạng: mặt hàng bán chạy thì đứt hàng (Stockout), mặt hàng ế thì tồn kho quá hạn gây chôn vốn hơn \$400,000.
+    \item \textbf{Tech Stack}: SQL, Python (Statsmodels, Prophet), Streamlit, PostgreSQL.
+    \item \textbf{Kiến trúc dữ liệu}: Dữ liệu bán lẻ POS đồng bộ về kho hàng đêm $\rightarrow$ Dự báo nhu cầu 14 ngày tới bằng Time Series Forecasting $\rightarrow$ Tính toán Điểm đặt hàng lại (ROP) động theo Lead Time và Safety Stock $\rightarrow$ Xuất cảnh báo tự động lên Dashboard Streamlit.
+    \item \textbf{Thách thức kỹ thuật}: Tính mùa vụ cao và biến động Lead Time do nhà cung cấp trễ hẹn. \textit{Giải pháp}: Sử dụng mô hình kiểm định phương sai phân phối nhu cầu (Service Level 95\% với $Z = 1.645$) để điều chỉnh Safety Stock linh hoạt.
+    \item \textbf{Tác động kinh doanh}: Giảm tỷ lệ đứt hàng (Stockout Rate) từ 14.5\% xuống còn 3.2\%, đồng thời giảm 22\% giá trị hàng tồn kho ứ đọng.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Xây dựng hệ thống dự báo nhu cầu và cảnh báo đứt hàng tự động cho 50 cửa hàng bán lẻ bằng Python và SQL, hạ tỷ lệ đứt hàng từ 14.5\% xuống 3.2\% và giải phóng \$90,000 vốn tồn kho lưu động."}
+\end{itemize}
+
+% ==============================================================================
+% NHÓM 2: 7 DỰ ÁN DATA ENGINEERING & HẠ TẦNG DỮ LIỆU CHUYÊN SÂU
+% ==============================================================================
+\section{Nhóm 2: 7 Dự Án Data Engineering \& Hạ Tầng Dữ Liệu (DE)}
+
+\subsection{Project 6: Đường Ống Ingestion Giao Dịch Hàng Ngày Có Tính Lũy Đẳng (Idempotent ETL)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Data Engineer / Backend Data Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Hệ thống thanh toán sinh ra 2 triệu giao dịch/ngày. Đường ống cũ thường xuyên bị lỗi mạng khi chạy lúc nửa đêm; mỗi lần kỹ sư nhấn chạy lại (re-run) lại gây trùng lặp doanh thu (Duplicate Rows).
+    \item \textbf{Tech Stack}: Python 3.11, PostgreSQL, Pydantic, Great Expectations, Docker, Bash.
+    \item \textbf{Kiến trúc dữ liệu}: REST API $\rightarrow$ Tầng Staging tạm thời $\rightarrow$ Kiểm định Schema \& Data Quality qua Pydantic $\rightarrow$ Nạp vào Data Warehouse bằng chiến lược Partition Overwrite / Atomic Upsert.
+    \item \textbf{Thách thức kỹ thuật}: Đảm bảo đường ống có tính lũy đẳng 100\% (Idempotency). \textit{Giải pháp}: Sử dụng giao dịch cơ sở dữ liệu (Database Transaction với câu lệnh \texttt{INSERT ... ON CONFLICT (order\_id) DO UPDATE}) và khóa dòng định danh duy nhất.
+    \item \textbf{Tác động kinh doanh}: Triệt tiêu 100\% nguy cơ trùng lặp dữ liệu, nâng SLA tính sẵn sàng của dữ liệu báo cáo buổi sáng lên 99.9\%.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Thiết kế đường ống ETL giao dịch thanh toán tự động xử lý 2M bản ghi/ngày bằng Python và PostgreSQL, áp dụng nguyên tắc Idempotency và Pydantic Validation, loại bỏ 100\% lỗi trùng lặp và duy trì SLA ổn định 99.9\%."}
+\end{itemize}
+
+\subsection{Project 7: Nền Tảng Modern Data Stack Với Apache Airflow, dbt \& PostgreSQL}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Analytics Engineer / Data Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Doanh nghiệp có hơn 200 bảng dữ liệu rời rạc, các câu SQL biến đổi dữ liệu được viết lộn xộn trong Stored Procedures không có version control, không có kiểm thử tự động, gây lỗi dashboard hàng tuần.
+    \item \textbf{Tech Stack}: Apache Airflow (TaskFlow API), dbt-core, PostgreSQL/Snowflake, Docker Compose, Git Flow.
+    \item \textbf{Kiến trúc dữ liệu}: Airflow lập lịch trích xuất thô $\rightarrow$ dbt đảm nhiệm toàn bộ tầng Transform theo 3 lớp: Staging $\rightarrow$ Intermediate $\rightarrow$ Data Marts (Star Schema). Cấu hình 45 bài kiểm định tự động (\texttt{unique, not\_null, relationships, singular tests}).
+    \item \textbf{Thách thức kỹ thuật}: Mô hình dbt chạy toàn bộ mất 50 phút. \textit{Giải pháp}: Chuyển đổi các mô hình bảng Fact lớn sang chiến lược \texttt{materialized='incremental'} với bộ lọc thời gian cập nhật (\texttt{updated\_at}), giảm thời gian build xuống còn 8 phút.
+    \item \textbf{Tác động kinh doanh}: Rút ngắn chu kỳ phát triển tính năng dữ liệu mới từ 2 tuần xuống còn 2 ngày, phát hiện và chặn đứng 100\% lỗi dữ liệu bẩn trước khi chạm tới báo cáo của ban giám đốc.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Kiến trúc hạ tầng Modern Data Stack với Docker, Apache Airflow và dbt trên 200+ bảng dữ liệu, thiết lập 45 bài test tự động và tối ưu hóa Incremental Materialization giúp giảm 84\% thời gian xử lý dữ liệu hàng ngày."}
+\end{itemize}
+
+\subsection{Project 8: Đường Ống CDC (Change Data Capture) Luồng Thời Gian Thực Với Debezium \& Kafka}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Real-Time Data Engineer / Streaming Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Ứng dụng gọi xe cần theo dõi vị trí và trạng thái chuyến đi theo thời gian thực (Real-Time). Việc truy vấn trực tiếp vào CSDL MySQL tác nghiệp cứ mỗi 5 giây làm nghẽn CSDL chính của người dùng.
+    \item \textbf{Tech Stack}: MySQL Binary Log, Debezium Connector, Apache Kafka, Kafka Connect, Apache Flink / Spark Streaming, ElasticSearch.
+    \item \textbf{Kiến trúc dữ liệu}: MySQL WAL/Binlog $\rightarrow$ Debezium CDC phát hiện thay đổi từng mili-giây $\rightarrow$ Đẩy sự kiện dạng JSON/Avro vào Kafka Topic (12 Partitions) $\rightarrow$ Stream Processor tổng hợp $\rightarrow$ Lưu vào Elasticsearch phục vụ Dashboard thời gian thực.
+    \item \textbf{Thách thức kỹ thuật}: Duy trì thứ tự sự kiện (In-Order Delivery) và xử lý hiện tượng rớt mạng của Consumer (Consumer Lag). \textit{Giải pháp}: Đặt \texttt{partition\_key = driver\_id} và cấu hình nhóm Consumer Group mở rộng ngang theo đúng số partition.
+    \item \textbf{Tác động kinh doanh}: Hạ độ trễ truyền dữ liệu từ 15 phút (Batch) xuống dưới 800 mili-giây (Streaming), giải phóng 100\% tải đọc cho CSDL tác nghiệp.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Xây dựng pipeline Change Data Capture thời gian thực sử dụng Debezium và Apache Kafka xử lý 15,000 sự kiện/giây, giảm độ trễ dữ liệu từ 15 phút xuống dưới 1 giây và triệt tiêu tải truy vấn trên CSDL production."}
+\end{itemize}
+
+\subsection{Project 9: Mô Hình Hóa Chiều Star Schema \& Quản Lý Lịch Sử SCD Type 2 Trên Cloud DWH}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Data Warehouse Architect / Senior Data Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Khi thông tin khách hàng (địa chỉ, hạng thẻ, chi nhánh phụ trách) thay đổi, hệ thống cũ ghi đè (Overwrite) làm sai lệch toàn bộ báo cáo doanh thu theo khu vực của các năm trước.
+    \item \textbf{Tech Stack}: Google BigQuery / Snowflake, SQL DDL/DML, dbt snapshots, Kimball Methodology.
+    \item \textbf{Kiến trúc dữ liệu}: Thiết kế lược đồ hình sao chuẩn Kimball gồm 3 Fact Tables (\texttt{fact\_order\_items, fact\_payments, fact\_inventory\_snapshots}) và 6 Dimension Tables. Triển khai bảng lịch sử biến đổi chậm SCD Type 2 cho \texttt{dim\_customers} với các trường kỹ thuật \texttt{valid\_from, valid\_to, is\_current}.
+    \item \textbf{Thách thức kỹ thuật}: Câu truy vấn Point-in-Time Join giữa bảng Fact và Dimension SCD2 bị chậm do phép so sánh khoảng ngày (\texttt{fact.date BETWEEN dim.valid\_from AND dim.valid\_to}). \textit{Giải pháp}: Sử dụng Date Partitioning và Cluster Key trên trường \texttt{customer\_id}, tăng tốc độ truy vấn gấp 5 lần.
+    \item \textbf{Tác động kinh doanh}: Đảm bảo tính toàn vẹn 100\% cho dữ liệu kiểm toán tài chính lịch sử, đáp ứng đầy đủ tiêu chuẩn kiểm toán doanh nghiệp niêm yết.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Thiết kế kiến trúc kho dữ liệu Star Schema chuẩn Kimball với kỹ thuật SCD Type 2 trên Google BigQuery, quản lý lịch sử biến động cho 2M khách hàng và tối ưu hóa cấu trúc Clustering giúp tiết kiệm 40\% chi phí truy vấn đám mây."}
+\end{itemize}
+
+\subsection{Project 10: Xử Lý Phân Tán Dữ Liệu Lớn (100M+ Dòng) Với PySpark \& Broadcast Join}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Big Data Engineer / Spark Specialist.
+    \item \textbf{Bối cảnh nghiệp vụ}: Hệ thống viễn thông có 120 triệu bản ghi nhật ký cuộc gọi (CDR) mỗi ngày. Các tác vụ tổng hợp bằng Pandas trên máy chủ đơn lẻ liên tục bị tràn bộ nhớ (Out-Of-Memory Crash).
+    \item \textbf{Tech Stack}: Apache Spark (PySpark), Hadoop HDFS / S3, Parquet, Snappy, YARN.
+    \item \textbf{Kiến trúc dữ liệu}: Ingestion file nén Parquet với Schema tường minh (\texttt{StructType}) $\rightarrow$ Thực thi các hàm phân tích Window Functions tính cước lũy kế $\rightarrow$ Phép nối dữ liệu tối ưu với bảng danh mục trạm phát sóng $\rightarrow$ Ghi ra partitioned Parquet theo \texttt{year/month/day}.
+    \item \textbf{Thách thức kỹ thuật}: Hiện tượng xáo trộn dữ liệu (Data Shuffling) qua mạng giữa các Executor khi Join bảng lớn (120M dòng) với bảng nhỏ (5,000 trạm BTS) làm đơ cụm Spark. \textit{Giải pháp}: Ép kiểu Broadcast Hash Join qua hàm \texttt{broadcast(dim\_bts)}, loại bỏ hoàn toàn quá trình Shuffle mạng.
+    \item \textbf{Tác động kinh doanh}: Rút ngắn thời gian xử lý toàn bộ 120M bản ghi từ 2 giờ 45 phút xuống còn 14 phút, tiết kiệm 60\% chi phí thuê cụm máy chủ điện toán đám mây.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Tối ưu hóa pipeline xử lý 120M+ bản ghi dữ liệu viễn thông hàng ngày bằng PySpark và Broadcast Hash Join, giải quyết dứt điểm lỗi OOM và cắt giảm thời gian thực thi tác vụ từ 165 phút xuống còn 14 phút."}
+\end{itemize}
+
+\subsection{Project 11: Kiến Trúc Lakehouse Hiện Đại Với Delta Lake ACID \& Time Travel}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Lakehouse Engineer / Data Platform Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Đồ án Data Lake truyền thống gặp vấn đề: Không hỗ trợ giao dịch ACID dẫn đến dữ liệu đọc dở dang khi pipeline đang ghi (Dirty Reads), và khó khăn khi thực hiện quyền xóa dữ liệu người dùng theo chuẩn GDPR/PDPA.
+    \item \textbf{Tech Stack}: Delta Lake, Apache Spark, MinIO / AWS S3, Delta Engine.
+    \item \textbf{Kiến trúc dữ liệu}: Kiến trúc Medallion 3 tầng (Bronze: Raw $\rightarrow$ Silver: Cleaned $\rightarrow$ Gold: Business-Ready). Quản lý nhật ký giao dịch qua thư mục \texttt{\_delta\_log/}.
+    \item \textbf{Thách thức kỹ thuật}: Vấn đề tệp tin nhỏ (Small File Problem) do cơ chế ghi streaming sinh ra hàng trăm nghìn file vài KB làm chậm tốc độ quét dữ liệu. \textit{Giải pháp}: Lập lịch tự động chạy lệnh \texttt{OPTIMIZE} định kỳ để nén tệp (Compaction) và cấu hình \texttt{VACUUM} dọn dẹp các phiên bản quá khứ cũ hơn 7 ngày.
+    \item \textbf{Tác động kinh doanh}: Cho phép truy vấn dữ liệu quá khứ tại bất kỳ thời điểm nào (\textit{Time Travel}), hỗ trợ 100\% các yêu cầu xóa dữ liệu tuân thủ pháp lý chỉ bằng 1 câu lệnh \texttt{DELETE}.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Triển khai kiến trúc Lakehouse hiện đại sử dụng Delta Lake trên nền MinIO/S3, thiết lập cơ chế nén tự động Compaction và ACID Transactions, tăng tốc độ truy vấn phân tích lên 3.5 lần và đáp ứng 100\% chuẩn bảo mật dữ liệu GDPR."}
+\end{itemize}
+
+\subsection{Project 12: Pipeline Đám Mây Không Máy Chủ (Serverless Event-Driven) Trên AWS}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Cloud Data Engineer / AWS Specialist.
+    \item \textbf{Bối cảnh nghiệp vụ}: Doanh nghiệp muốn xây dựng đường ống xử lý dữ liệu tự động cho các đối tác đẩy tệp hàng ngày nhưng không muốn tốn chi phí duy trì cụm máy chủ EC2 chạy 24/7.
+    \item \textbf{Tech Stack}: AWS S3, AWS Lambda (Python runtime), AWS Glue, Amazon Athena, CloudWatch.
+    \item \textbf{Kiến trúc dữ liệu}: Đối tác tải file CSV lên \texttt{s3://landing-bucket/} $\rightarrow$ S3 Event Notification kích hoạt AWS Lambda $\rightarrow$ Lambda xác thực và chuyển đổi dữ liệu $\rightarrow$ Ghi ra Parquet vào \texttt{s3://clean-bucket/} $\rightarrow$ AWS Glue Data Catalog cập nhật Metadata $\rightarrow$ Phân tích trực tiếp qua Amazon Athena bằng SQL.
+    \item \textbf{Thách thức kỹ thuật}: Giới hạn thời gian chạy 15 phút và RAM của AWS Lambda khi gặp tệp dữ liệu đột biến dung lượng lớn ($> 2$GB). \textit{Giải pháp}: Lambda chỉ làm nhiệm vụ kiểm tra sơ bộ và điều phối kích hoạt AWS Glue Serverless Job xử lý phân tán khi tệp vượt quá 500MB.
+    \item \textbf{Tác động kinh doanh}: Chi phí vận hành hạ tầng dữ liệu giảm 82\% so với việc duy trì máy chủ EC2 truyền thống (chỉ trả tiền đúng số giây Lambda và dung lượng Athena quét thực tế).
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Xây dựng đường ống dữ liệu Serverless hướng sự kiện trên AWS (S3, Lambda, Glue, Athena) xử lý tự động 50GB tệp giao dịch hàng ngày, cắt giảm 82\% chi phí hạ tầng máy chủ so với giải pháp EC2 truyền thống."}
+\end{itemize}
+
+% ==============================================================================
+% NHÓM 3: 5 DỰ ÁN DATA SCIENCE & MACHINE LEARNING THỰC CHIẾN
+% ==============================================================================
+\section{Nhóm 3: 5 Dự Án Data Science \& Machine Learning (DS)}
+
+\subsection{Project 13: Mô Hình Chấm Điểm Tín Dụng \& Dự Đoán Rủi Ro Nợ Xấu (Credit Risk Scoring)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Risk Data Scientist / Financial Modeler.
+    \item \textbf{Bối cảnh nghiệp vụ}: Ngân hàng số muốn tự động hóa phê duyệt hồ sơ vay tiêu dùng, giảm tỷ lệ nợ xấu (Non-Performing Loan -- NPL) mà không siết quá chặt làm mất khách hàng tốt.
+    \item \textbf{Tech Stack}: Python, Scikit-Learn, LightGBM, Optuna, Weight of Evidence (WoE) \& Information Value (IV).
+    \item \textbf{Quy trình dữ liệu}: Tập dữ liệu 250,000 hồ sơ vay lịch sử $\rightarrow$ Xử lý lệch lớp nghiêm trọng (chỉ có 4\% nợ xấu) $\rightarrow$ Mã hóa biến WoE $\rightarrow$ Tinh chỉnh siêu tham số bằng Optuna $\rightarrow$ Chuyển đổi xác suất vỡ nợ (Probability of Default) thành Credit Scorecard chuẩn thang điểm 300--850.
+    \item \textbf{Thách thức kỹ thuật}: Ngăn chặn Data Leakage từ các trường thông tin chỉ xuất hiện sau khi khoản vay được duyệt. \textit{Giải pháp}: Thiết lập Scikit-Learn Pipeline tách biệt nghiêm ngặt thời gian tính toán đặc trưng trước thời điểm giải ngân.
+    \item \textbf{Tác động kinh doanh}: Mô hình đạt ROC-AUC 0.86, giúp ngân hàng giảm 24\% tỷ lệ nợ xấu đồng thời rút ngắn thời gian phê duyệt hồ sơ từ 2 ngày xuống còn 15 giây.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Huấn luyện mô hình chấm điểm tín dụng LightGBM trên 250,000 hồ sơ vay với kỹ thuật cân bằng lớp và mã hóa WoE, đạt ROC-AUC 0.86, giúp ngân hàng giảm 24\% nợ xấu và tự động hóa phê duyệt khoản vay trong 15 giây."}
+\end{itemize}
+
+\subsection{Project 14: Hệ Thống Gợi Ý Sản Phẩm Thời Gian Thực (E-Commerce Recommendation Engine)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Machine Learning Engineer / Personalization Data Scientist.
+    \item \textbf{Bối cảnh nghiệp vụ}: Người dùng trên trang web TMĐT thường rời đi sau khi xem 1 sản phẩm vì không tìm thấy sản phẩm liên quan phù hợp, khiến tỷ lệ thoát trang cao và giá trị đơn hàng trung bình (AOV) thấp.
+    \item \textbf{Tech Stack}: Python, Implicit Matrix Factorization, Two-Tower Neural Network, Redis Cache, FastAPI.
+    \item \textbf{Kiến trúc hệ sinh thái}: Mô hình 2 giai đoạn: (1) Candidate Generation: Lọc lấy Top 200 sản phẩm tiềm năng bằng Matrix Factorization; (2) Ranking: Mô hình LightGBM xếp hạng dựa trên lịch sử xem gần nhất, phân loại hàng và khuyến mãi $\rightarrow$ Lưu kết quả tính sẵn vào Redis Cache.
+    \item \textbf{Thách thức kỹ thuật}: Vấn đề người dùng mới và sản phẩm mới không có lịch sử tương tác (Cold-Start Problem). \textit{Giải pháp}: Kết hợp Content-Based Filtering dựa trên nhãn sản phẩm và vị trí địa lý cho người dùng mới trong 24 giờ đầu.
+    \item \textbf{Tác động kinh doanh}: Tăng 22\% tỷ lệ nhấp chuột vào mục gợi ý (Click-Through Rate -- CTR) và nâng giá trị đơn hàng trung bình (AOV) thêm \$12.4.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Thiết kế hệ thống gợi ý sản phẩm 2 giai đoạn (Candidate Generation \& LightGBM Ranking) phục vụ qua Redis Cache với độ trễ dưới 20ms, nâng 22\% CTR vào mục gợi ý và tăng giá trị đơn hàng trung bình thêm \$12.4."}
+\end{itemize}
+
+\subsection{Project 15: Hệ Thống Phát Hiện Gian Lận Giao Dịch Tài Chính (Financial Fraud Detection)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Fraud Data Scientist / Risk Analytics Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Cổng thanh toán trực tuyến bị thiệt hại hàng trăm nghìn USD mỗi quý do các hành vi gian lận dùng thẻ đánh cắp (Stolen Cards) và rửa tiền qua tài khoản ảo.
+    \item \textbf{Tech Stack}: Python, Isolation Forest, XGBoost, NetworkX (Graph Analytics), Kafka.
+    \item \textbf{Quy trình dữ liệu}: Trích xuất các đặc trưng tần suất giao dịch trong cửa sổ thời gian ngắn (Velocity Features: số giao dịch trong 5 phút qua, khoảng cách địa lý giữa 2 lần quẹt thẻ liên tiếp) $\rightarrow$ Phân tích mạng lưới tài khoản có liên quan bằng Graph Analytics $\rightarrow$ Mô hình phân loại rủi ro.
+    \item \textbf{Thách thức kỹ thuật}: Tỷ lệ dương tính giả (False Positive) làm phiền khách hàng chân chính (chặn nhầm giao dịch hợp pháp). \textit{Giải pháp}: Tối ưu hóa ngưỡng phân loại dựa trên ma trận chi phí kinh doanh (Cost Matrix Optimization) thay vì ngưỡng cố định 0.5.
+    \item \textbf{Tác động kinh doanh}: Chặn đứng 88\% các vụ gian lận trước khi tiền bị chuyển đi, giảm tỷ lệ khiếu nại bồi hoàn (Chargeback Rate) xuống dưới ngưỡng 0.4\%.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Xây dựng hệ thống phát hiện gian lận thanh toán kết hợp Graph Analytics và XGBoost xử lý các đặc trưng vận tốc giao dịch, ngăn chặn thành công 88\% hành vi gian lận và hạ tỷ lệ Chargeback xuống dưới 0.4\%."}
+\end{itemize}
+
+\subsection{Project 16: Dự Đoán Khách Hàng Rời Bỏ Có Khả Năng Giải Thích (Explainable AI Với SHAP)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Customer Data Scientist / Retention Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Đội Chăm sóc khách hàng (Customer Success) nhận được danh sách khách hàng có nguy cơ rời bỏ từ đội Data nhưng không biết vì lý do gì để can thiệp (mô hình như một chiếc hộp đen - Blackbox).
+    \item \textbf{Tech Stack}: Python, Scikit-Learn Pipeline, CatBoost, SHAP (SHapley Additive exPlanations), Streamlit.
+    \item \textbf{Quy trình dữ liệu}: Huấn luyện mô hình phân loại CatBoost trên 100,000 khách hàng dịch vụ viễn thông/SaaS $\rightarrow$ Tích hợp thư viện SHAP để tính toán giá trị đóng góp của từng đặc trưng cho từng khách hàng cụ thể $\rightarrow$ Xuất Dashboard giải thích lý do rời bỏ trực quan cho nhân viên CS.
+    \item \textbf{Thách thức kỹ thuật}: Thời gian tính toán TreeSHAP cho hàng chục nghìn bản ghi quá lâu. \textit{Giải pháp}: Sử dụng xấp xỉ KernelSHAP trên tập mẫu đại diện (Representative Sample) và tiền tính toán (Pre-computation) theo lô hàng đêm.
+    \item \textbf{Tác động kinh doanh}: Giúp đội CS tiếp cận đúng nguyên nhân gốc rễ (do giá cước, sự cố kỹ thuật hay thiếu tính năng), nâng tỷ lệ giữ chân khách hàng can thiệp thành công từ 12\% lên 34\%.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Phát triển mô hình dự đoán rời bỏ Explainable AI sử dụng CatBoost và SHAP values, cung cấp lý do rủi ro cá nhân hóa cho từng khách hàng trên Dashboard, giúp tăng tỷ lệ giữ chân thành công của đội CS từ 12\% lên 34\%."}
+\end{itemize}
+
+\subsection{Project 17: Động Cơ Định Giá Động (Dynamic Pricing Engine) Dựa Trên Độ Co Giãn Của Cầu}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Pricing Data Scientist / Revenue Management Analyst.
+    \item \textbf{Bối cảnh nghiệp vụ}: Ứng dụng đặt phòng khách sạn / vé xe duy trì mức giá cố định quanh năm, dẫn đến việc mất doanh thu vào mùa cao điểm và thừa phòng trống vào mùa thấp điểm.
+    \item \textbf{Tech Stack}: Python, Scipy Optimize, Linear Regression, Machine Learning, Streamlit.
+    \item \textbf{Quy trình dữ liệu}: Ước lượng hệ số co giãn của cầu theo giá ($E_d$) theo từng phân khúc thị trường và khung giờ $\rightarrow$ Thiết lập bài toán tối ưu hóa doanh thu có ràng buộc (Constrained Revenue Maximization) $\rightarrow$ Khuyến nghị mức giá tối ưu theo thời gian thực.
+    \item \textbf{Thách thức kỹ thuật}: Hiệu ứng nội sinh (Endogeneity): Giá cả và nhu cầu tương tác đa chiều. \textit{Giải pháp}: Sử dụng biến công cụ (Instrumental Variables) và phân tích đối chứng để cô lập độ nhạy giá thuần túy của khách hàng.
+    \item \textbf{Tác động kinh doanh}: Tăng 14.8\% tổng doanh thu hàng tháng và nâng tỷ lệ lấp đầy phòng trung bình thêm 9.5\% điểm phần trăm.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Mô hình hóa độ co giãn giá của cầu và phát triển thuật toán định giá động bằng Python Scipy Optimize, tối ưu hóa doanh thu có ràng buộc giúp tăng 14.8\% doanh thu ròng hàng tháng."}
+\end{itemize}
+
+% ==============================================================================
+% NHÓM 4: 2 DỰ ÁN MLOPS & ĐƯA MÔ HÌNH LÊN PRODUCTION
+% ==============================================================================
+\section{Nhóm 4: 2 Dự Án MLOps \& Triển Khai Sản Xuất}
+
+\subsection{Project 18: Microservice Phục Vụ Dự Đoán ML Thời Gian Thực Với FastAPI \& Docker}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: MLOps Engineer / Machine Learning Engineer.
+    \item \textbf{Bối cảnh nghiệp vụ}: Đội Data Science huấn luyện được mô hình ML tốt trên Jupyter Notebook nhưng đội Kỹ thuật phần mềm không biết làm thế nào để tích hợp vào ứng dụng di động đang có 100,000 người dùng hoạt động.
+    \item \textbf{Tech Stack}: Python, FastAPI, Pydantic, Gunicorn/Uvicorn, Docker, Locust, Prometheus.
+    \item \textbf{Kiến trúc hệ thống}: Đóng gói mô hình thành REST API với endpoint \texttt{POST /predict} $\rightarrow$ Sử dụng cơ chế \texttt{lifespan} tải mô hình lên RAM 1 lần duy nhất $\rightarrow$ Đóng gói Docker Image đa tầng nhẹ dưới 140MB $\rightarrow$ Đo đạc độ trễ bằng Locust Load Testing.
+    \item \textbf{Thách thức kỹ thuật}: Xử lý 1,000 requests/giây mà không làm tăng độ trễ p99 vượt quá 50ms. \textit{Giải pháp}: Cấu hình Uvicorn Worker đa luồng bất đồng bộ và loại bỏ các phép tiền xử lý dữ liệu phức tạp dạng vòng lặp for bằng NumPy C-level vectorization.
+    \item \textbf{Tác động kinh doanh}: Đưa mô hình từ file tĩnh trên máy cá nhân thành một dịch vụ sản xuất độc lập có khả năng mở rộng quy mô, đạt SLA 99.99\% và độ trễ phản hồi chỉ 18 mili-giây.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Đóng gói mô hình Machine Learning thành Microservice FastAPI container hóa với Docker đa tầng, chịu tải 1,000 RPS với độ trễ p99 dưới 20ms, thiết lập giám sát Prometheus phục vụ tích hợp mượt mà vào ứng dụng production."}
+\end{itemize}
+
+\subsection{Project 19: Đường Ống CI/CD Tự Động Kiểm Thử \& Đăng Ký Mô Hình ML Với GitHub Actions}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: MLOps Engineer / DevOps Engineer for Data.
+    \item \textbf{Bối cảnh nghiệp vụ}: Khi các nhà khoa học dữ liệu cập nhật mô hình mới, việc kiểm tra lỗi và cập nhật lên máy chủ được làm thủ công bằng tay, thường xuyên làm sập server do xung đột phiên bản thư viện.
+    \item \textbf{Tech Stack}: GitHub Actions, Pytest, Flake8, MLflow Model Registry, Docker Hub, AWS ECR.
+    \item \textbf{Kiến trúc tự động hóa}: Khi tạo Pull Request $\rightarrow$ Kích hoạt GitHub Actions Workflow $\rightarrow$ Chạy kiểm tra chuẩn code (Flake8 linter) $\rightarrow$ Chạy bài kiểm thử đơn vị tự động (Pytest) $\rightarrow$ Đánh giá hiệu năng mô hình mới so sánh với mô hình Baseline $\rightarrow$ Tự động đóng gói Docker Image và gắn thẻ phiên bản (Semantic Tagging) $\rightarrow$ Đăng ký lên Model Registry.
+    \item \textbf{Thách thức kỹ thuật}: Quá trình build CI chạy lại từ đầu mất 15 phút. \textit{Giải pháp}: Cấu hình Docker Buildx Cache và GitHub Actions Dependency Caching, rút ngắn thời gian kiểm thử tự động xuống dưới 2.5 phút.
+    \item \textbf{Tác động kinh doanh}: Loại bỏ hoàn toàn lỗi triển khai do con người, cho phép đội ngũ cập nhật mô hình mới lên môi trường Production 3 lần mỗi tuần một cách an toàn tuyệt đối.
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Thiết lập đường ống CI/CD tự động hóa toàn diện cho hệ thống ML bằng GitHub Actions, Pytest và MLflow, kiểm soát chất lượng mã nguồn và rút ngắn chu kỳ triển khai mô hình từ 2 tuần xuống còn 30 phút."}
+\end{itemize}
+
+% ==============================================================================
+% DỰ ÁN 20: FLAGSHIP CAPSTONE TÍCH HỢP TOÀN DIỆN
+% ==============================================================================
+\section{Nhóm 5: Đồ Án Tích Hợp Toàn Diện (Full-Stack Capstone)}
+
+\subsection{Project 20: Nền Tảng Dữ Liệu \& AI Doanh Nghiệp Toàn Diện (Enterprise Modern Data Platform)}
+\begin{itemize}
+    \item \textbf{Vị trí mục tiêu}: Senior Data Analyst / Senior Data Engineer / Full-Stack Data Specialist.
+    \item \textbf{Tầm nhìn}: Đây là **đồ án Capstone đỉnh cao tích hợp trọn vẹn 3 trụ cột**: Ingestion $\rightarrow$ Warehouse/Lakehouse $\rightarrow$ Machine Learning Serving $\rightarrow$ Business Executive Dashboard.
+    \item \textbf{Kiến trúc 6 tầng hoàn chỉnh}:
+    \begin{enumerate}
+        \item \textit{Landing Zone}: S3/MinIO lưu trữ dữ liệu thô bán hàng và tương tác người dùng.
+        \item \textit{Orchestration}: Apache Airflow điều phối luồng ETL hàng ngày với cơ chế Retry và cảnh báo Slack.
+        \item \textit{Transformation \& Testing}: dbt xây dựng kho dữ liệu Star Schema (Fact, Dimension SCD2) kèm 40+ bài test tự động.
+        \item \textit{Machine Learning}: Mô hình XGBoost dự đoán khách hàng rời bỏ huấn luyện qua Scikit-Learn Pipeline, phục vụ qua FastAPI container.
+        \item \textit{Continuous Monitoring}: Hệ thống kiểm soát độ lệch phân phối dữ liệu (Data Drift / PSI) phát tín hiệu tự động huấn luyện lại.
+        \item \textit{Business Consumption}: Executive Power BI Dashboard 3 tầng phục vụ ban lãnh đạo ra quyết định kinh doanh.
+    \end{enumerate}
+    \item \textbf{Kịch bản bảo vệ đồ án 15 phút trước hội đồng tuyển dụng}:
     \begin{itemize}
-        \item \textit{"Em chọn mô hình ELT kết hợp dbt thay vì viết code Python biến đổi thủ công vì dbt tận dụng tối đa sức mạnh tính toán song song của DWH, tự động quản lý lineage và tích hợp sẵn bộ kiểm thử dữ liệu."}
-        \item \textit{"Em thiết kế Data Warehouse theo mô hình Star Schema của Ralph Kimball với các Surrogate Keys để tách biệt hoàn toàn dữ liệu vận hành khỏi dữ liệu phân tích lịch sử."}
+        \item \textit{Phút 1--3}: Giới thiệu bài toán kinh doanh, quy mô dữ liệu và kiến trúc tổng thể qua sơ đồ luồng dữ liệu.
+        \item \textit{Phút 4--7}: Trình diễn kỹ thuật kho dữ liệu dbt, cơ chế chống trùng lặp Idempotency và các bài test toàn vẹn dữ liệu.
+        \item \textit{Phút 8--11}: Trình diễn Microservice FastAPI gửi request thực tế và nhận kết quả dự đoán kèm giải thích SHAP trong 20ms.
+        \item \textit{Phút 12--15}: Mở Dashboard Power BI, phân tích các chỉ số tài chính và trả lời các câu hỏi về bài toán đánh đổi kiến trúc (Trade-offs: Chi phí vs Hiệu năng).
     \end{itemize}
-    \item \textbf{Phần 3: Trình Diễn Trực Tiếp (Live Demo) (5 phút)}:
-    Mở giao diện Webserver của Airflow cho thấy DAG chạy xanh hoàn toàn; mở terminal chạy lệnh gọi API FastAPI cho thấy kết quả dự báo churn trả về trong 18ms; mở file Power BI cho thấy các biểu đồ tương tác mượt mà.
-    \item \textbf{Phần 4: Số Liệu Đo Lường Thực Tế \& Bài Học Kinh Nghiệm (2 phút)}:
-    Báo cáo các con số ấn tượng: Thời gian chạy pipeline giảm 65\%, độ chính xác mô hình đạt ROC-AUC 0.88, và giải thích cách bạn xử lý sự cố khi tệp nguồn bị mất kết nối mạng (Network Retry \& Dead Letter Queue).
-\end{enumerate}
+    \item \textbf{Bullet Point CV (Google XYZ)}: \textit{"Kiến trúc nền tảng Enterprise Modern Data \& AI Platform toàn diện sử dụng Airflow, dbt, PostgreSQL, FastAPI và Power BI; tự động hóa đường ống nạp dữ liệu, phục vụ mô hình ML thời gian thực độ trễ dưới 20ms và cung cấp Executive Dashboard theo dõi 12 chỉ số kinh doanh cốt lõi."}
+\end{itemize}

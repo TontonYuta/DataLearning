@@ -1,47 +1,118 @@
-\chapter{Chiến Lược Nghề Nghiệp, Bộ CV Chuẩn ATS \& 40 Câu Hỏi Phỏng Vấn Sát Thủ}
+\chapter{Chiến Lược Nghề Nghiệp, Kỹ Năng Phỏng Vấn, Bí Quyết Build CV ATS \& Bộ Mẫu CV Chuẩn (Intern \& Middle)}
 
-\section{Chân Dung Năng Lực Tuyển Dụng: Intern vs Junior vs Middle}
+\begin{lythuyetbox}[Mục Tiêu \& Tiền Đề Cần Nắm]
+Kỹ năng kỹ thuật xuất sắc (Hard Skills) chỉ chiếm 50\% cơ hội nhận việc. 50\% còn lại phụ thuộc vào \textbf{khả năng truyền thông giá trị của bạn}: Cách một bản CV vượt qua bộ lọc tự động ATS, cách bạn trả lời các câu hỏi Live Coding dưới áp lực thời gian, cách xử lý các câu hỏi tình huống hành vi (Behavioral STAR), và cách bạn đàm phán mức lương xứng đáng.
 
-Rất nhiều người tự học lầm tưởng rằng chỉ cần học xong một khóa học hoặc một cuốn sách là có thể tự nhận mình là "Middle Data Engineer" hay "Middle Data Scientist". Trong thực tế ngành dữ liệu, ranh giới giữa các cấp bậc được định hình bởi **kinh nghiệm giải quyết sự cố thực tế và trách nhiệm làm chủ (Ownership)**:
-
-\begin{lythuyetbox}[Sự Khác Biệt Bản Chất Giữa Các Cấp Bậc]
-\begin{itemize}
-    \item \textbf{Intern / Fresher (Tuần 1--24)}:
-    \begin{itemize}
-        \item \textit{Kỳ vọng}: Nền tảng SQL và Python vững chắc; tư duy logic trong sáng; hiểu bản chất dữ liệu; thái độ cầu tiến và có khả năng đọc tài liệu kỹ thuật.
-        \item \textit{Bằng chứng cần có}: Portfolio 3--4 dự án hoàn chỉnh trên GitHub có README chỉn chu, có thể giải thích từng dòng code mình đã viết.
-    \end{itemize}
-    \item \textbf{Junior (1--2 năm kinh nghiệm)}:
-    \begin{itemize}
-        \item \textit{Kỳ vọng}: Hoàn thành độc lập các tính năng hoặc báo cáo được giao mà không cần người kèm cặp liên tục; tuân thủ quy chuẩn viết code, kiểm thử (Testing) và quy trình Git Flow; chủ động debug khi pipeline/mô hình gặp lỗi.
-    \end{itemize}
-    \item \textbf{Middle (2--4+ năm kinh nghiệm)}:
-    \begin{itemize}
-        \item \textit{Kỳ vọng}: \textbf{Tư duy làm chủ (Total Ownership)} một hệ thống con (Subsystem); tham gia thiết kế kiến trúc (System Architecture); cân nhắc các bài toán đánh đổi (Trade-offs: Chi phí vs Tốc độ vs Độ tin cậy); trực tiếp làm việc với các bên kinh doanh để định nghĩa yêu cầu và chuyển hóa thành giải pháp kỹ thuật.
-    \end{itemize}
-\end{itemize}
+Chương này cung cấp cẩm nang toàn diện nhất giúp bạn chinh phục mọi vòng phỏng vấn tuyển dụng từ Intern đến Middle Data Analyst, Data Engineer và Data Scientist.
 \end{lythuyetbox}
 
-\section{Công Thức Vàng Viết Bullet Point CV Chuẩn ATS}
+% ==============================================================================
+% PHẦN 1: BÍ QUYẾT XÂY DỰNG CV CHUẨN ATS & PORTFOLIO THU HÚT HEADHUNTER
+% ==============================================================================
+\section{Bí Quyết Xây Dựng CV Chuẩn ATS \& Portfolio Thu Hút Tuyển Dụng}
 
-Hệ thống lọc hồ sơ tự động (Applicant Tracking System - ATS) và các Trưởng nhóm Kỹ thuật (Tech Leads) chỉ dành trung bình 6 giây để lướt qua một bản CV. Những dòng mô tả chung chung như: \textit{"Tham gia phân tích dữ liệu bán hàng bằng Python và SQL"} sẽ bị loại ngay lập tức!
-
-\begin{thuchanhbox}[Công Thức 5 Thành Phần: Action + What + Tech + Scale + Result]
-Mỗi gạch đầu dòng trong phần Dự án của CV phải tuân thủ nghiêm ngặt công thức:
-\begin{center}
-\colorbox{navyprimary!10}{\textbf{[Hành Động]} $\boldsymbol{+}$ \textbf{[Cái Gì]} $\boldsymbol{+}$ \textbf{[Công Nghệ]} $\boldsymbol{+}$ \textbf{[Quy Mô]} $\boldsymbol{+}$ \textbf{[Kết Quả Đo Lường]}}
-\end{center}
-
-\textbf{So sánh các ví dụ thực tế}:
+\subsection{1. Giải Phẫu Cơ Chế Quét Của Bot ATS (Applicant Tracking System)}
+Hơn 90\% các tập đoàn công nghệ và công ty lớn sử dụng các phần mềm ATS (như Greenhouse, Lever, Workday) để lọc hồ sơ tự động trước khi CV đến tay con người:
 \begin{itemize}
-    \item \textbf{Cách viết yếu}: \textit{"Em viết câu lệnh SQL để truy vấn dữ liệu đơn hàng và làm dashboard Power BI cho công ty."}
-    \item \textbf{Cách viết chuẩn mực}: \textit{"Thiết kế kiến trúc cơ sở dữ liệu quan hệ gồm 5 bảng và viết hơn 40 truy vấn SQL nâng cao (CTEs, Window Functions), xây dựng Executive Dashboard trên Power BI hỗ trợ theo dõi 8 chỉ số kinh doanh chính cho hơn 120,000 giao dịch bán lẻ hàng tháng."}
-    \item \textbf{Cách viết yếu}: \textit{"Xây dựng mô hình máy học dự đoán khách hàng rời bỏ bằng Scikit-learn."}
-    \item \textbf{Cách viết chuẩn mực}: \textit{"Huấn luyện và tinh chỉnh mô hình XGBoost phân loại khách hàng rời bỏ trên tập dữ liệu 150,000 bản ghi, tối ưu hóa qua Stratified 5-Fold Cross Validation đạt ROC-AUC 0.88, đóng gói thành Microservice FastAPI với độ trễ phản hồi dưới 25ms."}
+    \item \textbf{Cơ chế Matching Score}: Bot ATS đọc bản mô tả công việc (Job Description -- JD), trích xuất khoảng 15--25 từ khóa kỹ thuật cốt lõi (Core Keywords), sau đó quét CV của bạn để tính điểm tương đồng. Nếu điểm dưới ngưỡng (thường là 70\%), CV sẽ bị loại tự động mà không có bất kỳ con người nào mở ra xem!
+    \item \textbf{Quy tắc 1 trang vs 2 trang}: Ứng viên Intern/Fresher bắt buộc CV chỉ dài \textbf{đúng 1 trang A4 duy nhất}. Ứng viên Middle có từ 3 năm kinh nghiệm thực tế trở lên có thể sử dụng tối đa 2 trang A4.
 \end{itemize}
-\end{thuchanhbox}
 
-\section{Bộ 3 Mẫu CV Chuẩn ATS (Sẵn Sàng Ứng Tuyển)}
+\subsection{2. 7 Lỗi Cấm Kỵ Khiến CV Bị Loại Ngay Lập Tức Từ Vòng Gửi Xe}
+\begin{enumerate}
+    \item \textbf{Chèn thanh đo kỹ năng dạng phần trăm} (ví dụ: \textit{"Python 85\%", "SQL 90\%"}): Đây là lỗi nghiệp dư số 1! Không có thước đo nào định lượng được 85\% Python là gì. Thay vào đó, hãy liệt kê công nghệ kèm ngữ cảnh dự án đã ứng dụng.
+    \item \textbf{Sử dụng định dạng cột phức tạp, Text Box hoặc bảng lồng}: Bot ATS đọc dữ liệu theo luồng từ trái sang phải, từ trên xuống dưới. Các bảng biểu lồng nhau sẽ làm bot bị lỗi phân tích cú pháp (Parsing Error), dẫn đến mất trắng thông tin học vấn hoặc kinh nghiệm.
+    \item \textbf{Chèn hình ảnh đồ họa, biểu tượng mạng xã hội lạ}: Bot ATS chỉ đọc văn bản thuần (Plain Text). Hãy để liên kết dạng chữ đơn giản: \texttt{github.com/your-username}.
+    \item \textbf{Mô tả công việc chung chung thiếu số liệu}: Những câu như \textit{"Tham gia truy vấn SQL và hỗ trợ đội ngũ làm báo cáo"} bị đánh giá là ứng viên thụ động. Phải có số liệu đo lường cụ thể (xem công thức Google XYZ bên dưới).
+    \item \textbf{Lỗi chính tả và viết sai tên công nghệ}: Viết \texttt{"python"} thay vì \texttt{"Python"}, \texttt{"scikit learn"} thay vì \texttt{"Scikit-Learn"}, \texttt{"powerbi"} thay vì \texttt{"Power BI"} sẽ khiến bot ATS bỏ qua từ khóa tìm kiếm.
+    \item \textbf{Đặt tên file CV thiếu chuyên nghiệp}: Tên file như \texttt{CV\_moi.pdf} hay \texttt{Resume\_2026.pdf} thể hiện sự cẩu thả. Quy chuẩn quốc tế bắt buộc: \texttt{[Ho\_Va\_Ten]\_[Vi\_Tri\_Ung\_Tuyen]\_CV.pdf} (ví dụ: \texttt{Nguyen\_Van\_A\_Data\_Analyst\_CV.pdf}).
+    \item \textbf{Không đồng bộ thông tin với LinkedIn \& GitHub}: Nhà tuyển dụng luôn đối chiếu CV với trang LinkedIn và kho mã nguồn GitHub. Nếu thông tin thời gian hoặc vị trí bị lệch nhau, hồ sơ sẽ bị đánh dấu đỏ về tính trung thực.
+\end{enumerate}
+
+\subsection{3. Công Thức Vàng Viết Bullet Point Chuẩn Google XYZ}
+Mỗi dòng gạch đầu dòng trong phần Dự án và Kinh nghiệm phải tuân thủ nghiêm ngặt công thức tuyển dụng kinh điển của Google:
+\begin{center}
+\colorbox{navyprimary!10}{\textbf{Accomplished [X] as measured by [Y], by doing [Z]}}
+\end{center}
+\begin{itemize}
+    \item \textbf{X (Thành tựu)}: Bạn đã hoàn thành điều gì? (Bắt đầu bằng một Động từ hành động mạnh mẽ: \textit{Designed, Engineered, Optimized, Architected, Automated}).
+    \item \textbf{Y (Thước đo số lượng)}: Tác động được đo lường bằng con số cụ thể nào? (Doanh thu tăng bao nhiêu \%, thời gian xử lý giảm bao nhiêu lần, xử lý bao nhiêu triệu bản ghi).
+    \item \textbf{Z (Phương pháp / Công nghệ)}: Bạn đã làm điều đó bằng công nghệ và kỹ thuật gì? (Sử dụng công cụ gì, thuật toán nào).
+\end{itemize}
+
+% ==============================================================================
+% PHẦN 2: KỸ NĂNG PHỎNG VẤN 5 VÒNG CHINH PHỤC TECH LEADS
+% ==============================================================================
+\section{Kỹ Năng Phỏng Vấn 5 Vòng Chinh Phục Tech Leads}
+
+\subsection{Vòng 1: HR Screening (Phỏng Vấn Sơ Loại Với Nhân Sự)}
+\begin{itemize}
+    \item \textbf{Mục tiêu của HR}: Kiểm tra sự phù hợp văn hóa, khả năng giao tiếp, mức độ tự tin, tính trung thực và kỳ vọng về mức lương cơ bản.
+    \item \textbf{Công thức trả lời 2 phút "Tell me about yourself" (Elevator Pitch)}:
+    \begin{enumerate}
+        \item \textit{Past (Quá khứ - 30s)}: Nền tảng học thuật hoặc lý do bạn bén duyên với ngành Dữ liệu.
+        \item \textit{Present (Hiện tại - 60s)}: Những công nghệ cốt lõi bạn làm chủ vững chắc nhất và 1--2 thành tựu dự án thực chiến nổi bật nhất bạn vừa hoàn thành.
+        \item \textit{Future (Tương lai - 30s)}: Lý do cụ thể vì sao bạn hứng thú với sản phẩm/văn hóa của công ty và giá trị bạn có thể đóng góp ngay lập tức cho team.
+    \end{enumerate}
+    \item \textbf{Xử lý câu hỏi chuyển ngành (Career Switcher)}: Tuyệt đối không than phiền về ngành cũ. Hãy nhấn mạnh \textit{"Transferable Skills"} (Kỹ năng chuyển đổi): Năng lực thấu hiểu nghiệp vụ kinh doanh, kỹ năng giải quyết vấn đề, và tư duy logic định lượng.
+\end{itemize}
+
+\subsection{Vòng 2: Live Coding \& Whiteboard SQL/Python (Phỏng Vấn Kỹ Thuật)}
+Rất nhiều ứng viên giỏi bị trượt vòng này vì vừa nhìn thấy đề bài là cắm đầu gõ code ngay lập tức trong im lặng. Hãy áp dụng \textbf{Quy Trình 5 Bước Tư Duy Kỹ Thuật}:
+\begin{enumerate}
+    \item \textbf{Bước 1: Làm rõ yêu cầu (Clarify Requirements)}: Luôn đặt lại 2--3 câu hỏi trước khi viết code: \textit{"Dữ liệu đầu vào có chứa giá trị NULL không?", "Bảng dữ liệu có bị trùng lặp khóa chính không?", "Nếu có 2 khách hàng đồng hạng doanh số thì xử lý thế nào?"}.
+    \item \textbf{Bước 2: Nêu các trường hợp biên (Identify Edge Cases)}: Chỉ ra các tình huống cực đoan: Mảng rỗng, tất cả giá trị đều âm, hoặc bảng chỉ có 1 dòng duy nhất.
+    \item \textbf{Bước 3: Trình bày ý tưởng bằng lời (Speak Your Mind / Pseudocode)}: Nói to suy nghĩ của bạn: \textit{"Em dự định tiếp cận bài toán này bằng cách dùng CTE để tiền tổng hợp doanh thu theo tháng, sau đó áp dụng Window Function LAG() để tính tăng trưởng MoM"}. Điều này giúp người phỏng vấn can thiệp và gợi ý nếu bạn đi sai hướng.
+    \item \textbf{Bước 4: Viết mã sạch (Clean Code)}: Đặt tên biến rõ nghĩa, thụt lề chuẩn, xử lý bẫy lỗi chia cho 0 (\texttt{NULLIF} hoặc \texttt{try/except}).
+    \item \textbf{Bước 5: Đánh giá độ phức tạp (Time \& Space Complexity)}: Chủ động phân tích độ phức tạp thời gian $O(n)$ và không gian bộ nhớ $O(1)$ sau khi viết xong.
+\end{enumerate}
+
+\subsection{Vòng 3: System Design \& Kiến Trúc Dữ Liệu (Dành Cho Middle)}
+Khi được hỏi câu hỏi mở như: \textit{"Hãy thiết kế hệ thống báo cáo đơn hàng theo thời gian thực cho 10 triệu người dùng"}:
+\begin{itemize}
+    \item \textbf{Khung trả lời 4 bước}:
+    \begin{enumerate}
+        \item \textit{Quy mô \& SLA}: Hỏi rõ thông lượng (Throughput: bao nhiêu RPS?), dung lượng lưu trữ (bao nhiêu GB/ngày?), và độ trễ tối đa cho phép (Latency: dưới 1 giây hay chấp nhận 15 phút?).
+        \item \textit{Kiến trúc tổng thể (High-Level Architecture)}: Vẽ sơ đồ luồng dữ liệu 4 khối: Ingestion (Kafka/API) $\rightarrow$ Storage (S3/Delta Lake) $\rightarrow$ Processing (Spark/dbt) $\rightarrow$ Serving (Postgres/Redis/Power BI).
+        \item \textit{Đi sâu từng thành phần (Deep Dive)}: Chọn giải pháp phân vùng (Partitioning), cơ chế chống trùng lặp (Idempotency), và chiến lược đánh chỉ mục (Index B-Tree).
+        \item \textit{Điểm nghẽn \& Dự phòng sự cố (Bottlenecks \& Failover)}: Nêu rõ phương án xử lý khi một Worker bị sập, cơ chế Dead Letter Queue cho bản ghi lỗi, và giám sát hạ tầng.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Vòng 4: Phỏng Vấn Hành Vi (Behavioral Interview Theo Mô Hình STAR)}
+Các câu hỏi tình huống nhằm kiểm tra kỹ năng mềm, khả năng chịu áp lực và tinh thần làm việc nhóm:
+\begin{itemize}
+    \item \textbf{Công thức STAR}:
+    \begin{itemize}
+        \item \textbf{S (Situation)}: Bối cảnh vấn đề xảy ra ở đâu, khi nào? (20\% thời lượng).
+        \item \textbf{T (Task)}: Nhiệm vụ và thách thức mà bạn phải gánh vác là gì? (10\% thời lượng).
+        \item \textbf{A (Action)}: Bạn đã trực tiếp thực hiện những hành động kỹ thuật cụ thể nào? (50\% thời lượng - trọng tâm!).
+        \item \textbf{R (Result)}: Kết quả đo lường được là gì và bài học bạn rút ra? (20\% thời lượng).
+    \end{itemize}
+    \item \textbf{Ví dụ tình huống kinh điển}: \textit{"Kể về lần bạn phát hiện số liệu báo cáo bị sai trước giờ thuyết trình cho Ban Giám Đốc 30 phút?"} \\
+    $\rightarrow$ \textit{Trả lời chuẩn STAR}: \textbf{[S]} 30 phút trước buổi họp chiến lược quý, em kiểm tra lại số liệu doanh thu trên Dashboard và nhận thấy con số bị nhảy vọt 200\% bất thường. \textbf{[T]} Nhiệm vụ của em là xác định nguyên nhân ngay lập tức và ngăn chặn việc đưa số liệu sai cho ban lãnh đạo. \textbf{[A]} Em lập tức chạy câu lệnh SQL phân rã dữ liệu và phát hiện một bảng Fact vừa bị dính cạm bẫy Fan-Out do một phép JOIN nhiều-nhiều phát sinh lúc sáng. Em thông báo thẳng thắn cho Trưởng nhóm, sửa nhanh truy vấn bằng CTE tiền tổng hợp và refresh lại dashboard trong 12 phút. \textbf{[R]} Buổi thuyết trình diễn ra thành công với số liệu chính xác 100\%; sau đó em chủ động viết thêm một bài dbt test tự động kiểm tra tính duy nhất của khóa chính để triệt tiêu vĩnh viễn lỗi này trong tương lai.
+\end{itemize}
+
+\subsection{Vòng 5: Kỹ Năng Đặt Câu Hỏi Ngược Lại (Reverse Interviewing)}
+Cuối buổi phỏng vấn, khi người phỏng vấn hỏi: \textit{"Bạn có câu hỏi nào cho chúng tôi không?"}, việc nói \textit{"Em không có câu hỏi nào"} là một điểm trừ lớn. Hãy sử dụng các câu hỏi "đắt giá" sau để ghi điểm tuyệt đối:
+\begin{enumerate}
+    \item \textit{"Độ trưởng thành dữ liệu (Data Maturity) của công ty hiện tại đang ở giai đoạn nào: Đang tập trung dọn dẹp hạ tầng ETL, chuẩn hóa báo cáo BI, hay đã sẵn sàng cho Machine Learning phục vụ thời gian thực?"}
+    \item \textit{"Thách thức kỹ thuật lớn nhất mà team Data của anh/chị đang phải đối mặt trong 6 tháng tới là gì?"}
+    \item \textit{"Một kỹ sư dữ liệu mới gia nhập team cần đạt được những cột mốc (Milestones) cụ thể nào trong 30--60--90 ngày đầu tiên để được đánh giá là xuất sắc?"}
+    \item \textit{"Cơ cấu team Data ở công ty mình đang tổ chức theo mô hình Tập trung (Centralized), Nhúng vào từng phòng ban (Embedded), hay theo mô hình Kết hợp (Data Mesh / Hybrid)?"}
+\end{enumerate}
+
+\subsection{Nghệ Thuật Đàm Phán Lương (Salary Negotiation)}
+\begin{itemize}
+    \item \textbf{Nguyên tắc 1: Không bao giờ tiết lộ con số đầu tiên}: Khi HR hỏi \textit{"Mức lương hiện tại của bạn là bao nhiêu?"}, hãy khéo léo chuyển hướng: \textit{"Dạ, mức lương ở công ty cũ được bảo mật theo hợp đồng lao động. Tuy nhiên, căn cứ vào yêu cầu công việc và giá trị em có thể mang lại cho team, em kỳ vọng mức đãi ngộ cho vị trí này rơi vào khoảng \$X đến \$Y"}.
+    \item \textbf{Nguyên tắc 2: Luôn đàm phán dựa trên một khoảng (Salary Range)}: Đặt cận dưới của khoảng bằng đúng mức lương bạn thực sự mong muốn.
+    \item \textbf{Nguyên tắc 3: Đàm phán tổng thu nhập (Total Compensation)}: Nếu công ty không thể nâng lương cơ bản (Base Salary), hãy đàm phán các quyền lợi khác: Thưởng hiệu quả (Performance Bonus), Tiền thưởng gia nhập (Sign-on Bonus), Số ngày làm việc từ xa (Remote/Hybrid days), và ngân sách học tập chứng chỉ công nghệ.
+\end{itemize}
+
+% ==============================================================================
+% PHẦN 3: BỘ 5 MẪU CV CHUẨN ATS (INTERN & MIDDLE)
+% ==============================================================================
+\section{Bộ 5 Mẫu CV Chuẩn ATS Sẵn Sàng Ứng Tuyển (Intern \& Middle)}
 
 \subsection{Mẫu 1: Data Analyst Intern / Fresher CV}
 \begin{lstlisting}
@@ -75,11 +146,14 @@ A/B Testing Conversion Optimization Experiment | Python, SciPy, Statsmodels
 - Performed Two-proportion Z-test and computed 95% confidence intervals, demonstrating a statistically significant +8.3% relative conversion lift (p = 0.004) to support executive rollout decisions.
 \end{lstlisting}
 
-\subsection{Mẫu 2: Data Engineer Intern / Junior CV}
+\subsection{Mẫu 2: Data Engineer Intern / Fresher CV}
 \begin{lstlisting}
 TRAN VAN B
 Ho Chi Minh City, Vietnam | (+84) 987 654 321 | vanb.de@email.com
 github.com/vanb-dataeng | linkedin.com/in/vanb-de
+
+OBJECTIVE
+Results-driven Data Engineer candidate with solid programming skills in Python and SQL, passionate about building reliable, automated data pipelines and containerized architectures. Ready to contribute to high-availability data infrastructure.
 
 TECHNICAL SKILLS
 - Data Pipelines & Orchestration: Python, Apache Airflow (TaskFlow API), dbt, Bash Scripting
@@ -100,28 +174,95 @@ Big Data Lakehouse Pipeline | PySpark, Delta Lake, AWS S3
 - Implemented Delta Lake ACID transaction tables with Z-Ordering on timestamp and user ID, accelerating downstream analytical query performance by 4x.
 \end{lstlisting}
 
-\subsection{Mẫu 3: Data Scientist Intern / Junior CV}
+\subsection{Mẫu 3: Middle Data Analyst CV (2--4 Năm Kinh Nghiệm)}
 \begin{lstlisting}
-LE THI C
-Hanoi, Vietnam | (+84) 901 234 567 | lethic.ds@email.com
-github.com/lethic-datascience | linkedin.com/in/lethic-ds
+LE HOANG LONG
+Hanoi, Vietnam | (+84) 903 888 999 | hoanglong.analytics@email.com
+linkedin.com/in/hoanglong-data | github.com/hoanglong-analytics
 
-TECHNICAL SKILLS
-- Machine Learning: Scikit-learn, XGBoost, Random Forest, Logistic Regression, Feature Engineering
-- Statistical Analysis: Hypothesis Testing, A/B Testing, Dimensionality Reduction (PCA), SHAP
-- Deployment & MLOps: FastAPI, Docker, MLflow (Experiment Tracking, Model Registry), Git, CI/CD
-- Programming & DB: Python (NumPy, Pandas, Matplotlib, Seaborn), SQL (PostgreSQL)
+PROFESSIONAL SUMMARY
+Senior-level Middle Data Analyst with 3+ years of experience in E-Commerce and FinTech. Specialized in translating complex datasets into high-impact commercial decisions, KPI Tree architecture, advanced DAX/Power BI dashboards, and statistical experimentation. Proven track record of boosting company-wide conversion rates and saving $120,000+ in marketing expenditures.
 
-FEATURED PROJECTS
-Customer Churn Prediction & Model Serving Microservice | Python, XGBoost, FastAPI, Docker
-- Built an end-to-end customer churn prediction pipeline on 120,000 customer records, resolving class imbalance using class-weighted loss functions.
-- Engineered 25+ behavioral features and bundled preprocessing transformations using Scikit-Learn Pipeline and ColumnTransformer to completely eliminate data leakage risks.
-- Tuned ensemble classifiers (XGBoost, Random Forest) via Stratified 5-Fold Cross Validation, achieving an ROC-AUC score of 0.88 and Recall of 76% on holdout test data.
-- Leveraged SHAP values to explain individual feature contributions, identifying tenure and contract type as key retention drivers for targeted marketing campaigns.
-- Productionized the trained pipeline into a containerized FastAPI REST microservice with Pydantic request validation, serving real-time inference with sub-25ms latency.
+WORK EXPERIENCE
+FinTech Payment Platform                                              2023 - Present
+Middle Data Analyst
+- Designed and maintained the core enterprise Semantic Layer in Google BigQuery, serving 14 cross-functional business stakeholders across Marketing, Operations, and Finance.
+- Developed an automated P&L Executive Dashboard in Power BI with 35+ DAX measures, reducing monthly financial consolidation time from 3 business days to 0 minutes for C-Suite executives.
+- Architected a multi-touch marketing attribution model (Markov Chain) that evaluated $2.5M in quarterly ad spend, resulting in a 28% budget reallocation and a 34% increase in blended ROAS.
+- Led 12 end-to-end product A/B experiments on the mobile checkout funnel; identified severe onboarding drop-offs and recommended UX redesigns that unlocked a +4.2% lift in GMV ($320,000/month).
+
+Retail E-Commerce Corporation                                          2021 - 2023
+Junior Data Analyst
+- Analyzed transaction histories of 1.2M active users using PostgreSQL and Python, creating an automated RFM segmentation model that increased CRM email campaign revenue by 19%.
+- Automated daily inventory stockout alerts across 45 physical stores using Python and Streamlit, reducing out-of-stock incidents by 22% during peak holiday campaigns.
+
+CORE COMPETENCIES & TECH STACK
+- Business Analytics: KPI Tree Decomposition, Cohort Retention, Unit Economics, CLV & CAC Modeling
+- Tools: Google BigQuery, PostgreSQL, Power BI (DAX, Tabular Editor, RLS), Tableau, Excel Power Query
+- Programming & Stats: Python (Pandas, NumPy, SciPy), A/B Testing, Two-Proportion Z-Test, Regression
 \end{lstlisting}
 
-\section{Ngân Hàng 40 Câu Hỏi Phỏng Vấn "Sát Thủ" Kèm Lời Giải}
+\subsection{Mẫu 4: Middle Data Engineer CV (2--4 Năm Kinh Nghiệm)}
+\begin{lstlisting}
+VU TIEN DAT
+Ho Chi Minh City, Vietnam | (+84) 934 555 777 | tiendat.de@email.com
+github.com/tiendat-de | linkedin.com/in/tiendat-dataeng
+
+PROFESSIONAL SUMMARY
+Middle Data Engineer with 3.5 years of production experience architecting scalable data infrastructure, idempotent ETL/ELT pipelines, and modern cloud lakehouses. Expert in Apache Spark, Apache Airflow, dbt, and Kafka. Demonstrated capability in handling 100M+ daily transactions, maintaining 99.9% pipeline SLA, and reducing cloud infrastructure costs by 38% through proactive FinOps practices.
+
+WORK EXPERIENCE
+Tier-1 Ride-Hailing & Logistics Unicorn                                2023 - Present
+Middle Data Engineer
+- Engineered a real-time CDC streaming pipeline using Debezium, Apache Kafka, and Spark Streaming processing 25,000 events/sec from MySQL production databases with sub-second latency.
+- Architected the company's enterprise Lakehouse on Delta Lake and AWS S3, implementing automated Compaction (OPTIMIZE) and VACUUM routines that slashed analytical query latency by 45%.
+- Implemented Kimball Star Schema data marts with Slowly Changing Dimensions (SCD Type 2) across 15 business domains, supporting auditable point-in-time financial reporting.
+- Executed Cloud FinOps optimizations on Google BigQuery and AWS EMR (Partitioning, Clustering, Broadcast Joins), reducing monthly compute and storage expenditure by 38% ($14,000/month savings).
+
+Technology Solutions Provider                                         2021 - 2023
+Junior Data Engineer
+- Built and maintained 30+ daily batch DAGs in Apache Airflow using TaskFlow API, integrating Pydantic schema validation to catch corrupted payload records before warehouse ingestion.
+- Migrated legacy stored procedures to modern dbt models with incremental materialization and 60+ automated data quality tests, cutting daily warehouse build time from 2 hours to 22 minutes.
+
+TECHNICAL EXPERTISE
+- Big Data & Streaming: Apache Spark (PySpark), Apache Kafka, Delta Lake, Presto/Trino
+- Orchestration & Modern Stack: Apache Airflow, dbt-core, Docker, Docker Compose, Linux/Bash
+- Cloud & Storage: AWS (S3, Lambda, Glue, Athena, EMR), Google Cloud (BigQuery, GCS), PostgreSQL
+- Practices & DevOps: Idempotent Pipelines, Kimball Star Schema, SCD2, CI/CD (GitHub Actions), Git
+\end{lstlisting}
+
+\subsection{Mẫu 5: Middle Data Scientist / MLOps CV (2--4 Năm Kinh Nghiệm)}
+\begin{lstlisting}
+TRAN HOANG NAM
+Hanoi, Vietnam | (+84) 918 222 333 | hoangnam.ds@email.com
+github.com/hoangnam-mlops | linkedin.com/in/hoangnam-ai
+
+PROFESSIONAL SUMMARY
+Middle Data Scientist & MLOps Engineer with 3+ years of experience taking machine learning models from mathematical ideation into resilient production microservices. Skilled in predictive modeling, deep learning, explainable AI (SHAP), and high-throughput real-time serving. Successfully deployed models generating over $500,000 in incremental value.
+
+WORK EXPERIENCE
+Digital Banking & Consumer Finance                                    2023 - Present
+Middle Data Scientist / MLOps Specialist
+- Developed an end-to-end Credit Risk Scoring model using LightGBM and Optuna hyperparameter tuning on 300,000 customer records, achieving an ROC-AUC of 0.87 while cutting loan default rates by 21%.
+- Productionized the model as a containerized FastAPI microservice on AWS ECS; engineered an asynchronous inference pipeline achieving p99 latency < 18ms at 800 requests/sec.
+- Integrated SHAP (SHapley Additive exPlanations) to provide real-time feature attribution for credit decisions, enabling 100% compliance with State Bank transparency guidelines.
+- Established an automated MLOps monitoring system tracking Data Drift and Concept Drift using Population Stability Index (PSI); configured automated retrain triggers on GitHub Actions.
+
+E-Commerce Platform                                                    2021 - 2023
+Junior Machine Learning Engineer
+- Engineered customer churn prediction pipelines with Scikit-Learn Pipeline and ColumnTransformer, resolving extreme class imbalance and boosting holdout Recall from 48% to 73%.
+- Built a candidate-generation recommendation module using Collaborative Filtering that lifted on-site product click-through rate (CTR) by 16%.
+
+SKILLS & SPECIALIZATIONS
+- Modeling: LightGBM, XGBoost, CatBoost, Scikit-learn, PyTorch, Imbalanced Learning, SHAP
+- MLOps & Production: FastAPI, Docker, MLflow (Tracking & Registry), GitHub Actions CI/CD, Locust
+- Infrastructure & Languages: Python, SQL, Redis, AWS (S3, ECS, ECR), PostgreSQL, Git
+\end{lstlisting}
+
+% ==============================================================================
+% PHẦN 4: NGÂN HÀNG 40 CÂU HỎI PHỎNG VẤN SÁT THỦ KÈM LỜI GIẢI
+% ==============================================================================
+\section{Ngân Hàng 40 Câu Hỏi Phỏng Vấn "Sát Thủ" Kèm Lời Giải Chi Tiết}
 
 \subsection{10 Câu Hỏi Cốt Lõi Về SQL \& Cơ Sở Dữ Liệu}
 \begin{enumerate}
@@ -192,7 +333,7 @@ Customer Churn Prediction & Model Serving Microservice | Python, XGBoost, FastAP
     \item \textbf{Câu 29}: \textit{"Tại sao ta không nên kiểm tra p-value mỗi ngày trong suốt thời gian chạy A/B Test (Peeking Problem)?"} \\
     $\rightarrow$ \textbf{Trả lời}: Việc kiểm tra liên tục và dừng thử nghiệm khi thấy $p < 0.05$ làm sai lầm loại I (False Positive Rate) tích lũy tăng vọt từ 5\% lên tới 30--50\% do hiện tượng kiểm định nhiều lần ngẫu nhiên.
     \item \textbf{Câu 30}: \textit{"Phân biệt Data Drift và Concept Drift trong sản xuất?"} \\
-    $\rightarrow$ \textbf{Trả lời}: Data Drift là khi phân phối dữ liệu đầu vào thay đổi $P(X)$ nhưng mối quan hệ không đổi. Concept Drift là khi mối quan hệ giữa đầu vào và nhãn thay đổi $P(y|X)$ (hành vi bản chất của con người đã thay đổi).
+    $\rightarrow$ \textbf{Trả lời}: Data Drift là khi phân phối dữ liệu đầu vào thay đổi $P(X)$ nhưng mối quan hệ không đổi. Concept Drift là khi mối quan hệ giữa đầu vào và nhãn thay đổi $P(y \mid X)$ (hành vi bản chất của con người đã thay đổi).
 \end{enumerate}
 
 \subsection{10 Câu Hỏi Về Data Engineering, System Design \& Hạ Tầng}
