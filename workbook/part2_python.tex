@@ -1,31 +1,43 @@
 \chapter{Workbook Phần 2: 20 Bài Tập Thực Hành Lập Trình Python \& Pandas}
 
 \begin{lythuyetbox}[Mục Tiêu Luyện Tập Phần 2]
-Phần này cung cấp \textbf{20 bài tập code Python \& Pandas thực chiến}, bao gồm cả lập trình giải thuật xử lý dữ liệu và thao tác phân tích nâng cao, giúp bạn làm chủ 100\% các kỹ năng code được yêu cầu trong CV.
+Phần này cung cấp \textbf{20 bài tập code Python \& Pandas thực chiến}, bao gồm cả lập trình giải thuật xử lý dữ liệu và thao tác phân tích nâng cao trên các tệp dữ liệu thực tế, giúp bạn làm chủ 100\% các kỹ năng code được yêu cầu trong CV ứng tuyển DA/DS/DE.
 \end{lythuyetbox}
+
+\begin{thuchanhbox}[Tệp Dữ Liệu \& Kịch Bản Thực Hành Python/Pandas Trực Tiếp (Bấm Vào Để Mở)]
+Toàn bộ các bài tập phân tích trong chương này được liên kết trực tiếp với các tệp dữ liệu và mã nguồn chuẩn mẫu trong dự án:
+\begin{itemize}
+    \item \href{run:./data/order_items.csv}{\Large\textbf{\color{navyprimary}data/order\_items.csv}} -- 24,837 dòng chi tiết mặt hàng: \texttt{[order\_id, item\_id, category, price, quantity]}.
+    \item \href{run:./data/orders.csv}{\Large\textbf{\color{navyprimary}data/orders.csv}} -- 10,000 đơn hàng: \texttt{[order\_id, customer\_id, order\_purchase\_timestamp, order\_status]}.
+    \item \href{run:./data/customers.csv}{\Large\textbf{\color{navyprimary}data/customers.csv}} -- 2,000 khách hàng: \texttt{[customer\_id, customer\_name, city, signup\_date]}.
+    \item \href{run:./data/input.csv}{\Large\textbf{\color{navyprimary}data/input.csv}} -- 5,017 bản ghi khách hàng chứa giá trị khuyết và ngoại lai để làm sạch.
+    \item \href{run:./code/ch03_python/eda_pipeline.py}{\Large\textbf{\color{navyprimary}code/ch03\_python/eda\_pipeline.py}} -- Pipeline EDA hoàn chỉnh phân tích doanh thu MoM, Pareto 80/20.
+\end{itemize}
+\small\textit{(Xem trực tuyến tại: \url{https://github.com/TontonYuta/DataLearning/tree/main/data} và \url{https://github.com/TontonYuta/DataLearning/tree/main/code/ch03_python})}
+\end{thuchanhbox}
 
 \begin{baitapbox}[Hệ Thống 20 Bài Tập Python \& Pandas Thực Chiến]
 \begin{enumerate}
-    \item \textbf{Bài 1 (Khử Trùng Lặp List)}: Viết hàm Python nhận vào một danh sách số nguyên có thứ tự bất kỳ, trả về danh sách các phần tử duy nhất được sắp xếp tăng dần mà không dùng hàm \texttt{set()}.
-    \item \textbf{Bài 2 (Đếm Tần Suất Ký Tự)}: Viết hàm nhận vào một chuỗi văn bản, trả về một dictionary đếm số lần xuất hiện của từng từ (Word Frequency Counter), bỏ qua dấu câu và không phân biệt chữ hoa/thường.
-    \item \textbf{Bài 3 (Tìm Cặp Số Có Tổng Bằng K)}: Cho một mảng số nguyên và một số $K$. Viết thuật toán tìm 2 số trong mảng có tổng đúng bằng $K$ với độ phức tạp thời gian tối ưu $O(n)$ sử dụng Hash Map (Dictionary).
-    \item \textbf{Bài 4 (Flatten Nested List)}: Viết hàm đệ quy làm phẳng một danh sách lồng nhau nhiều cấp (ví dụ: \texttt{[1, [2, [3, 4], 5], 6]} thành \texttt{[1, 2, 3, 4, 5, 6]}).
+    \item \textbf{Bài 1 (Khử Trùng Lặp List)}: Viết hàm Python \texttt{unique\_sorted(lst)} nhận vào một danh sách số nguyên có thứ tự bất kỳ, trả về danh sách các phần tử duy nhất được sắp xếp tăng dần mà không dùng hàm \texttt{set()}.
+    \item \textbf{Bài 2 (Đếm Tần Suất Từ Bằng Regex)}: Viết hàm nhận vào một chuỗi văn bản, trả về một dictionary đếm số lần xuất hiện của từng từ (Word Frequency Counter), bỏ qua dấu câu và không phân biệt chữ hoa/thường bằng module \texttt{re}.
+    \item \textbf{Bài 3 (Tìm Cặp Số Có Tổng Bằng K -- Two Sum)}: Cho một mảng số nguyên và một số $K$. Viết thuật toán tìm 2 số trong mảng có tổng đúng bằng $K$ với độ phức tạp thời gian tối ưu $O(n)$ sử dụng Hash Map (Dictionary).
+    \item \textbf{Bài 4 (Làm Phẳng List Lồng Nhau -- Flatten Nested List)}: Viết hàm đệ quy làm phẳng một danh sách lồng nhau nhiều cấp (ví dụ: \texttt{[1, [2, [3, 4], 5], 6]} thành \texttt{[1, 2, 3, 4, 5, 6]}).
     \item \textbf{Bài 5 (Xử Lý Ngoại Lệ An Toàn)}: Viết hàm \texttt{safe\_divide(a, b)} chuyển đổi cả hai tham số sang float và thực hiện phép chia. Bắt và xử lý riêng biệt các lỗi \texttt{ValueError}, \texttt{ZeroDivisionError}, và \texttt{TypeError}.
-    \item \textbf{Bài 6 (Decorator Tính Thời Gian)}: Viết một decorator \texttt{@benchmark} đo thời gian chạy của hàm và in ra thông báo nếu hàm chạy quá $1.0$ giây.
-    \item \textbf{Bài 7 (Generator Sinh Chuỗi Fibonacci)}: Viết một Generator sử dụng \texttt{yield} sinh vô hạn dãy số Fibonacci $(0, 1, 1, 2, 3, 5, 8...)$ với mức tiêu thụ RAM luôn cố định $O(1)$.
-    \item \textbf{Bài 8 (NumPy Matrix Operations)}: Cho ma trận $A$ kích thước $(1000, 50)$ và vector $B$ kích thước $(50,)$. Hãy dùng NumPy tính tích vô hướng $A \times B$ và chuẩn hóa vector kết quả về khoảng $[0, 1]$ bằng Min-Max Scaling.
-    \item \textbf{Bài 9 (Pandas Memory Optimization)}: Viết hàm nhận vào một DataFrame, tự động ép kiểu các cột số nguyên từ \texttt{int64} xuống \texttt{int32} hoặc \texttt{int16}, và các cột chuỗi có ít hơn 50 giá trị duy nhất sang \texttt{category} để giảm ít nhất 50\% dung lượng RAM.
-    \item \textbf{Bài 10 (Pandas Missing Data Imputation)}: Cho cột \texttt{income} có 5\% giá trị null. Hãy viết code điền giá trị khuyết bằng giá trị trung vị của nhóm ngành nghề tương ứng (\texttt{groupby('occupation')}).
-    \item \textbf{Bài 11 (Pandas Regex Extraction)}: Cột \texttt{product\_code} chứa các chuỗi như \texttt{"VN-TECH-2026-X01"}. Dùng biểu thức chính quy Regex tách thành 4 cột riêng biệt: \texttt{Country, Department, Year, ItemID}.
-    \item \textbf{Bài 12 (Pandas Time Series Resampling)}: Cho bảng dữ liệu giao dịch phát sinh từng giây. Hãy viết code gộp nhóm (Resample) theo từng khung giờ (Hourly), tính tổng doanh thu và số lượng đơn hàng của mỗi giờ.
-    \item \textbf{Bài 13 (Rolling Window Metrics)}: Sử dụng hàm \texttt{rolling()} của Pandas tính độ lệch chuẩn động 14 ngày (14-day Rolling Volatility) của giá cổ phiếu.
-    \item \textbf{Bài 14 (Tách Cột List Thành Nhiều Dòng)}: Bảng dữ liệu có cột \texttt{tags} chứa danh sách các thể loại sản phẩm dạng list (ví dụ: \texttt{['Tech', 'Sale', 'New']}). Dùng hàm \texttt{explode()} để biến mỗi phần tử trong list thành một dòng độc lập.
-    \item \textbf{Bài 15 (Pivot \& Melt)}: Trình bày sự khác biệt giữa hai thao tác \texttt{pivot()} và \texttt{melt()} trong Pandas. Viết code chuyển đổi bảng từ Wide format sang Long format.
-    \item \textbf{Bài 16 (Phát Hiện Outlier Bằng IQR)}: Viết hàm Python nhận vào DataFrame và tên cột số, trả về DataFrame con chỉ chứa các dòng có giá trị ngoại lai nằm ngoài khoảng $[Q1 - 1.5 \times IQR, Q3 + 1.5 \times IQR]$.
-    \item \textbf{Bài 17 (Custom Aggregation Function)}: Sử dụng hàm \texttt{agg()} với một hàm tùy chỉnh để tính chỉ số chênh lệch giữa giá trị lớn nhất và nhỏ nhất (\texttt{Range = Max - Min}) cho từng nhóm khách hàng.
-    \item \textbf{Bài 18 (Xử Lý Trùng Lặp Có Điều Kiện)}: Bảng lịch sử đăng nhập có các cột \texttt{[user\_id, login\_timestamp, device]}. Hãy giữ lại duy nhất lần đăng nhập MỚI NHẤT của từng người dùng bằng hàm \texttt{sort\_values()} và \texttt{drop\_duplicates()}.
-    \item \textbf{Bài 19 (Pandas Merge Indicators)}: Khi thực hiện phép nối \texttt{merge(df1, df2, how='outer')}, làm thế nào để biết một dòng dữ liệu đến từ bảng bên trái, bảng bên phải hay xuất hiện ở cả hai bảng bằng tham số \texttt{indicator=True}?
-    \item \textbf{Bài 20 (Batch Processing File Lớn)}: Viết script Python sử dụng tham số \texttt{chunksize=50000} trong \texttt{pd.read\_csv} để tính tổng doanh thu của một tệp CSV dung lượng 10GB mà không làm tràn bộ nhớ máy tính.
+    \item \textbf{Bài 6 (Decorator Đo Thời Gian Chạy)}: Viết một decorator \texttt{@benchmark} đo thời gian chạy của hàm sử dụng \lstinline|time.perf_counter()| và in ra cảnh báo nếu thời gian thực thi vượt quá $1.0$ giây.
+    \item \textbf{Bài 7 (Generator Sinh Chuỗi Fibonacci)}: Viết một Generator sử dụng từ khóa \texttt{yield} sinh vô hạn dãy số Fibonacci $(0, 1, 1, 2, 3, 5, 8...)$ với mức tiêu thụ RAM luôn cố định $O(1)$.
+    \item \textbf{Bài 8 (NumPy Vectorization \& Min-Max Scaling)}: Cho ma trận $A$ kích thước $(1000, 50)$ và vector $B$ kích thước $(50,)$. Hãy dùng NumPy tính tích vô hướng $A \times B$ và chuẩn hóa vector kết quả về đoạn $[0, 1]$ bằng công thức Min-Max Scaling.
+    \item \textbf{Bài 9 (Tối Ưu Hóa RAM Trên \texttt{data/order\_items.csv})}: Mở tệp \href{run:./data/order_items.csv}{\texttt{data/order\_items.csv}} (24,837 dòng). Hãy viết hàm tự động ép kiểu cột \texttt{quantity} từ \texttt{int64} xuống kiểu nguyên nhỏ nhất (\texttt{int8} hoặc \texttt{int16}), ép \texttt{price} xuống \texttt{float32}, và chuyển \texttt{category} (5 giá trị duy nhất) sang \texttt{category}. Đo đạc tỷ lệ RAM tiết kiệm được. \textit{Kết quả kiểm tra}: Tiết kiệm khoảng \textbf{34.2\%} bộ nhớ.
+    \item \textbf{Bài 10 (Xử Lý Dữ Liệu Khuyết Trên \texttt{data/input.csv})}: Mở tệp \href{run:./data/input.csv}{\texttt{data/input.csv}} (5,017 dòng). Cột \texttt{age} bị khuyết 131 dòng và \texttt{income} khuyết 50 dòng. Viết mã Pandas điền giá trị khuyết của \texttt{income} bằng giá trị trung vị (median) của từng thành phố tương ứng (\texttt{groupby('city')}).
+    \item \textbf{Bài 11 (Tách Chuỗi Mã Định Danh Bằng Regex)}: Trong tệp \href{run:./data/order_items.csv}{\texttt{data/order\_items.csv}}, cột \texttt{item\_id} có dạng chuỗi \texttt{"ORD\_000001\_ITM\_1"}. Sử dụng \lstinline|str.extract()| với biểu thức chính quy để tách thành 2 cột mới: \texttt{order\_code} (ví dụ \texttt{"000001"}) và \texttt{item\_seq} (ví dụ \texttt{"1"}).
+    \item \textbf{Bài 12 (Time Series Resampling Trên \texttt{data/orders.csv})}: Đọc tệp \href{run:./data/orders.csv}{\texttt{data/orders.csv}} (10,000 dòng). Chuyển đổi cột \texttt{order\_purchase\_timestamp} sang kiểu \texttt{datetime}, đặt làm index và thực hiện gộp nhóm (Resample) theo từng tháng (\texttt{'ME'}), đếm số lượng đơn hàng phát sinh mỗi tháng. \textit{Kết quả kiểm tra}: Tháng 01/2025 có \textbf{672 đơn hàng}, tháng 02/2025 có \textbf{616 đơn hàng}.
+    \item \textbf{Bài 13 (Rolling Average 7 Ngày)}: Dựa trên chuỗi số lượng đơn hàng theo ngày từ \texttt{orders.csv}, sử dụng phương thức \lstinline|rolling(window=7).mean()| để tính đường trung bình động 7 ngày nhằm làm mượt các dao động ngắn hạn cuối tuần.
+    \item \textbf{Bài 14 (Tách Cột Danh Sách Bằng \texttt{explode()})}: Cho DataFrame có cột \texttt{tags} chứa danh sách: \lstinline|[['Fashion', 'Sale'], ['Electronics']]|. Hãy viết code Pandas dùng hàm \texttt{explode()} để bung danh sách thành các dòng riêng biệt, phục vụ phân tích tần suất thẻ sản phẩm.
+    \item \textbf{Bài 15 (Chuyển Đổi Wide \& Long Bằng Pivot/Melt)}: Đọc dữ liệu từ \texttt{order\_items.csv}. Tính tổng doanh thu theo cặp \texttt{[order\_id, category]}. Dùng \texttt{pivot()} để xoay 5 ngành hàng thành 5 cột ngang, sau đó dùng \texttt{melt()} để chuyển ngược lại cấu trúc bảng dọc Tidy Data.
+    \item \textbf{Bài 16 (Phát Hiện Giá Trị Ngoại Lai IQR Trên \texttt{data/input.csv})}: Mở tệp \href{run:./data/input.csv}{\texttt{data/input.csv}}. Tính $Q1$, $Q3$ và khoảng biến thiên tứ phân vị $IQR = Q3 - Q1$ của cột thu nhập \texttt{income}. Xác định ngưỡng trên $Q3 + 1.5 \times IQR$ và ngưỡng dưới $Q1 - 1.5 \times IQR$. Lọc ra toàn bộ các bản ghi thu nhập ngoại lai. \textit{Kết quả kiểm tra}: Tìm thấy chính xác \textbf{27 bản ghi ngoại lai}.
+    \item \textbf{Bài 17 (Custom Aggregation Trên \texttt{data/order\_items.csv})}: Tính tổng doanh thu (\texttt{GMV = price * quantity}) cho từng danh mục trong 5 ngành hàng (\texttt{Fashion, Sports, Beauty, Home \& Living, Electronics}). Xác định danh mục dẫn đầu về doanh thu. \textit{Kết quả kiểm tra}: Danh mục \textbf{Fashion} đứng đầu với tổng doanh thu \textbf{\$1,291,623.03}.
+    \item \textbf{Bài 18 (Khử Trùng Lặp Giữ Bản Ghi Mới Nhất)}: Trong bảng lịch sử trạng thái đơn hàng, viết cú pháp kết hợp \lstinline|sort_values(by=['order_id', 'timestamp'], ascending=[True, False])| và \lstinline|drop_duplicates(subset=['order_id'], keep='first')| để trích xuất trạng thái cuối cùng của từng đơn.
+    \item \textbf{Bài 19 (Phân Tích Nối Bảng Với Merge Indicator)}: Thực hiện phép nối ngoài \lstinline|pd.merge(customers, orders, on='customer_id', how='outer', indicator=True)| giữa 2,000 khách hàng trong \href{run:./data/customers.csv}{\texttt{data/customers.csv}} và đơn hàng trong \href{run:./data/orders.csv}{\texttt{data/orders.csv}}. Đếm số lượng khách hàng chưa từng phát sinh đơn hàng nào (\texttt{'left\_only'}). \textit{Kết quả kiểm tra}: Có chính xác \textbf{11 khách hàng} chưa từng mua hàng.
+    \item \textbf{Bài 20 (Xử Lý Tệp Dữ Liệu Lớn Bằng Chunksize)}: Viết script Python sử dụng tham số \texttt{chunksize=5000} trong \lstinline|pd.read_csv('data/order_items.csv')| để tính tổng GMV của toàn bộ 24,837 dòng mà lượng RAM sử dụng tại mỗi thời điểm không vượt quá 5MB. \textit{Kết quả kiểm tra}: Tổng doanh thu là \textbf{\$8,275,862.90}.
 \end{enumerate}
 \end{baitapbox}
 
@@ -39,8 +51,16 @@ def unique_sorted(lst):
         if not res or x != res[-1]: res.append(x)
     return res
     \end{lstlisting}
-    \item \textbf{Bài 2}: Dùng \texttt{re.findall(r'\textbackslash w+', text.lower())} kết hợp với \texttt{collections.Counter} hoặc duyệt dict đếm số lần xuất hiện.
-    \item \textbf{Bài 3}: Duyệt mảng, với mỗi số $x$, kiểm tra nếu $K - x$ đã có trong \texttt{seen\_dict}. Nếu có, trả về $(x, K - x)$; nếu chưa, lưu $x$ vào \texttt{seen\_dict}. Độ phức tạp $O(n)$.
+    \item \textbf{Bài 2}: \lstinline|from collections import Counter; import re|; \lstinline|Counter(re.findall(r'\b\w+\b', text.lower()))|.
+    \item \textbf{Bài 3}: 
+    \begin{lstlisting}[language=Python]
+def two_sum(nums, K):
+    seen = {}
+    for x in nums:
+        if K - x in seen: return (K - x, x)
+        seen[x] = True
+    return None
+    \end{lstlisting}
     \item \textbf{Bài 4}: 
     \begin{lstlisting}[language=Python]
 def flatten(lst):
@@ -49,8 +69,8 @@ def flatten(lst):
         res.extend(flatten(item)) if isinstance(item, list) else res.append(item)
     return res
     \end{lstlisting}
-    \item \textbf{Bài 5}: Dùng khối \texttt{try: ... except (ValueError, TypeError): ... except ZeroDivisionError: ...}.
-    \item \textbf{Bài 6}: Decorator sử dụng \lstinline|time.perf_counter()|, tính \lstinline|elapsed = end - start|, nếu \lstinline|elapsed > 1.0| thì in cảnh báo \lstinline|print("[!] Canh bao qua tai")|.
+    \item \textbf{Bài 5}: Dùng \texttt{try: return float(a) / float(b)} với các block \texttt{except ZeroDivisionError: return "Lỗi chia cho 0"} và \texttt{except (ValueError, TypeError): return "Tham số không hợp lệ"}.
+    \item \textbf{Bài 6}: Decorator sử dụng \lstinline|t0 = time.perf_counter()|, chạy hàm, lấy \lstinline|elapsed = time.perf_counter() - t0|. Nếu \lstinline|elapsed > 1.0| thì in cảnh báo tốc độ.
     \item \textbf{Bài 7}: 
     \begin{lstlisting}[language=Python]
 def fib_gen():
@@ -60,23 +80,29 @@ def fib_gen():
         a, b = b, a + b
     \end{lstlisting}
     \item \textbf{Bài 8}: \texttt{C = np.dot(A, B)}; \texttt{C\_norm = (C - C.min()) / (C.max() - C.min())}.
-    \item \textbf{Bài 9}: Duyệt qua các cột số nguyên: \texttt{pd.to\_numeric(df[col], downcast='integer')}; với cột object: \texttt{if df[col].nunique() < 50: df[col] = df[col].astype('category')}.
-    \item \textbf{Bài 10}: \texttt{df['income'] = df.groupby('occupation')['income'].transform(lambda x: x.fillna(x.median()))}.
-    \item \textbf{Bài 11}: \lstinline|df[['Country', 'Dept', 'Year', 'ID']] = df['product_code'].str.extract(r'^(\w+)-(\w+)-(\d+)-(\w+)$')|
-    \item \textbf{Bài 12}: \texttt{df.set\_index('timestamp').resample('1H').agg(\{'revenue': 'sum', 'order\_id': 'count'\})}.
-    \item \textbf{Bài 13}: \texttt{df['volatility\_14d'] = df['close\_price'].rolling(window=14).std()}.
-    \item \textbf{Bài 14}: \texttt{df\_exploded = df.explode('tags')}.
-    \item \textbf{Bài 15}: \texttt{pivot()} xoay từ dòng thành cột (dài sang rộng). \texttt{melt()} xoay từ cột thành dòng (rộng sang dài): \texttt{pd.melt(df, id\_vars=['id'], value\_vars=['month1', 'month2'])}.
-    \item \textbf{Bài 16}: Tính \texttt{q1 = df[col].quantile(0.25)}, \texttt{q3 = df[col].quantile(0.75)}, \texttt{iqr = q3 - q1}. Lọc: \texttt{df[(df[col] < q1 - 1.5*iqr) | (df[col] > q3 + 1.5*iqr)]}.
-    \item \textbf{Bài 17}: \texttt{df.groupby('segment')['spending'].agg(lambda x: x.max() - x.min())}.
-    \item \textbf{Bài 18}: \texttt{df.sort\_values(by=['user\_id', 'login\_timestamp'], ascending=[True, False]).drop\_duplicates(subset=['user\_id'], keep='first')}.
-    \item \textbf{Bài 19}: Khi đặt \texttt{indicator=True}, Pandas sinh cột \texttt{\_merge} với 3 giá trị: \texttt{'left\_only'}, \texttt{'right\_only'}, và \texttt{'both'}.
+    \item \textbf{Bài 9}: Ép kiểu:
+    \begin{lstlisting}[language=Python]
+df['quantity'] = pd.to_numeric(df['quantity'], downcast='integer')
+df['price'] = pd.to_numeric(df['price'], downcast='float')
+df['category'] = df['category'].astype('category')
+# Dung lượng RAM giảm từ 4.68 MB xuống 3.08 MB (giảm 34.2%)
+    \end{lstlisting}
+    \item \textbf{Bài 10}: \lstinline|df['income'] = df.groupby('city')['income'].transform(lambda x: x.fillna(x.median()))|. Đảm bảo tính nhất quán thu nhập theo từng khu vực địa lý.
+    \item \textbf{Bài 11}: \lstinline|df[['order_code', 'item_seq']] = df['item_id'].str.extract(r'ORD_(\d+)_ITM_(\d+)')|.
+    \item \textbf{Bài 12}: \lstinline|orders['dt'] = pd.to_datetime(orders['order_purchase_timestamp'])|; \lstinline|monthly = orders.set_index('dt').resample('ME')['order_id'].count()|. Tháng 01/2025: 672 đơn, tháng 02/2025: 616 đơn.
+    \item \textbf{Bài 13}: \lstinline|daily_orders['rolling_7d'] = daily_orders['order_count'].rolling(window=7).mean()|.
+    \item \textbf{Bài 14}: \lstinline|df_exploded = df.explode('tags')|. Mỗi phần tử trong list trở thành một dòng dữ liệu riêng.
+    \item \textbf{Bài 15}: Dùng \lstinline|piv = df.pivot_table(index='order_id', columns='category', values='price', aggfunc='sum', fill_value=0)|; Sau đó chuyển lại Long format bằng \lstinline|piv.reset_index().melt(id_vars='order_id', var_name='category', value_name='revenue')|.
+    \item \textbf{Bài 16}: $Q1 = 39,708.07$, $Q3 = 60,196.47$, $IQR = 20,488.40$. Ngưỡng trên = $90,929.08$, ngưỡng dưới = $8,975.46$. Phát hiện chính xác \textbf{27 bản ghi ngoại lai} thỏa mãn \lstinline|(df['income'] < 8975.46) | (df['income'] > 90929.08)|.
+    \item \textbf{Bài 17}: \lstinline|df.groupby('category').apply(lambda x: (x['price'] * x['quantity']).sum())|. Kết quả: Fashion: \$1,291,623.03; Beauty: \$1,279,015.38; Home \& Living: \$1,269,376.92; Sports: \$1,267,088.89; Electronics: \$1,255,866.63.
+    \item \textbf{Bài 18}: \lstinline|df.sort_values(by=['order_id', 'timestamp'], ascending=[True, False]).drop_duplicates(subset=['order_id'], keep='first')|.
+    \item \textbf{Bài 19}: \lstinline|merged = pd.merge(customers, orders, on='customer_id', how='outer', indicator=True)|; \lstinline|unengaged = merged[merged['_merge'] == 'left_only']['customer_id'].nunique()|. Kết quả: Đúng \textbf{11 khách hàng} chưa từng mua hàng.
     \item \textbf{Bài 20}: 
     \begin{lstlisting}[language=Python]
-total_rev = 0.0
-for chunk in pd.read_csv("large_sales.csv", chunksize=50000):
-    total_rev += chunk['amount'].sum()
-print("Tong doanh thu:", total_rev)
+total_gmv = 0.0
+for chunk in pd.read_csv("data/order_items.csv", chunksize=5000):
+    total_gmv += (chunk['price'] * chunk['quantity']).sum()
+print(f"Tổng GMV: ${total_gmv:,.2f}") # Ket qua: $8,275,862.90
     \end{lstlisting}
 \end{itemize}
 \end{dapanbox}
