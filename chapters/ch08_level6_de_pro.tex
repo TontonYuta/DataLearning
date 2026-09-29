@@ -54,6 +54,15 @@ Airflow không thực hiện tính toán dữ liệu trực tiếp; nó đóng v
 \end{itemize}
 \end{lythuyetbox}
 
+\begin{handsonlabbox}[Khảo Sát \& Thực Thi Airflow DAG ecommerce\_dag.py]
+Mở tệp mã nguồn điều phối luồng \href{run:./code/ch08_orchestration/ecommerce_dag.py}{\textbf{code/ch08\_orchestration/ecommerce\_dag.py}}:
+\begin{itemize}
+    \item Khảo sát cú pháp hiện đại \texttt{@dag} với cấu hình \texttt{schedule="@daily"} và \texttt{catchup=False}.
+    \item Tìm hiểu cách 3 tasks (\texttt{extract\_orders}, \texttt{transform\_orders}, \texttt{load\_to\_dwh}) truyền nhận dữ liệu qua XComs tự động.
+    \item Cấu hình cơ chế tự động thử lại \texttt{retries=3} và khoảng thời gian chờ 5 phút giữa các lần thử lại.
+\end{itemize}
+\end{handsonlabbox}
+
 \subsection{Mã Nguồn Một Airflow DAG Chuẩn Doanh Nghiệp (TaskFlow API)}
 
 \begin{lstlisting}[language=Python]

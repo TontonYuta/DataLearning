@@ -210,6 +210,19 @@ SELECT
 FROM product_sales;
 \end{lstlisting}
 
+\begin{handsonlabbox}[Thực Thi Trực Tiếp Bộ Truy Vấn E-Commerce SQL]
+Toàn bộ mã nguồn SQL và cơ sở dữ liệu đã được nạp sẵn trong dự án. Bạn có thể mở Terminal và chạy trực tiếp runner Python để kiểm chứng các truy vấn trên SQLite in-memory:
+\begin{lstlisting}[language=bash]
+python3 code/ch04_sql/run_queries.py
+\end{lstlisting}
+Kịch bản tự động nạp 4 bảng: \texttt{customers} (2,000 dòng), \texttt{orders} (10,000 dòng), \texttt{order\_items} (24,837 dòng), và \texttt{payments} (10,000 dòng).
+\begin{itemize}
+    \item \textbf{Top Thành Phố Nhiều Khách Hàng Nhất}: Đà Nẵng (414 khách), Cần Thơ (405), TP.HCM (401), Hải Phòng (392), Hà Nội (388).
+    \item \textbf{Khách Hàng VIP Chi Tiêu Nhiều Nhất}: \texttt{CUST\_01815} tại Đà Nẵng với 9 đơn hàng và tổng chi tiêu \textbf{\$11,306.13}!
+    \item Xem file truy vấn mẫu chi tiết: \href{run:./code/ch04_sql/ecommerce_queries.sql}{\textbf{code/ch04\_sql/ecommerce\_queries.sql}}.
+\end{itemize}
+\end{handsonlabbox}
+
 \section{PROJECT 2: E-Commerce Analytics Database}
 
 Khởi tạo schema hoàn chỉnh trong PostgreSQL và viết các truy vấn phân tích nghiệp vụ then chốt:

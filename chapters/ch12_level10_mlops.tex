@@ -172,6 +172,18 @@ Xây dựng hệ thống phục vụ mô hình hoàn chỉnh:
     \item Đóng gói Dockerfile đa tầng và thiết lập pipeline GitHub Actions tự động kiểm thử mỗi khi có commit.
 \end{enumerate}
 
+\begin{handsonlabbox}[Thực Hành Triển Khai Microservice MLOps \& Kiểm Thử Tự Động]
+Mở tệp mã nguồn API \href{run:./code/ch12_mlops/app.py}{\textbf{code/ch12\_mlops/app.py}} và tệp kiểm thử tự động \href{run:./code/ch12_mlops/test_api.py}{\textbf{code/ch12\_mlops/test\_api.py}}:
+\begin{lstlisting}[language=bash]
+./data_env/bin/python code/ch12_mlops/test_api.py
+\end{lstlisting}
+\begin{itemize}
+    \item \textbf{Healthcheck Endpoint}: Kiểm tra \texttt{GET /health} xác thực trạng thái máy chủ và đảm bảo mô hình đã được tải sẵn vào bộ nhớ (HTTP 200, \texttt{model\_loaded: True}).
+    \item \textbf{Real-time Inference}: Kiểm tra \texttt{POST /predict} truyền dữ liệu JSON của khách hàng theo schema Pydantic, nhận kết quả phân loại Churn, xác suất rủi ro (\texttt{churn\_probability}) và đo đạc độ trễ phản hồi (\texttt{latency\_ms}).
+    \item \textbf{Bộ kiểm thử pytest}: Tự động chạy trong pipeline CI/CD trước khi kích hoạt quy trình build Docker Image phục vụ Production.
+\end{itemize}
+\end{handsonlabbox}
+
 \section{Bài Tập Tự Luyện Level 10}
 
 \begin{baitapbox}[5 Bài Tập MLOps \& Production Engineering]
@@ -191,7 +203,7 @@ Xây dựng hệ thống phục vụ mô hình hoàn chỉnh:
     \item \textbf{Bài 3}: Nhận tham số \texttt{customers: List[CustomerFeatures]}, dùng \texttt{pd.DataFrame([c.model\_dump() for c in customers])} và gọi hàm \texttt{predict\_proba} 1 lần duy nhất cho toàn bộ bảng.
     \item \textbf{Bài 4}: Công thức PSI:
     \[
-    PSI = \sum \left(Actual\% - Expected\%\right) \times \ln\left(\frac{Actual\%}{Expected\%}\right)
+    \text{PSI} = \sum_{i=1}^k \left(\text{Actual}_i\% - \text{Expected}_i\%\right) \times \ln\left(\frac{\text{Actual}_i\%}{\text{Expected}_i\%}\right)
     \]
     \item \textbf{Bài 5}: Dòng lệnh trong Dockerfile:
     \begin{lstlisting}[language=bash]

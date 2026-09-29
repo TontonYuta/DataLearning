@@ -86,6 +86,19 @@ df_historical = spark.read.format("delta") \
 
 Xây dựng pipeline PySpark đọc 15 triệu bản ghi sự kiện clickstream của người dùng dạng JSON thô từ Cloud Storage, thực hiện parsing, gộp nhóm hành vi theo phiên truy cập (Sessionization) bằng Window Functions, và ghi ra bảng Delta Lake được tối ưu hóa bằng kỹ thuật phân vùng \texttt{partitionBy('event\_date')}.
 
+\begin{handsonlabbox}[Thực Hành PySpark Pipeline \& Tối Ưu Hóa Phân Tán]
+Mở tệp mã nguồn \href{run:./code/ch10_bigdata/pyspark_pipeline.py}{\textbf{code/ch10\_bigdata/pyspark\_pipeline.py}} và tệp dữ liệu \href{run:./data/orders.csv}{\textbf{data/orders.csv}}:
+\begin{lstlisting}[language=bash]
+python3 code/ch10_bigdata/pyspark_pipeline.py
+\end{lstlisting}
+\begin{itemize}
+    \item \textbf{Cơ chế hoạt động}: Script khởi tạo SparkSession với cấu hình \texttt{spark.sql.shuffle.partitions=4} và ngưỡng tự động Broadcast Hash Join 10MB (\texttt{autoBroadcastJoinThreshold}).
+    \item \textbf{Ép kiểu Schema}: Sử dụng \texttt{StructType} tường minh để tránh chi phí quét toàn bộ dữ liệu suy đoán kiểu (InferSchema) trên hàng triệu dòng.
+    \item \textbf{Broadcast Join}: Phát tán bảng tra cứu đơn hàng nhỏ tới tất cả các worker nodes, loại bỏ hoàn toàn giai đoạn Shuffle tốn kém tài nguyên mạng.
+    \item \textbf{Window Ranking}: Tính toán xếp hạng các sản phẩm bán chạy nhất trong từng danh mục bằng \texttt{Window.partitionBy("category").orderBy(desc("quantity"))}.
+\end{itemize}
+\end{handsonlabbox}
+
 \section{Bài Tập Tự Luyện Level 8}
 
 \begin{baitapbox}[5 Bài Tập PySpark \& Lakehouse]

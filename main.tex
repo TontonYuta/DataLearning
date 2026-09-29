@@ -9,6 +9,7 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{xcolor}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
@@ -65,136 +66,207 @@
   {\normalfont\normalsize\bfseries\color{violetaccent}}
   {\thesubsubsection}{1em}{}
 
-% Cấu hình Listings cho Code blocks
+% Cấu hình Listings cho Code blocks chuẩn, tự động ngắt dòng thông minh
 \lstset{
-  basicstyle=\ttfamily\small\color{darktext},
+  basicstyle=\ttfamily\footnotesize\color{darktext},
   backgroundcolor=\color{lightbg},
   frame=single,
   rulecolor=\color{bordergray},
   breaklines=true,
-  breakatwhitespace=true,
+  breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
   keepspaces=true,
   showstringspaces=false,
   numbers=left,
   numberstyle=\tiny\color{gray},
-  numbersep=8pt,
-  xleftmargin=15pt,
-  framexleftmargin=15pt,
+  numbersep=6pt,
+  xleftmargin=12pt,
+  framexleftmargin=12pt,
   keywordstyle=\color{violetaccent}\bfseries,
   commentstyle=\color{emeraldcode}\itshape,
   stringstyle=\color{amberwarn},
-  columns=fullflexible
+  columns=flexible
 }
 
 \lstdefinelanguage{json}{
-  basicstyle=\ttfamily\small\color{darktext},
+  basicstyle=\ttfamily\footnotesize\color{darktext},
   stringstyle=\color{amberwarn},
   numbers=left,
   numberstyle=\tiny\color{gray},
   stepnumber=1,
-  numbersep=8pt,
+  numbersep=6pt,
   showstringspaces=false,
   breaklines=true,
+  breakatwhitespace=false,
   frame=single,
   backgroundcolor=\color{lightbg}
 }
 
 \lstdefinelanguage{yaml}{
-  basicstyle=\ttfamily\small\color{darktext},
+  basicstyle=\ttfamily\footnotesize\color{darktext},
   stringstyle=\color{amberwarn},
   numbers=left,
   numberstyle=\tiny\color{gray},
   stepnumber=1,
-  numbersep=8pt,
+  numbersep=6pt,
   showstringspaces=false,
   breaklines=true,
+  breakatwhitespace=false,
   frame=single,
   backgroundcolor=\color{lightbg}
 }
 
-% Định nghĩa các TColorBox chuyên biệt
+% Định nghĩa các TColorBox chuyên biệt có khả năng ngắt trang hoàn hảo
 % 1. Hộp Lý Thuyết Cốt Lõi
 \newtcolorbox{lythuyetbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=navyprimary!5!white,
   colframe=navyprimary,
   coltitle=white,
   fonttitle=\bfseries,
   title={Kiến Thức Cốt Lõi: #1},
-  arc=3mm,
-  boxrule=1pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=1pt
 }
 
 % 2. Hộp Thực Chiến & Code Mẫu
 \newtcolorbox{thuchanhbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=tealsecondary!5!white,
   colframe=tealsecondary,
   coltitle=white,
   fonttitle=\bfseries,
   title={Thực Chiến \& Best Practices: #1},
-  arc=3mm,
-  boxrule=1pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=1pt
 }
 
-% 3. Hộp AI Copilot & Prompt Engineering
+% 3. Hộp Thực Hành Ngay Tại Bài Học (Hands-On Lab)
+\newtcolorbox{handsonlabbox}[1][]{
+  enhanced,
+  breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
+  colback=emeraldcode!5!white,
+  colframe=emeraldcode,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={Thực Hành Ngay Tại Bài Học (Hands-On Lab): #1},
+  arc=2.5mm,
+  boxrule=1.2pt
+}
+
+% 4. Hộp AI Copilot & Prompt Engineering
 \newtcolorbox{aipromptbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=violetaccent!5!white,
   colframe=violetaccent,
   coltitle=white,
   fonttitle=\bfseries,
   title={Bí Kíp AI Copilot \& Prompt Engineering: #1},
-  arc=3mm,
-  boxrule=1.2pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=1.2pt
 }
 
-% 4. Hộp Bài Tập Tự Luyện
+% 5. Hộp Bài Tập Tự Luyện
 \newtcolorbox{baitapbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=amberwarn!5!white,
   colframe=amberwarn,
   coltitle=white,
   fonttitle=\bfseries,
   title={Bài Tập Tự Luyện: #1},
-  arc=3mm,
-  boxrule=1pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=1pt
 }
 
-% 5. Hộp Lời Giải & Đối Chiếu
+% 6. Hộp Lời Giải & Đối Chiếu
 \newtcolorbox{dapanbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=gray!10!white,
   colframe=gray!70!black,
   coltitle=white,
   fonttitle=\bfseries,
   title={Lời Giải \& Hướng Dẫn Kiểm Tra: #1},
-  arc=3mm,
-  boxrule=0.8pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=0.8pt
 }
 
-% 6. Hộp Lời Khuyên Tuyển Dụng & CV
+% 7. Hộp Lời Khuyên Tuyển Dụng & CV
 \newtcolorbox{cvtipbox}[1][]{
   enhanced,
   breakable,
+  parbox=false,
+  before skip=8pt plus 3pt minus 2pt,
+  after skip=8pt plus 3pt minus 2pt,
+  boxsep=3pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  pad at break=2mm,
   colback=rosecv!5!white,
   colframe=rosecv,
   coltitle=white,
   fonttitle=\bfseries,
   title={Góc Nhìn Tuyển Dụng \& Đưa Vào CV: #1},
-  arc=3mm,
-  boxrule=1pt,
-  left=12pt, right=12pt, top=10pt, bottom=10pt
+  arc=2.5mm,
+  boxrule=1pt
+}
+
+% 8. Hộp Mẫu CV Chuẩn ATS
+\newtcolorbox{samplecvbox}[1][]{
+  enhanced,
+  breakable,
+  parbox=false,
+  before skip=10pt plus 3pt minus 2pt,
+  after skip=10pt plus 3pt minus 2pt,
+  boxsep=4pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt,
+  pad at break=2mm,
+  colback=white,
+  colframe=navyprimary,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title={MẪU CV CHUẨN ATS: #1},
+  arc=2.5mm,
+  boxrule=1.2pt
 }
 
 % Cấu hình Hyperref
@@ -220,7 +292,7 @@
 
 \rule{\linewidth}{1.5pt}\\[0.6cm]
 \parbox{0.9\linewidth}{\centering\itshape\large
-Cẩm nang thực chiến chuyên sâu với 11 Flagship Projects, ứng dụng AI Copilot hiện đại, hệ thống bài tập tự luyện có lời giải chi tiết, và bộ công thức chuẩn hóa CV chinh phục mọi nhà tuyển dụng.
+Cẩm nang thực chiến chuyên sâu với 20 Flagship Projects, ứng dụng AI Copilot hiện đại, hệ thống bài tập tự luyện có lời giải chi tiết, và bộ công thức chuẩn hóa CV chinh phục mọi nhà tuyển dụng.
 }\\[0.6cm]
 \rule{\linewidth}{1.5pt}\\[2.5cm]
 

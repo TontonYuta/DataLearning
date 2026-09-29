@@ -132,21 +132,43 @@ awk -F ',' '{sum += $3} END {print "Tong Doanh Thu = ", sum}' sales_data.csv
 \end{lstlisting}
 \end{thuchanhbox}
 
+\begin{handsonlabbox}[Thao Tác Trực Tiếp Với Bộ Dữ Liệu data/orders.csv]
+Mở Terminal trên máy của bạn và chạy trực tiếp các câu lệnh sau trên bộ dữ liệu dự án:
+\begin{enumerate}
+    \item \textbf{Đếm số dòng}: \lstinline|wc -l data/orders.csv| $\rightarrow$ Trả về \textbf{10,001 dòng} (1 dòng tiêu đề + 10,000 đơn hàng).
+    \item \textbf{Xem 3 dòng đầu}: \lstinline|head -n 4 data/orders.csv| $\rightarrow$ Quan sát nhanh cấu trúc cột: \texttt{[order\_id, customer\_id, order\_purchase\_timestamp, order\_status]}.
+    \item \textbf{Thống kê trạng thái đơn hàng (Value Counts siêu tốc)}:
+    \begin{lstlisting}[language=bash]
+cut -d ',' -f 4 data/orders.csv | sort | uniq -c | sort -nr
+    \end{lstlisting}
+    \textit{Kết quả trả về}: \textbf{8,498} COMPLETED, \textbf{1,014} CANCELLED, \textbf{488} REFUNDED!
+    \item \textbf{Lọc các đơn hàng bất thường}:
+    \begin{lstlisting}[language=bash]
+grep -E "CANCELLED|REFUNDED" data/orders.csv | wc -l
+    \end{lstlisting}
+    \textit{Kết quả trả về}: Đúng \textbf{1,502 đơn hàng} cần điều tra nguyên nhân.
+    \item \textbf{Chạy thử nghiệm CLI Analyzer}:
+    \begin{lstlisting}[language=bash]
+python3 code/ch02_cli/analyzer.py --file data/input.csv
+    \end{lstlisting}
+\end{enumerate}
+\end{handsonlabbox}
+
 \section{Bí Kíp AI Copilot: Sinh Dữ Liệu Giả Lập \& Scripting}
 
 \begin{aipromptbox}[Prompt Sinh Mock Data Chuẩn Schema Doanh Nghiệp]
 Khi bạn cần kiểm thử một pipeline hoặc xây dựng portfolio mà không có dữ liệu thực tế, hãy dùng prompt sau:
 
 \textit{"Đóng vai trò là Senior Data Engineer. Hãy viết một script Python hoàn chỉnh sử dụng thư viện Faker để sinh ra 5,000 dòng dữ liệu giao dịch bán hàng thương mại điện tử.
-Tệp xuất ra định dạng CSV và Parquet tên là `ecommerce\_transactions`.
+Tệp xuất ra định dạng CSV và Parquet tên là ecommerce\_transactions.
 Các cột bao gồm:
-1. `transaction\_id` (UUIDv4 dạng chuỗi)
-2. `customer\_id` (định dạng `CUST\_` kèm 5 chữ số ngẫu nhiên từ 10000 đến 15000 để tạo ra hành vi mua lặp lại)
-3. `order\_timestamp` (phân bổ ngẫu nhiên trong 90 ngày gần nhất)
-4. `category` (chọn từ ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports'])
-5. `amount` (phân phối chuẩn lệch phải, giá trị từ 10 đến 2,500 USD, làm tròn 2 chữ số thập phân)
-6. `status` (tỷ lệ 85\% 'COMPLETED', 10\% 'CANCELLED', 5\% 'REFUNDED')
-Yêu cầu: Chèn cố tình 2\% giá trị null ở cột `amount` và 5\% khách hàng có thông tin địa chỉ email rỗng để làm bài tập Data Cleaning. Viết mã tối ưu hóa chạy dưới 3 giây."}
+1. transaction\_id (UUIDv4 dạng chuỗi)
+2. customer\_id (định dạng CUST\_ kèm 5 chữ số ngẫu nhiên từ 10000 đến 15000 để tạo ra hành vi mua lặp lại)
+3. order\_timestamp (phân bổ ngẫu nhiên trong 90 ngày gần nhất)
+4. category (chọn từ ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports'])
+5. amount (phân phối chuẩn lệch phải, giá trị từ 10 đến 2,500 USD, làm tròn 2 chữ số thập phân)
+6. status (tỷ lệ 85\% 'COMPLETED', 10\% 'CANCELLED', 5\% 'REFUNDED')
+Yêu cầu: Chèn cố tình 2\% giá trị null ở cột amount và 5\% khách hàng có thông tin địa chỉ email rỗng để làm bài tập Data Cleaning. Viết mã tối ưu hóa chạy dưới 3 giây."}
 \end{aipromptbox}
 
 \section{PROJECT 0: Xây Dựng Personal Data CLI Analyzer}

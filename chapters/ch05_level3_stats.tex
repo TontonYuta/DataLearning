@@ -90,7 +90,7 @@ Mọi thử nghiệm A/B Testing đều bắt đầu từ việc thiết lập c
 
 Trước khi bấm nút bắt đầu thử nghiệm, bạn phải tính toán kích thước mẫu tối thiểu (Sample Size) cần thu thập:
 \[
-n = \frac{2 \times \left(Z\_{1 - \alpha/2} + Z\_{1 - \beta}\right)^2 \times p(1 - p)}{\Delta^2}
+n = \frac{2 \times \left(Z_{1 - \alpha/2} + Z_{1 - \beta}\right)^2 \times p(1 - p)}{\Delta^2}
 \]
 Trong đó: $\Delta$ là MDE (Minimum Detectable Effect - mức chênh lệch nhỏ nhất bạn muốn phát hiện), $p$ là tỷ lệ chuyển đổi hiện tại (Baseline Conversion Rate), $Z_{1-\alpha/2} = 1.96$ (với $\alpha = 0.05$), và $Z_{1-\beta} = 0.84$ (với Power $= 80\%$).
 
@@ -109,6 +109,25 @@ if p_val < 0.001:
     print("[!] NGHAY LAP TUC HUY KET QUA: Phat hien loi nghiem trong SRM (Sample Ratio Mismatch)!")
 \end{lstlisting}
 \end{thuchanhbox}
+
+\begin{handsonlabbox}[Thực Hành Kiểm Định A/B Testing 50,000 Người Dùng]
+Mở tệp dữ liệu \href{run:./data/ab_test_checkout.csv}{\texttt{data/ab\_test\_checkout.csv}} và chạy kịch bản kiểm định thống kê:
+\begin{lstlisting}[language=bash]
+python3 code/ch05_stats/ab_test_analysis.py
+\end{lstlisting}
+\begin{enumerate}
+    \item \textbf{Kiểm định SRM}: Control: 25,000 (50.00\%), Treatment: 25,000 (50.00\%), $\chi^2 = 0.000$, $p = 1.000$ $\rightarrow$ [PASS] Tỷ lệ phân luồng hoàn hảo 50:50.
+    \item \textbf{Two-Proportion Z-Test}:
+    \begin{itemize}
+        \item Control CR: $11.82\%$ (2,955 / 25,000)
+        \item Treatment CR: $13.12\%$ (3,279 / 25,000)
+        \item Mức tăng tuyệt đối: $+1.30\%$ (Mức tăng tương đối: \textbf{+10.96\%})
+        \item Giá trị kiểm định: $Z = 4.3861$, $p = 1.154 \times 10^{-5} \ll 0.05$
+        \item Khoảng tin cậy 95\%: $[+0.72\%, +1.88\%]$
+    \end{itemize}
+    \item \textbf{Kết luận kinh doanh}: [SHIP IT!] Ra mắt giao diện checkout mới lên 100\% người dùng thực tế!
+\end{enumerate}
+\end{handsonlabbox}
 
 \section{PROJECT 3: Thử Nghiệm A/B Testing Tỷ Lệ Chuyển Đổi E-Commerce}
 

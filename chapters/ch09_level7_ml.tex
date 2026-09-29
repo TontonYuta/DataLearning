@@ -167,6 +167,19 @@ shap_values = explainer.shap_values(X_test_transformed)
 # shap.summary_plot(shap_values[1], X_test_transformed)
 \end{lstlisting}
 
+\begin{handsonlabbox}[Thực Hành Huấn Luyện Machine Learning Pipeline Dự Đoán Churn]
+Mở tệp dữ liệu \href{run:./data/customer_churn_features.csv}{\textbf{data/customer\_churn\_features.csv}} (10,000 khách hàng) và chạy script huấn luyện:
+\begin{lstlisting}[language=bash]
+./data_env/bin/python code/ch09_ml/train_churn.py
+\end{lstlisting}
+\begin{itemize}
+    \item \textbf{Tỷ lệ rời bỏ cơ sở}: $52.66\%$ (5,266 / 10,000 khách hàng).
+    \item \textbf{Phân chia tập dữ liệu}: 8,000 mẫu Train, 2,000 mẫu Test độc lập (Holdout 20\%).
+    \item \textbf{Hiệu năng mô hình}: Random Forest Classifier đạt \textbf{ROC-AUC: 0.6739}, Precision: 0.67, Recall: 0.57.
+    \item \textbf{Lưu trữ Artifact}: File mô hình được xuất tại \texttt{code/ch09\_ml/churn\_model.joblib} sẵn sàng triển khai!
+\end{itemize}
+\end{handsonlabbox}
+
 \section{Bài Tập Tự Luyện Level 7}
 
 \begin{baitapbox}[5 Bài Tập Xây Dựng \& Tối Ưu Mô Hình ML]
@@ -186,7 +199,7 @@ shap_values = explainer.shap_values(X_test_transformed)
     \texttt{Total\_Cost = FP * 10 + FN * 200}. Duyệt qua các ngưỡng cắt từ 0.1 đến 0.9 với bước nhảy 0.05, chọn ngưỡng có \texttt{Total\_Cost} thấp nhất (thường ngưỡng tối ưu sẽ thấp hơn 0.5 để bắt được nhiều FN hơn).
     \item \textbf{Bài 3}: Công thức làm mịn Target Encoding:
     \[
-    S\_i = \frac{n\_i \times \bar{y}\_i + m \times \bar{y}\_{\text{global}}}{n\_i + m}
+    S_i = \frac{n_i \times \bar{y}_i + m \times \bar{y}_{\text{global}}}{n_i + m}
     \]
     với $m$ là trọng số làm mịn (Weight of prior).
     \item \textbf{Bài 4}: LightGBM chia nhánh theo Leaf-wise (chọn lá làm giảm sai số nhiều nhất để chia tiếp). Trên tập dữ liệu nhỏ ($<10,000$ dòng), Leaf-wise rất dễ phát triển cây quá sâu và gây Overfitting nặng. Cần kiểm soát bằng \texttt{max\_depth} và \texttt{min\_child\_samples}.

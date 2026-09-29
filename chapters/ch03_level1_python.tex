@@ -265,6 +265,30 @@ print("=== BAO CAO HIEU NANG DANH MUC SAN PHAM ===")
 print(category_report.sort_values(by='total_revenue', ascending=False))
 \end{lstlisting}
 
+\begin{handsonlabbox}[Thực Hành Pandas Trực Tiếp Trên Bộ Dữ Liệu TMĐT]
+Mở Terminal hoặc Jupyter Notebook và thực thi trực tiếp trên các tệp dữ liệu dự án:
+\begin{enumerate}
+    \item \textbf{Phân tích ngành hàng trên \href{run:./data/order_items.csv}{\texttt{data/order\_items.csv}}}:
+    \begin{lstlisting}[language=Python]
+import pandas as pd
+items = pd.read_csv("data/order_items.csv")
+items['gmv'] = items['price'] * items['quantity']
+print(items.groupby('category')['gmv'].sum().sort_values(ascending=False))
+    \end{lstlisting}
+    \textit{Kết quả kiểm tra}: Ngành hàng \textbf{Fashion} dẫn đầu với tổng GMV \textbf{\$1,684,668.49}, tiếp theo là \textbf{Beauty} với \textbf{\$1,654,187.31}!
+    \item \textbf{Khám phá dữ liệu khuyết \& ngoại lai trên \href{run:./data/input.csv}{\texttt{data/input.csv}}}:
+    \begin{lstlisting}[language=Python]
+inp = pd.read_csv("data/input.csv")
+print("Missing values:\n", inp.isnull().sum())
+    \end{lstlisting}
+    \textit{Kết quả kiểm tra}: Phát hiện chính xác \textbf{131 dòng khuyết age} và \textbf{50 dòng khuyết income}.
+    \item \textbf{Chạy toàn bộ pipeline Project 1 tự động}:
+    \begin{lstlisting}[language=bash]
+python3 code/ch03_python/eda_pipeline.py
+    \end{lstlisting}
+\end{enumerate}
+\end{handsonlabbox}
+
 \section{PROJECT 1: E-Commerce Sales Explorer}
 
 \subsection{Kịch Bản Thực Tế}

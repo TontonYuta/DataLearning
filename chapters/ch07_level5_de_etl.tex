@@ -59,6 +59,18 @@ INSERT INTO fact_daily_sales SELECT ... FROM staging_sales WHERE sales_date = '2
 \end{enumerate}
 \end{lythuyetbox}
 
+\begin{handsonlabbox}[Thực Thi Batch ETL Pipeline Trên data/raw\_transactions.csv]
+Mở Terminal và trực tiếp khởi chạy pipeline ETL nạp kho dữ liệu:
+\begin{lstlisting}[language=bash]
+python3 code/ch07_etl/batch_etl.py
+\end{lstlisting}
+\begin{itemize}
+    \item \textbf{Tệp nguồn đầu vào}: \href{run:./data/raw_transactions.csv}{\textbf{data/raw\_transactions.csv}} gồm 10,000 giao dịch thô.
+    \item \textbf{Cơ chế kiểm định chất lượng}: Pipeline tự động phát hiện và loại bỏ chính xác \textbf{341 bản ghi lỗi} (trạng thái \texttt{INVALID\_STATUS}, số tiền âm, chiết khấu âm).
+    \item \textbf{Nạp kho lũy đẳng}: Ghi đè an toàn đúng \textbf{9,659 bản ghi sạch} vào bảng \texttt{fact\_transactions} trong cơ sở dữ liệu \href{run:./data/analytics_warehouse.db}{\textbf{data/analytics\_warehouse.db}}.
+\end{itemize}
+\end{handsonlabbox}
+
 \section{PROJECT 5: Automated Batch ETL Pipeline Chuẩn Production}
 
 \subsection{Bài Toán Thực Tế}

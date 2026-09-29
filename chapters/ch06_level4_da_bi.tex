@@ -17,6 +17,15 @@ Nhiều người mới thường xem thường Excel và cho rằng chỉ có Py
 \end{itemize}
 \end{thuchanhbox}
 
+\begin{handsonlabbox}[Thực Hành Bảng Tính Excel Đa Sheet Tại data/excel\_practice\_data.xlsx]
+Mở tệp bảng tính thực hành mẫu \href{run:./data/excel_practice_data.xlsx}{\textbf{data/excel\_practice\_data.xlsx}} gồm 6 sheets để thao tác:
+\begin{itemize}
+    \item \textbf{Sheet NhanVien}: Nhập mã \texttt{"NV105"} tại \texttt{F2}, viết công thức XLOOKUP tìm Họ Tên tại \texttt{G2} $\rightarrow$ Kết quả: \textbf{"Phan Van Dat"}, Lương tại \texttt{H2} $\rightarrow$ \textbf{28,000,000 VND}.
+    \item \textbf{Sheet CuocVanChuyen}: Viết công thức 2-Way XLOOKUP tìm cước chuyển phát đi Đà Nẵng mức \texttt{"5kg"} $\rightarrow$ Kết quả: \textbf{55,000 VND}.
+    \item \textbf{Sheet DoanhSo}: Lập Pivot Table lọc tự động \textit{Value Filters $\rightarrow$ Top 5} nhân viên có doanh số cao nhất.
+\end{itemize}
+\end{handsonlabbox}
+
 \section{Power BI \& Nghệ Thuật Mô Hình Hóa Dữ Liệu (Data Modeling)}
 
 Một báo cáo Power BI chạy chậm chạp hoặc ra số sai lệch 99\% là do mô hình hóa dữ liệu cẩu thả, không phải do giao diện hiển thị!
@@ -38,7 +47,7 @@ DAX (Data Analysis Expressions) không phải là Excel Formula. DAX hoạt đ�
 \begin{lythuyetbox}[Hàm Vạn Năng CALCULATE() \& Chuyển Đổi Ngữ Cảnh]
 Hàm \texttt{CALCULATE()} là hàm duy nhất trong DAX có khả năng **sửa đổi, ghi đè hoặc mở rộng Filter Context hiện tại**:
 \[
-\text{CALCULATE}(\langle\text{Expression}\rangle, \langle\text{Filter}\_1\rangle, \langle\text{Filter}\_2\rangle, \dots)
+\text{CALCULATE}(\langle\text{Expression}\rangle, \langle\text{Filter}_1\rangle, \langle\text{Filter}_2\rangle, \dots)
 \]
 Khi \texttt{CALCULATE} được gọi, nó thực hiện:
 \begin{enumerate}
