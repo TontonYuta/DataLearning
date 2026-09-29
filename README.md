@@ -9,6 +9,23 @@ Cuốn sách và kho lưu trữ mã nguồn mở cung cấp giáo trình **All-I
 
 ---
 
+## 🖥️ Cổng Học Tập Tương Tác Trái - Phải (Interactive Dual-Pane Web & Desktop App)
+
+Hệ thống đi kèm ứng dụng web và desktop chuẩn **LeetCode / Educative** với bố cục trực quan:
+- **Nửa trái (Lý thuyết + Ví dụ mẫu)**: Toàn bộ 16 chương lý thuyết chuyên sâu, công thức KaTeX, sơ đồ khối ASCII và code mẫu có chú giải từng dòng.
+- **Nửa phải (Trình soạn thảo Code & Sandbox)**: Trình biên dịch Python (Pyodide WebAssembly) và SQLite Wasm chạy trực tiếp trên trình duyệt, nạp sẵn 10 tập dữ liệu thực tế (`customers.csv`, `orders.csv`, `order_items.csv`, `payments.csv`, `raw_transactions.csv`, ...).
+- **Tối ưu UX tối giản**: Loại bỏ nút bấm thừa, chỉ giữ 2 thao tác cốt lõi: `▶ Chạy Thử` (Run) và `⚡ Nộp Bài` (Submit) kèm kiểm thử tự động.
+
+### 🚀 Khởi chạy ứng dụng:
+* **Khởi chạy từ Menu Ứng dụng Linux (Desktop App)**: Tìm `Data Mastery 2026` trong Menu hoặc Dash.
+* **Hoặc mở trực tiếp từ dòng lệnh**:
+  ```bash
+  /home/tontonyuta/Documents/data-mastery-2026/launch.sh
+  ```
+* **Hoặc truy cập trình duyệt**: `http://localhost:3026`
+
+---
+
 ## 📖 Tải Giáo Trình Hoàn Chỉnh (Bản PDF 162 Trang)
 
 Bạn có thể tải hoặc đọc trực tiếp tài liệu biên soạn bằng LaTeX chuyên nghiệp:
